@@ -245,13 +245,13 @@ public class Listen implements Listener {
                             player.getLocation().getBlockZ());
                     break;
                 case 12:
-                    table.moveTable(table.getGx() + by, table.getGy(), table.getGz());
+                    table.moveTableRelative(by, 0, 0);
                     break;
                 case 13:
-                    table.moveTable(table.getGx(), table.getGy() + by, table.getGz());
+                    table.moveTableRelative(0, by, 0);
                     break;
                 case 14:
-                    table.moveTable(table.getGx(), table.getGy() + by, table.getGz());
+                    table.moveTableRelative(0, 0, by);
                     break;
                 case 37:
                     table.m1x += by;
@@ -305,13 +305,13 @@ public class Listen implements Listener {
                 new SettingsMenu(player);
                 return;
             case 21:
-                table.moveTable(table.getGx() + by, table.getGy(), table.getGz());
+                table.moveTableRelative(by, 0, 0);
                 break;
             case 22:
-                table.moveTable(table.getGx(), table.getGy() + by, table.getGz());
+                table.moveTableRelative(0, by, 0);
                 break;
             case 23:
-                table.moveTable(table.getGx(), table.getGy(), table.getGz() + by);
+                table.moveTableRelative(0, 0, by);
                 break;
             case 30:
                 table.rotateTable("X");
@@ -416,7 +416,7 @@ public class Listen implements Listener {
 
                 player.sendMessage("xDiff: " + xDiff);
                 player.sendMessage("zDiff: " + zDiff);
-                player.sendMessage("looptick: " + table.looptick);
+                player.sendMessage("looptick: " + table.getLooptick());
                 
                 if (xDiff > 0 || yDiff > 0 || zDiff > 0) {
                     event.getPlayer().teleport(fromLocation.setDirection(toLocation.getDirection()));

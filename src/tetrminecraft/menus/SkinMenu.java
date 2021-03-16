@@ -34,7 +34,7 @@ public class SkinMenu implements InventoryHolder {
         //changeable blocks
         for(int i=0;i<17;i++){
             if(Main.skineditorver.get(player)==0) {
-                inventory.setItem(BLOCK_LOCATIONS[i], Blocks.blocks[i]);
+                inventory.setItem(BLOCK_LOCATIONS[i], Blocks.defaultBlocks[i]);
             }else if(Main.skineditorver.get(player)==1) {
                 inventory.setItem(BLOCK_LOCATIONS[i], blocks[i]);
             }

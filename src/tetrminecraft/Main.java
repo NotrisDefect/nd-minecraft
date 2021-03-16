@@ -30,6 +30,7 @@ import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 
 import tetrcore.Constants;
 import tetrcore.LoadConfig;
+import tetrminecraft.commands.Tetr;
 import tetrminecraft.functions.Functions;
 import tetrminecraft.functions.Functions_1_10_R1;
 import tetrminecraft.functions.Functions_1_11_R1;
@@ -125,7 +126,7 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         console = getServer().getConsoleSender();
-        this.getCommand("tetr").setExecutor(new CommandTetr());
+        this.getCommand("tetr").setExecutor(new Tetr());
 
         // detect events
         getServer().getPluginManager().registerEvents(new Listen(), this);

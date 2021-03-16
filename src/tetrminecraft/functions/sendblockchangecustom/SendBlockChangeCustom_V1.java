@@ -19,7 +19,7 @@ public class SendBlockChangeCustom_V1 {
         if(Main.skineditorver.get(player)==1) {
             player.sendBlockChange(loc, blocks[color].getType(), blocks[color].getData().getData());
         }else if(Main.skineditorver.get(player)==0) {
-            player.sendBlockChange(loc, Blocks.blocks[color].getType(), Blocks.blocks[color].getData().getData());
+            player.sendBlockChange(loc, Blocks.defaultBlocks[color].getType(), Blocks.defaultBlocks[color].getData().getData());
         }
     }
     
