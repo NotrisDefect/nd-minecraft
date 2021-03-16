@@ -15,9 +15,9 @@ public class SendBlockChangeCustom_V2 {
     public static void sendBlockChangeCustom(Player player, Location loc, int color) {
         ItemStack blocks[] = Main.skinmap.get(player);
         
-        if(Main.skineditorver.get(player)==1) {
+        if(Main.playerUsesCustom.get(player)) {
             player.sendBlockChange(loc, blocks[color].getType().createBlockData());
-        }else if(Main.skineditorver.get(player)==0) {
+        }else if(!Main.playerUsesCustom.get(player)) {
             player.sendBlockChange(loc, Blocks.defaultBlocks[color].getType().createBlockData());
         }
     }

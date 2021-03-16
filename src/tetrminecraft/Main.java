@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.bukkit.Bukkit;
@@ -24,29 +25,12 @@ import org.bukkit.util.Consumer;
 
 import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
-import com.xxmicloxx.NoteBlockAPI.model.playmode.MonoStereoMode;
-import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
 import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 
 import tetrcore.Constants;
 import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
 import tetrminecraft.functions.Functions;
-import tetrminecraft.functions.Functions_1_10_R1;
-import tetrminecraft.functions.Functions_1_11_R1;
-import tetrminecraft.functions.Functions_1_12_R1;
-import tetrminecraft.functions.Functions_1_13_R1;
-import tetrminecraft.functions.Functions_1_13_R2;
-import tetrminecraft.functions.Functions_1_14_R1;
-import tetrminecraft.functions.Functions_1_15_R1;
-import tetrminecraft.functions.Functions_1_16_R1;
-import tetrminecraft.functions.Functions_1_16_R2;
-import tetrminecraft.functions.Functions_1_16_R3;
-import tetrminecraft.functions.Functions_1_8_R1;
-import tetrminecraft.functions.Functions_1_8_R2;
-import tetrminecraft.functions.Functions_1_8_R3;
-import tetrminecraft.functions.Functions_1_9_R1;
-import tetrminecraft.functions.Functions_1_9_R2;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -79,25 +63,22 @@ public class Main extends JavaPlugin implements Listener {
     public static JavaPlugin plugin;
     public static ConsoleCommandSender console;
 
-    public static LinkedHashMap<String, Room> roommap = new LinkedHashMap<String, Room>();
-    public static HashMap<Player, Room> inwhichroom = new HashMap<Player, Room>();
+    public static Map<String, Room> roomMap = new LinkedHashMap<String, Room>();
+    public static Map<Player, Room> inwhichroom = new HashMap<Player, Room>();
 
-    public static HashMap<Player, String> lastui = new HashMap<Player, String>();
-    public static HashMap<Player, Integer> joinroompage = new HashMap<Player, Integer>();
+    public static Map<Player, String> lastui = new HashMap<Player, String>();
+    public static Map<Player, Integer> joinroompage = new HashMap<Player, Integer>();
 
-    public static HashMap<Player, Integer> skineditorver = new HashMap<Player, Integer>();
-    public static HashMap<Player, ItemStack[]> skinmap = new HashMap<Player, ItemStack[]>();
+    public static Map<Player, Boolean> playerUsesCustom = new HashMap<Player, Boolean>();
+    public static Map<Player, ItemStack[]> skinmap = new HashMap<Player, ItemStack[]>();
     
     public static Playlist playlist;
-    public static RadioSongPlayer rsp;
 
-    public static void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
-        try {
-            ymlConfig.save(ymlFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    public static Functions functions;
+
+    public static int numberOfSongs;
+
+    private static Song[] songArray;
 
     public static boolean isDeveloper(CommandSender sender) {
         if (Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"))) {
@@ -105,12 +86,14 @@ public class Main extends JavaPlugin implements Listener {
         }
         return false;
     }
-
-    public static Functions functions;
-
-    public static int numberOfSongs;
-    static Song[] songArray;
-    private static String version;
+    
+    public static void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
+        try {
+            ymlConfig.save(ymlFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onEnable() {
@@ -171,15 +154,12 @@ public class Main extends JavaPlugin implements Listener {
 
                 playlist = new Playlist(songArray);
                 // tRASH end
-                rsp = new RadioSongPlayer(playlist);
-                rsp.setChannelMode(new MonoStereoMode());
-                rsp.setVolume((byte) 50);
             } else {
                 getLogger().info("No songs detected. Please add some songs!");
             }
         }
 
-        if (checkVersion()) {
+        if (versionIsSupported()) {
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
             getLogger().severe("Unsupported server version");
@@ -189,8 +169,8 @@ public class Main extends JavaPlugin implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             lastui.put(player, "home");
 
-            if (!Main.skineditorver.containsKey(player)) {
-                Main.skineditorver.put(player, 0);
+            if (!Main.playerUsesCustom.containsKey(player)) {
+                Main.playerUsesCustom.put(player, false);
             }
 
             initSkin(player);
@@ -200,7 +180,7 @@ public class Main extends JavaPlugin implements Listener {
 
         long timeElapsed = timeEnd - timeStart;
 
-        getLogger().info("Done. Time elapsed: " + timeElapsed + "ms");
+        getLogger().info("Done. Time elapsed: " + timeElapsed / 1000000 + "ms");
 
         // https://www.spigotmc.org/wiki/creating-an-update-checker-that-checks-for-updates/
         new UpdateChecker(this).getVersion(version -> {
@@ -210,51 +190,6 @@ public class Main extends JavaPlugin implements Listener {
                 getLogger().info("Your version: " + this.getDescription().getVersion());
             }
         });
-    }
-
-    private boolean checkVersion() {
-        version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-
-        getLogger().info("Your server is running version " + version);
-
-        if (version.equals("v1_8_R1")) {
-            functions = new Functions_1_8_R1();
-        } else if (version.equals("v1_8_R2")) {
-            functions = new Functions_1_8_R2();
-        } else if (version.equals("v1_8_R3")) {
-            functions = new Functions_1_8_R3();
-        } else if (version.equals("v1_9_R1")) {
-            functions = new Functions_1_9_R1();
-        } else if (version.equals("v1_9_R2")) {
-            functions = new Functions_1_9_R2();
-        } else if (version.equals("v1_10_R1")) {
-            functions = new Functions_1_10_R1();
-        } else if (version.equals("v1_11_R1")) {
-            functions = new Functions_1_11_R1();
-        } else if (version.equals("v1_12_R1")) {
-            functions = new Functions_1_12_R1();
-        } else if (version.equals("v1_13_R1")) {
-            functions = new Functions_1_13_R1();
-        } else if (version.equals("v1_13_R2")) {
-            functions = new Functions_1_13_R2();
-        } else if (version.equals("v1_14_R1")) {
-            functions = new Functions_1_14_R1();
-        } else if (version.equals("v1_15_R1")) {
-            functions = new Functions_1_15_R1();
-        } else if (version.equals("v1_16_R1")) {
-            functions = new Functions_1_16_R1();
-        } else if (version.equals("v1_16_R2")) {
-            functions = new Functions_1_16_R2();
-        } else if (version.equals("v1_16_R3")) {
-            functions = new Functions_1_16_R3();
-        }
-
-        return functions != null;
-    }
-
-    @Override
-    public void onDisable() {
-        plugin = null;
     }
 
     @EventHandler
@@ -276,7 +211,7 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public void initSkin(Player player) {
+    private void initSkin(Player player) {
         File customYml = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
         ItemStack[] blocks = new ItemStack[17];
@@ -298,6 +233,23 @@ public class Main extends JavaPlugin implements Listener {
         blocks[15] = customConfig.getItemStack("ghostT");
         blocks[16] = customConfig.getItemStack("zone");
         skinmap.put(player, blocks);
-        Main.skineditorver.put(player, customConfig.getInt("useSkinSlot"));
+        Main.playerUsesCustom.put(player, customConfig.getBoolean("useSkinSlot"));
+    }
+
+    private boolean versionIsSupported() {
+        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+
+        getLogger().info("Your server is running version " + version);
+        
+        try {
+            functions = (Functions) Class.forName("tetrminecraft.functions.Functions_" + version.substring(1)).newInstance();
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        } catch (InstantiationException e) {
+            return false;
+        } catch (IllegalAccessException e) {
+            return false;
+        }
     }
 }

@@ -33,15 +33,15 @@ public class SkinMenu implements InventoryHolder {
         ItemStack blocks[] = Main.skinmap.get(player);
         //changeable blocks
         for(int i=0;i<17;i++){
-            if(Main.skineditorver.get(player)==0) {
+            if(!Main.playerUsesCustom.get(player)) {
                 inventory.setItem(BLOCK_LOCATIONS[i], Blocks.defaultBlocks[i]);
-            }else if(Main.skineditorver.get(player)==1) {
+            }else if(Main.playerUsesCustom.get(player)) {
                 inventory.setItem(BLOCK_LOCATIONS[i], blocks[i]);
             }
         }
         
         inventory.setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        inventory.setItem(TORCH_LOCATION, BaseMenu.createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (Main.skineditorver.get(player)==0?ChatColor.BOLD:"") + "Default", ChatColor.WHITE + "" + (Main.skineditorver.get(player)==1?ChatColor.BOLD:"") + "Custom"));
+        inventory.setItem(TORCH_LOCATION, BaseMenu.createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.playerUsesCustom.get(player)?ChatColor.BOLD:"") + "Default", ChatColor.WHITE + "" + (Main.playerUsesCustom.get(player)?ChatColor.BOLD:"") + "Custom"));
         
         player.openInventory(inventory);
     }

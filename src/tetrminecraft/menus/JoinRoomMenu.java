@@ -47,14 +47,14 @@ public class JoinRoomMenu implements InventoryHolder {
         int counter = 0;
         int i = 0;
         
-        Object[] roomlist = Main.roommap.values().toArray();
+        Object[] roomlist = Main.roomMap.values().toArray();
         while(true) {
             if(i<roomlist.length) {
             Room room = (Room) roomlist[i];
                 if(!room.isSingleplayer) {
                     if(counter<pagesize) {
                         if(display==page) {
-                            inventory.setItem(ROOM_LOCATION_MIN+counter, BaseMenu.createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.id));
+                            inventory.setItem(ROOM_LOCATION_MIN+counter, BaseMenu.createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.roomID));
                         }
                     }else {
                         if(display==page) {

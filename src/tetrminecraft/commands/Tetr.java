@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 
 import tetrminecraft.Main;
 
@@ -33,7 +34,7 @@ public class Tetr implements CommandExecutor, Listener {
                     player.sendMessage("Room id is missing!");
                 } else {
                     try {
-                        Main.roommap.get(args[1]).addSpectator(player);
+                        Main.roomMap.get(args[1]).addSpectator(player);
                     } catch (NullPointerException e) {
                         player.sendMessage("Null pointer exception! This room id most likely doesn't exist");
                     }
@@ -42,7 +43,7 @@ public class Tetr implements CommandExecutor, Listener {
                 Choice.disablePlugin();
             } else if (args[0].equalsIgnoreCase("fastjoin") && Main.isDeveloper(sender) && player != null) {
                 try {
-                    Main.roommap.get(args[1]).addPlayer(player);
+                    Main.roomMap.get(args[1]).addPlayer(player);
                     Main.lastui.put(player, "room");
                 } catch (Exception e) {
                     player.sendMessage("Error");
@@ -62,11 +63,18 @@ public class Tetr implements CommandExecutor, Listener {
         }
         return true;
     }
-    
+
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         if (e.getMessage().equalsIgnoreCase("/help tetr")) {
             e.setMessage("/tetr help");
+        }
+    }
+
+    @EventHandler
+    public void onServerCommand(ServerCommandEvent e) {
+        if (e.getCommand().equalsIgnoreCase("help tetr")) {
+            e.setCommand("tetr help");
         }
     }
     
