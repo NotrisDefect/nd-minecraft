@@ -5,10 +5,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import tetrminecraft.Main;
 
-public class Tetr implements CommandExecutor {
+public class Tetr implements CommandExecutor, Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -58,6 +61,13 @@ public class Tetr implements CommandExecutor {
             sender.sendMessage(ChatColor.DARK_RED + "" + ChatColor.BOLD + "You cannot use this plugin");
         }
         return true;
+    }
+    
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent e) {
+        if (e.getMessage().equalsIgnoreCase("/help tetr")) {
+            e.setMessage("/tetr help");
+        }
     }
     
 }

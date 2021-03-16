@@ -124,13 +124,15 @@ public class Main extends JavaPlugin implements Listener {
             getLogger().severe("Error loading the config from inside jar (did you /reload?)");
             e.printStackTrace();
         }
-
+        
+        Tetr fuckingHorribleCode = new Tetr();
         console = getServer().getConsoleSender();
-        this.getCommand("tetr").setExecutor(new Tetr());
+        this.getCommand("tetr").setExecutor(fuckingHorribleCode);
 
         // detect events
         getServer().getPluginManager().registerEvents(new Listen(), this);
-
+        getServer().getPluginManager().registerEvents(fuckingHorribleCode, this);
+        
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
             getLogger().severe("NoteBlockAPI not found, if you see any errors report it immediately!");
             noteBlockAPIIsPresent = false;
