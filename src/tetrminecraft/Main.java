@@ -30,7 +30,13 @@ import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 import tetrcore.Constants;
 import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
-import tetrminecraft.functions.Functions;
+import tetrminecraft.functions.dependencyutil.Netherboard;
+import tetrminecraft.functions.dependencyutil.NetherboardNo;
+import tetrminecraft.functions.dependencyutil.NetherboardYes;
+import tetrminecraft.functions.dependencyutil.NoteBlockAPI;
+import tetrminecraft.functions.dependencyutil.NoteBlockAPINo;
+import tetrminecraft.functions.dependencyutil.NoteBlockAPIYes;
+import tetrminecraft.functions.versions.Functions;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -57,9 +63,6 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public static boolean noteBlockAPIIsPresent;
-    public static boolean netherBoardIsPresent;
-
     public static JavaPlugin plugin;
     public static ConsoleCommandSender console;
 
@@ -75,6 +78,8 @@ public class Main extends JavaPlugin implements Listener {
     public static Playlist playlist;
 
     public static Functions functions;
+    public static Netherboard netherboard;
+    public static NoteBlockAPI noteblockapi;
 
     public static int numberOfSongs;
 
@@ -118,22 +123,11 @@ public class Main extends JavaPlugin implements Listener {
         
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
             getLogger().severe("NoteBlockAPI not found, if you see any errors report it immediately!");
-            noteBlockAPIIsPresent = false;
+            noteblockapi = new NoteBlockAPINo();
         } else {
             getLogger().info("NoteBlockAPI OK.");
-            noteBlockAPIIsPresent = true;
-        }
-
-        if (getServer().getPluginManager().getPlugin("Netherboard") == null) {
-            getLogger().severe("Netherboard not found, if you see any errors report it immediately!");
-            netherBoardIsPresent = false;
-        } else {
-            getLogger().info("Netherboard OK.");
-            netherBoardIsPresent = true;
-        }
-
-        if (noteBlockAPIIsPresent) {
-            // trash
+            noteblockapi = new NoteBlockAPIYes();
+         // trash
             File f = new File(this.getDataFolder() + "/songs");
             f.mkdirs();
             numberOfSongs = f.listFiles().length;
@@ -159,6 +153,14 @@ public class Main extends JavaPlugin implements Listener {
             }
         }
 
+        if (getServer().getPluginManager().getPlugin("Netherboard") == null) {
+            getLogger().severe("Netherboard not found, if you see any errors report it immediately!");
+            netherboard = new NetherboardNo();
+        } else {
+            getLogger().info("Netherboard OK.");
+            netherboard = new NetherboardYes();
+        }
+        
         if (versionIsSupported()) {
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
@@ -242,7 +244,7 @@ public class Main extends JavaPlugin implements Listener {
         getLogger().info("Your server is running version " + version);
         
         try {
-            functions = (Functions) Class.forName("tetrminecraft.functions.Functions_" + version.substring(1)).newInstance();
+            functions = (Functions) Class.forName("tetrminecraft.functions.versions.Functions_" + version.substring(1)).newInstance();
             return true;
         } catch (ClassNotFoundException e) {
             return false;

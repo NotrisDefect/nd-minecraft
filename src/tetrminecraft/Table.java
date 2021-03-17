@@ -1,6 +1,8 @@
 package tetrminecraft;
 
 import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -15,8 +17,6 @@ import org.bukkit.util.Vector;
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.ActionBar;
 
-import fr.minuskube.netherboard.Netherboard;
-import fr.minuskube.netherboard.bukkit.BPlayerBoard;
 import tetrcore.GameLogic;
 
 public class Table extends GameLogic {
@@ -30,8 +30,6 @@ public class Table extends GameLogic {
     private World world;
     private Player player;
     private int looptick;
-
-    private BPlayerBoard board;
 
     private int gx = 100;
     private int gy = 50;
@@ -94,7 +92,7 @@ public class Table extends GameLogic {
         }
         setGameover(true);
     }
-
+    
     public void destroyTable() {
         boolean ot = transparent;
         transparent = true;
@@ -105,11 +103,7 @@ public class Table extends GameLogic {
         }
         transparent = ot;
         setGameover(true);
-        if (Main.netherBoardIsPresent) {
-            if (board != null)
-                board.delete();
-            board = null;
-        }
+        Main.netherboard.removeBoard(player);
         destroying = true;
     }
 
@@ -124,7 +118,7 @@ public class Table extends GameLogic {
     public int getGz() {
         return gz;
     }
-    
+
     public int getLooptick() {
         return looptick;
     }
@@ -155,10 +149,8 @@ public class Table extends GameLogic {
     public void moveTableRelative(int x, int y, int z) {
         moveTable(gx + x, gy + y, gz + z);
     }
-
-    // unique functions
-
-    public void prepareTable(long seed, long seed2) {
+    
+    public void initTable(long seed, long seed2) {
 
         coni = Math.max(Math.abs(m1x), Math.abs(m1y));
         conj = Math.max(Math.abs(m2x), Math.abs(m2y));
@@ -172,7 +164,7 @@ public class Table extends GameLogic {
         initScoreboard();
         gameLoop();
     }
-
+    
     public void rotateTable(String input) {
         boolean ot = transparent;
         transparent = true;
@@ -287,6 +279,15 @@ public class Table extends GameLogic {
         return false;
     }
 
+    private int calculateGhostHeight() {
+        Point position = getCurrentPiecePosition();
+        int calc = position.y;
+        while (!collides(position.x, calc + 1, getCurrentPieceRotation())) {
+            calc++;
+        }
+        return calc;
+    }
+
     private void colPrintNewRender(float x, float y, int color) {
         int tex, tey, tez;
         for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
@@ -302,58 +303,10 @@ public class Table extends GameLogic {
 
     }
 
-    private void whenPlayerDies() {
-        switch (Constants.deathAnim) {
-        case EXPLOSION:
-            boolean ot = transparent;
-            transparent = true;
-            for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
-                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
-                    colPrintNewRender(j, i, 7);
-                }
-            }
-            transparent = ot;
-
-            for (int i = GameLogic.STAGESIZEY - VISIBLEROWS; i < GameLogic.STAGESIZEY; i++) {
-                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
-                    turnToFallingBlock(j, i, 1);
-                }
-            }
-            break;
-        case GRAYSCALE:
-            for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
-                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
-                    if (getStage()[i][j] != 7)
-                        colPrintNewRender(j, i, 8);
-                }
-            }
-            break;
-        case CLEAR:
-            for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
-                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
-                    if (getStage()[i][j] != 7)
-                        colPrintNewRender(j, i, 7);
-                }
-            }
-        case DISAPPEAR:
-            for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
-                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
-                    if (getStage()[i][j] != 7)
-                        colPrintNewRender(j, i, 7);
-                }
-            }
-
-        case NONE:
-            break;
-        }
-    }
-
     @SuppressWarnings("unused")
     private void debug(String s) {
         System.out.println(s);
     }
-
-    // rendering functions
 
     private void gameLoop() {
         // thread unsafe code
@@ -373,10 +326,10 @@ public class Table extends GameLogic {
         }.runTaskTimer(Main.plugin, 0, 1);
     }
 
+    // rendering functions
+
     private void initScoreboard() {
-        if (Main.netherBoardIsPresent) {
-            board = Netherboard.instance().createBoard(player, "Stats");
-        }
+        Main.netherboard.createBoard(player, "Stats");
     }
 
     private void playSound(XSound xSound, float volume, float pitch) {
@@ -443,7 +396,7 @@ public class Table extends GameLogic {
 
         // update ghost
         for (Point point : getPiece(piece, rot)) {
-            newStageState[point.y + getGhostHeight()][point.x + cpp.x] = 9 + piece;
+            newStageState[point.y + calculateGhostHeight()][point.x + cpp.x] = 9 + piece;
         }
 
         // update current piece
@@ -487,27 +440,29 @@ public class Table extends GameLogic {
     }
 
     private void sendScoreboard() {
-        if (Main.netherBoardIsPresent) {
-            if (getCombo() > 0) {
-                board.set("Combo: " + getCombo(), 7);
-            } else {
-                board.set("     ", 6);
-            }
-
-            board.set("Garbage received: " + getTotalGarbageReceived(), 6);
-            board.set("Lines: " + getTotalLinesCleared(), 5);
-            board.set("Pieces: " + getTotalPiecesPlaced(), 4);
-            board.set("Score: " + getScore(), 3);
-
-            if (getBackToBack() > 0) {
-                board.set("Back to back: " + getBackToBack(), 2);
-            } else {
-                board.set(" ", 2);
-            }
-
-            board.set("Time: " + looptick, 1);
-            board.set("getcounter: " + getCounter(), 0);
+        Map<Integer, String> text = new HashMap<Integer, String>();
+        
+        if (getCombo() > 0) {
+            text.put(7, "Combo: " + getCombo());
+        } else {
+            text.put(7, null);
         }
+
+        text.put(6, "Garbage received: " + getTotalGarbageReceived());
+        text.put(5, "Lines: " + getTotalLinesCleared());
+        text.put(4, "Pieces: " + getTotalPiecesPlaced());
+        text.put(3, "Score: " + getScore());
+
+        if (getBackToBack() > 0) {
+            text.put(2, "Back to back: " + getBackToBack());
+        } else {
+            text.put(2, null);
+        }
+
+        text.put(1, "Time: " + looptick);
+        text.put(0, "getcounter: " + getCounter());
+    
+        Main.netherboard.sendScoreboard(player, text);
     }
 
     @SuppressWarnings("deprecation")
@@ -531,6 +486,52 @@ public class Table extends GameLogic {
                     }
                 }
             }
+        }
+    }
+
+    private void whenPlayerDies() {
+        switch (Constants.deathAnim) {
+        case EXPLOSION:
+            boolean ot = transparent;
+            transparent = true;
+            for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
+                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
+                    colPrintNewRender(j, i, 7);
+                }
+            }
+            transparent = ot;
+
+            for (int i = GameLogic.STAGESIZEY - VISIBLEROWS; i < GameLogic.STAGESIZEY; i++) {
+                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
+                    turnToFallingBlock(j, i, 1);
+                }
+            }
+            break;
+        case GRAYSCALE:
+            for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
+                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
+                    if (getStage()[i][j] != 7)
+                        colPrintNewRender(j, i, 8);
+                }
+            }
+            break;
+        case CLEAR:
+            for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
+                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
+                    if (getStage()[i][j] != 7)
+                        colPrintNewRender(j, i, 7);
+                }
+            }
+        case DISAPPEAR:
+            for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
+                for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
+                    if (getStage()[i][j] != 7)
+                        colPrintNewRender(j, i, 7);
+                }
+            }
+
+        case NONE:
+            break;
         }
     }
     

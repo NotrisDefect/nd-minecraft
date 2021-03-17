@@ -11,8 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
 
 import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
-import com.xxmicloxx.NoteBlockAPI.model.playmode.MonoStereoMode;
-import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
 
 public class Room {
 
@@ -51,15 +49,11 @@ public class Room {
     public int playersAlive;
     public boolean backfire = false;
     public boolean isSingleplayer;
-    
-    public static RadioSongPlayer rsp;
 
     public int index;
 
     public Room(Player host, boolean isSingleplayer) {
-        rsp = new RadioSongPlayer(Main.playlist);
-        rsp.setChannelMode(new MonoStereoMode());
-        rsp.setVolume((byte) 50);
+        Main.noteblockapi.newRSP(this);
         
         String mkID;
         do {
@@ -80,9 +74,7 @@ public class Room {
     }
 
     public void stopRoom() {
-        if (Main.noteBlockAPIIsPresent && Main.numberOfSongs > 0) {
-            rsp.setPlaying(false);
-        }
+        Main.noteblockapi.setPlaying(this, false);
 
         for (Player player : playerList) {
             playerTableMap.get(player).setGameOver(true);
@@ -92,17 +84,15 @@ public class Room {
     }
 
     public void startRoom() {
-        if (Main.noteBlockAPIIsPresent && Main.numberOfSongs > 0) {
-            if (index == -1) {
-                int random = (int) (Math.random() * Main.numberOfSongs);
-                rsp.playSong(random);
-            } else {
-                rsp.playSong(index);
-            }
-            rsp.setRepeatMode(RepeatMode.ONE);
-            if (rsp.isPlaying() == false) {
-                rsp.setPlaying(true);
-            }
+        if (index == -1) {
+            int random = (int) (Math.random() * Main.numberOfSongs);
+            Main.noteblockapi.playSong(this, random);
+        } else {
+            Main.noteblockapi.playSong(this, index);
+        }
+        Main.noteblockapi.setRepeatMode(this, RepeatMode.ONE);
+        if (Main.noteblockapi.isPlaying(this) == false) {
+            Main.noteblockapi.setPlaying(this, true);
         }
 
         Random x = new Random();
@@ -111,12 +101,8 @@ public class Room {
 
         for (Player player : playerList) {
             Table table = playerTableMap.get(player);
-            table.prepareTable(seed, seed2);
-
-            if (Main.noteBlockAPIIsPresent && Main.numberOfSongs > 0) {
-                table.getPlayer().sendMessage(
-                        "[TETR] Playing: " + rsp.getSong().getPath().getName().replaceAll(".nbs$", ""));
-            }
+            table.initTable(seed, seed2);
+            table.getPlayer().sendMessage(Main.noteblockapi.getPlayingNow(this));
         }
 
         playersAlive = playerList.size();
@@ -129,10 +115,7 @@ public class Room {
         playerList.add(player);
         Table table = new Table(player);
         playerTableMap.put(player, table);
-
-        if (Main.noteBlockAPIIsPresent && Main.numberOfSongs > 0) {
-            rsp.addPlayer(player);
-        }
+        Main.noteblockapi.addPlayer(this, player);
     }
 
     public void addSpectator(Player player) {
@@ -145,9 +128,7 @@ public class Room {
     }
 
     public void removePlayer(Player player) {
-        if (Main.noteBlockAPIIsPresent && Main.numberOfSongs > 0) {
-            rsp.removePlayer(player);
-        }
+        Main.noteblockapi.removePlayer(this, player);
         playerTableMap.get(player).destroyTable();
         playerTableMap.get(player).setGameOver(true);
         playersAlive--;

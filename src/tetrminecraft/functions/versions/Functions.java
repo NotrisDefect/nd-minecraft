@@ -1,4 +1,4 @@
-package tetrminecraft.functions;
+package tetrminecraft.functions.versions;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;

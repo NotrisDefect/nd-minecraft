@@ -1,20 +1,20 @@
-package tetrminecraft.functions;
+package tetrminecraft.functions.versions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.minecraft.server.v1_9_R1.IChatBaseComponent;
-import net.minecraft.server.v1_9_R1.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
-import net.minecraft.server.v1_9_R1.PacketPlayOutTitle.EnumTitleAction;
-import tetrminecraft.functions.sendblockchangecustom.SendBlockChangeCustom_V1;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_11_R1.PacketPlayOutTitle.EnumTitleAction;
+import tetrminecraft.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V1;
 
-public class Functions_1_9_R1 implements Functions {
+public class Functions_1_11_R1 implements Functions {
 
     @Override
     public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
@@ -27,7 +27,7 @@ public class Functions_1_9_R1 implements Functions {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iTitle);
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
     }
-
+    
     @Override
     public void sendBlockChangeCustom(Player player, Location loc, int color) {
         SendBlockChangeCustom_V1.sendBlockChangeCustom(player, loc, color);

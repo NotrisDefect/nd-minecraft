@@ -1,4 +1,4 @@
-package tetrminecraft.functions.sendblockchangecustom;
+package tetrminecraft.functions.versions.sendblockchangecustom;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -8,22 +8,25 @@ import org.bukkit.inventory.ItemStack;
 import tetrminecraft.Blocks;
 import tetrminecraft.Main;
 
-public class SendBlockChangeCustom_V2 {
+public class SendBlockChangeCustom_V1 {
     
-    //used after 1.13
+    //used from 1.8 - 1.12.2
     
+    @SuppressWarnings("deprecation")
     public static void sendBlockChangeCustom(Player player, Location loc, int color) {
         ItemStack blocks[] = Main.skinmap.get(player);
         
         if(Main.playerUsesCustom.get(player)) {
-            player.sendBlockChange(loc, blocks[color].getType().createBlockData());
+            player.sendBlockChange(loc, blocks[color].getType(), blocks[color].getData().getData());
         }else if(!Main.playerUsesCustom.get(player)) {
-            player.sendBlockChange(loc, Blocks.defaultBlocks[color].getType().createBlockData());
+            player.sendBlockChange(loc, Blocks.defaultBlocks[color].getType(), Blocks.defaultBlocks[color].getData().getData());
         }
     }
     
+    @SuppressWarnings("deprecation")
     public static void sendBlockChangeCustom(Player player, Location loc, Block block) {
-        player.sendBlockChange(loc, block.getBlockData());
+        player.sendBlockChange(loc, block.getType(), block.getData());
     }
+    
     
 }

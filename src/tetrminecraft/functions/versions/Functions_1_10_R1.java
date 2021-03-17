@@ -1,20 +1,20 @@
-package tetrminecraft.functions;
+package tetrminecraft.functions.versions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.minecraft.server.v1_9_R2.IChatBaseComponent;
-import net.minecraft.server.v1_9_R2.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_9_R2.PacketPlayOutTitle;
-import net.minecraft.server.v1_9_R2.PacketPlayOutTitle.EnumTitleAction;
-import tetrminecraft.functions.sendblockchangecustom.SendBlockChangeCustom_V1;
+import net.minecraft.server.v1_10_R1.IChatBaseComponent;
+import net.minecraft.server.v1_10_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_10_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_10_R1.PacketPlayOutTitle.EnumTitleAction;
+import tetrminecraft.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V1;
 
-public class Functions_1_9_R2 implements Functions {
+public class Functions_1_10_R1 implements Functions {
 
     @Override
     public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
@@ -42,4 +42,5 @@ public class Functions_1_9_R2 implements Functions {
     public void sendActionBarCustom(Player player, String message) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(message).create());
     }
+
 }

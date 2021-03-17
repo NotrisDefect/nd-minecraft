@@ -1,4 +1,4 @@
-package tetrminecraft.functions;
+package tetrminecraft.functions.versions;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import tetrminecraft.functions.sendblockchangecustom.SendBlockChangeCustom_V2;
+import tetrminecraft.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V2;
 
-public class Functions_1_16_R1 implements Functions {
+public class Functions_1_16_R3 implements Functions {
 
     @Override
     public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
