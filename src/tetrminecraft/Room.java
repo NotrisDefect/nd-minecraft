@@ -10,8 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
 
-import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
-
 public class Room {
 
     private static String makeID() {
@@ -84,16 +82,8 @@ public class Room {
     }
 
     public void startRoom() {
-        if (index == -1) {
-            int random = (int) (Math.random() * Main.numberOfSongs);
-            Main.noteblockapi.playSong(this, random);
-        } else {
-            Main.noteblockapi.playSong(this, index);
-        }
-        Main.noteblockapi.setRepeatMode(this, RepeatMode.ONE);
-        if (Main.noteblockapi.isPlaying(this) == false) {
-            Main.noteblockapi.setPlaying(this, true);
-        }
+        
+        Main.noteblockapi.startPlaying(this, index);
 
         Random x = new Random();
         long seed = x.nextInt();

@@ -14,6 +14,12 @@ import tetrminecraft.Main;
 
 public class Tetr implements CommandExecutor, Listener {
 
+    private static Tetr instance = new Tetr();
+    
+    public static Tetr getInstance() {
+        return instance;
+    }
+    
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         Player player = null;

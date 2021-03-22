@@ -2,8 +2,6 @@ package tetrminecraft.functions.dependencyutil;
 
 import org.bukkit.entity.Player;
 
-import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
-
 import tetrminecraft.Room;
 
 public class NoteBlockAPINo implements NoteBlockAPI {
@@ -39,7 +37,7 @@ public class NoteBlockAPINo implements NoteBlockAPI {
     }
 
     @Override
-    public void setRepeatMode(Room room, RepeatMode x) {
+    public void startPlaying(Room room, int index) {
         // TODO Auto-generated method stub
         
     }

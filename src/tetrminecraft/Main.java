@@ -23,10 +23,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Consumer;
 
-import com.xxmicloxx.NoteBlockAPI.model.Playlist;
-import com.xxmicloxx.NoteBlockAPI.model.Song;
-import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
-
 import tetrcore.Constants;
 import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
@@ -50,9 +46,8 @@ public class Main extends JavaPlugin implements Listener {
 
         public void getVersion(final Consumer<String> consumer) {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try (InputStream inputStream = new URL(
-                        "https://api.spigotmc.org/legacy/update.php?resource=84269").openStream();
-                        Scanner scanner = new Scanner(inputStream)) {
+                try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=84269")
+                        .openStream(); Scanner scanner = new Scanner(inputStream)) {
                     if (scanner.hasNext()) {
                         consumer.accept(scanner.next());
                     }
@@ -73,17 +68,11 @@ public class Main extends JavaPlugin implements Listener {
     public static Map<Player, Integer> joinroompage = new HashMap<Player, Integer>();
 
     public static Map<Player, Boolean> playerUsesCustom = new HashMap<Player, Boolean>();
-    public static Map<Player, ItemStack[]> skinmap = new HashMap<Player, ItemStack[]>();
-    
-    public static Playlist playlist;
+    public static Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
 
     public static Functions functions;
     public static Netherboard netherboard;
     public static NoteBlockAPI noteblockapi;
-
-    public static int numberOfSongs;
-
-    private static Song[] songArray;
 
     public static boolean isDeveloper(CommandSender sender) {
         if (Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"))) {
@@ -91,7 +80,7 @@ public class Main extends JavaPlugin implements Listener {
         }
         return false;
     }
-    
+
     public static void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
         try {
             ymlConfig.save(ymlFile);
@@ -112,45 +101,21 @@ public class Main extends JavaPlugin implements Listener {
             getLogger().severe("Error loading the config from inside jar (did you /reload?)");
             e.printStackTrace();
         }
-        
-        Tetr fuckingHorribleCode = new Tetr();
+
         console = getServer().getConsoleSender();
-        this.getCommand("tetr").setExecutor(fuckingHorribleCode);
+        this.getCommand("tetr").setExecutor(Tetr.getInstance());
 
         // detect events
-        getServer().getPluginManager().registerEvents(new Listen(), this);
-        getServer().getPluginManager().registerEvents(fuckingHorribleCode, this);
-        
+        getServer().getPluginManager().registerEvents(Listeners.getInstance(), this);
+        getServer().getPluginManager().registerEvents(Tetr.getInstance(), this);
+
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
             getLogger().severe("NoteBlockAPI not found, if you see any errors report it immediately!");
             noteblockapi = new NoteBlockAPINo();
         } else {
             getLogger().info("NoteBlockAPI OK.");
             noteblockapi = new NoteBlockAPIYes();
-         // trash
-            File f = new File(this.getDataFolder() + "/songs");
-            f.mkdirs();
-            numberOfSongs = f.listFiles().length;
-            if (numberOfSongs > 0) {
-
-                String[] pathNames;
-                String song;
-
-                getLogger().info(numberOfSongs + " song(s) found");
-
-                pathNames = new String[numberOfSongs];
-                songArray = new Song[numberOfSongs];
-                pathNames = f.list();
-                for (int i = 0; i < numberOfSongs; i++) {
-                    song = this.getDataFolder() + "/songs/" + pathNames[i];
-                    songArray[i] = NBSDecoder.parse(new File(song));
-                }
-
-                playlist = new Playlist(songArray);
-                // tRASH end
-            } else {
-                getLogger().info("No songs detected. Please add some songs!");
-            }
+            NoteBlockAPIYes.loadSongs();
         }
 
         if (getServer().getPluginManager().getPlugin("Netherboard") == null) {
@@ -160,7 +125,7 @@ public class Main extends JavaPlugin implements Listener {
             getLogger().info("Netherboard OK.");
             netherboard = new NetherboardYes();
         }
-        
+
         if (versionIsSupported()) {
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
@@ -168,6 +133,7 @@ public class Main extends JavaPlugin implements Listener {
             Bukkit.getPluginManager().disablePlugin(this);
         }
 
+        // has players on reload
         for (Player player : Bukkit.getOnlinePlayers()) {
             lastui.put(player, "home");
 
@@ -177,7 +143,7 @@ public class Main extends JavaPlugin implements Listener {
 
             initSkin(player);
         }
-        
+
         long timeEnd = System.nanoTime();
 
         long timeElapsed = timeEnd - timeStart;
@@ -234,7 +200,7 @@ public class Main extends JavaPlugin implements Listener {
         blocks[14] = customConfig.getItemStack("ghostJ");
         blocks[15] = customConfig.getItemStack("ghostT");
         blocks[16] = customConfig.getItemStack("zone");
-        skinmap.put(player, blocks);
+        customBlocks.put(player, blocks);
         Main.playerUsesCustom.put(player, customConfig.getBoolean("useSkinSlot"));
     }
 
@@ -242,9 +208,10 @@ public class Main extends JavaPlugin implements Listener {
         String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
         getLogger().info("Your server is running version " + version);
-        
+
         try {
-            functions = (Functions) Class.forName("tetrminecraft.functions.versions.Functions_" + version.substring(1)).newInstance();
+            functions = (Functions) Class.forName("tetrminecraft.functions.versions.Functions_" + version.substring(1))
+                    .newInstance();
             return true;
         } catch (ClassNotFoundException e) {
             return false;

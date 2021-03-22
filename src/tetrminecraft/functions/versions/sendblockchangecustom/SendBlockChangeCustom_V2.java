@@ -13,7 +13,7 @@ public class SendBlockChangeCustom_V2 {
     //used after 1.13
     
     public static void sendBlockChangeCustom(Player player, Location loc, int color) {
-        ItemStack blocks[] = Main.skinmap.get(player);
+        ItemStack blocks[] = Main.customBlocks.get(player);
         
         if(Main.playerUsesCustom.get(player)) {
             player.sendBlockChange(loc, blocks[color].getType().createBlockData());

@@ -30,7 +30,15 @@ import tetrminecraft.menus.SimpleSettingsMenu;
 import tetrminecraft.menus.SkinMenu;
 import tetrminecraft.menus.SongMenu;
 
-public class Listen implements Listener {
+//not independent
+public class Listeners implements Listener {
+    
+    private static Listeners instance = new Listeners();
+    
+    public static Listeners getInstance() {
+        return instance;
+    }
+    
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
@@ -144,7 +152,7 @@ public class Listen implements Listener {
                 }
 
                 if (event.getSlot() == SkinMenu.BACK_LOCATION) {
-                    ItemStack[] blocks = Main.skinmap.get(player);
+                    ItemStack[] blocks = Main.customBlocks.get(player);
                     if (Main.playerUsesCustom.get(player)) {
                         Inventory inv = event.getClickedInventory();
                         // save blocks

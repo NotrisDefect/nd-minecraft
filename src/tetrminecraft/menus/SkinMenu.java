@@ -30,7 +30,7 @@ public class SkinMenu implements InventoryHolder {
             inventory.setItem(i, border);
         }
         
-        ItemStack blocks[] = Main.skinmap.get(player);
+        ItemStack blocks[] = Main.customBlocks.get(player);
         //changeable blocks
         for(int i=0;i<17;i++){
             if(!Main.playerUsesCustom.get(player)) {

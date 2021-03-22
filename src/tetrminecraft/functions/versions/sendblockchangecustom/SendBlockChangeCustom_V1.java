@@ -14,7 +14,7 @@ public class SendBlockChangeCustom_V1 {
     
     @SuppressWarnings("deprecation")
     public static void sendBlockChangeCustom(Player player, Location loc, int color) {
-        ItemStack blocks[] = Main.skinmap.get(player);
+        ItemStack blocks[] = Main.customBlocks.get(player);
         
         if(Main.playerUsesCustom.get(player)) {
             player.sendBlockChange(loc, blocks[color].getType(), blocks[color].getData().getData());

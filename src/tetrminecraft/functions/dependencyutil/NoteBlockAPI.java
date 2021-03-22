@@ -2,7 +2,6 @@ package tetrminecraft.functions.dependencyutil;
 
 import org.bukkit.entity.Player;
 
-import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
 
 import tetrminecraft.Room;
 
@@ -21,5 +20,5 @@ public interface NoteBlockAPI {
     
     public boolean isPlaying(Room room);
     
-    public void setRepeatMode(Room room, RepeatMode x);
+    public void startPlaying(Room room, int index);
 }

@@ -279,15 +279,6 @@ public class Table extends GameLogic {
         return false;
     }
 
-    private int calculateGhostHeight() {
-        Point position = getCurrentPiecePosition();
-        int calc = position.y;
-        while (!collides(position.x, calc + 1, getCurrentPieceRotation())) {
-            calc++;
-        }
-        return calc;
-    }
-
     private void colPrintNewRender(float x, float y, int color) {
         int tex, tey, tez;
         for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
@@ -396,7 +387,7 @@ public class Table extends GameLogic {
 
         // update ghost
         for (Point point : getPiece(piece, rot)) {
-            newStageState[point.y + calculateGhostHeight()][point.x + cpp.x] = 9 + piece;
+            newStageState[point.y + getCurrentPieceLowestPossiblePosition()][point.x + cpp.x] = 9 + piece;
         }
 
         // update current piece

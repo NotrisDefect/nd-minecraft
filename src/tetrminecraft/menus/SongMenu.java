@@ -11,7 +11,10 @@ import com.cryptomorin.xseries.XMaterial;
 import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 
 import tetrminecraft.Main;
+import tetrminecraft.functions.dependencyutil.NoteBlockAPIYes;
 
+
+//used only if noteblockapi is present
 public class SongMenu implements InventoryHolder {
 private Inventory inventory = null;
     
@@ -35,7 +38,7 @@ private Inventory inventory = null;
         inventory.setItem(9, BaseMenu.createItem(XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "Random"));
         
 
-        Playlist playlist = Main.playlist;
+        Playlist playlist = NoteBlockAPIYes.playlist;
         for(int i=0;i<playlist.getCount();i++) {
             inventory.setItem(10+i, BaseMenu.createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + playlist.get(i).getPath().getName().replaceAll(".nbs$", "")));
         }
