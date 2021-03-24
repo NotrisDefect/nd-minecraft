@@ -33,6 +33,7 @@ import tetrminecraft.functions.dependencyutil.NoteBlockAPI;
 import tetrminecraft.functions.dependencyutil.NoteBlockAPINo;
 import tetrminecraft.functions.dependencyutil.NoteBlockAPIYes;
 import tetrminecraft.functions.versions.Functions;
+import tetrminecraft.menus.SongMenuInventoryClickEvent;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -124,6 +125,7 @@ public class Main extends JavaPlugin implements Listener {
         } else {
             getLogger().info("Netherboard OK.");
             netherboard = new NetherboardYes();
+            Bukkit.getPluginManager().registerEvents(new SongMenuInventoryClickEvent(), this);
         }
 
         if (versionIsSupported()) {

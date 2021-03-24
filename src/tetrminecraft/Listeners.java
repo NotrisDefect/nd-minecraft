@@ -30,7 +30,6 @@ import tetrminecraft.menus.SimpleSettingsMenu;
 import tetrminecraft.menus.SkinMenu;
 import tetrminecraft.menus.SongMenu;
 
-//not independent
 public class Listeners implements Listener {
     
     private static Listeners instance = new Listeners();
@@ -335,16 +334,6 @@ public class Listeners implements Listener {
                 }
 
                 new SimpleSettingsMenu(player);
-            } else if (event.getClickedInventory().getHolder() instanceof SongMenu) {
-                event.setCancelled(true);
-                Room room = Main.inwhichroom.get(player);
-                if (event.getSlot() == SongMenu.BACK_LOCATION) {
-                    new RoomMenu(player);
-                } else if (event.getSlot() == 9) {
-                    room.index = -1;
-                } else if (event.getSlot() - 10 < Main.playlist.getCount()) {
-                    room.index = event.getSlot() - 10;
-                }
             }
         }
     }
