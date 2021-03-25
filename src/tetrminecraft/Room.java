@@ -9,6 +9,9 @@ import java.util.Random;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapView;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import tetrminecraft.commands.Choice;
 
 public class Room {
 
@@ -44,7 +47,7 @@ public class Room {
     public String roomName;
     public Player host;
     public boolean isRunning;
-    public int playersAlive;
+    public List<Player> alivePlayers = new ArrayList<Player>();
     public boolean backfire = false;
     public boolean isSingleplayer;
 
@@ -52,7 +55,7 @@ public class Room {
 
     public Room(Player host, boolean isSingleplayer) {
         Main.instance.noteBlockAPI.newRSP(this);
-        
+
         String mkID;
         do {
             mkID = makeID();
@@ -72,32 +75,29 @@ public class Room {
     }
 
     public void stopRoom() {
-        Main.instance.noteBlockAPI.setPlaying(this, false);
-
-        for (Player player : playerList) {
-            playerTableMap.get(player).setGameOver(true);
-        }
-
         isRunning = false;
     }
 
     public void startRoom() {
-        
-        Main.instance.noteBlockAPI.startPlaying(this, index);
+        if (!isSingleplayer && playerList.size() == 1) {
+            host.sendMessage("[TETR] 2 players are needed");
+        } else {
 
-        Random x = new Random();
-        long seed = x.nextInt();
-        long seed2 = x.nextInt();
+            Main.instance.noteBlockAPI.startPlaying(this, index);
 
-        for (Player player : playerList) {
-            Table table = playerTableMap.get(player);
-            table.initTable(seed, seed2);
-            table.getPlayer().sendMessage(Main.instance.noteBlockAPI.getPlayingNow(this));
+            Random x = new Random();
+            long seed = x.nextInt();
+            long seed2 = x.nextInt();
+
+            for (Player player : playerList) {
+                Table table = playerTableMap.get(player);
+                table.initTable(seed, seed2);
+                table.getPlayer().sendMessage(Main.instance.noteBlockAPI.getPlayingNow(this));
+            }
+            alivePlayers = new ArrayList<Player>(playerList);
+            roomLoop();
         }
-
-        playersAlive = playerList.size();
-        isRunning = true;
-
+        tryToUpdateMenu();
     }
 
     public void addPlayer(Player player) {
@@ -106,6 +106,7 @@ public class Room {
         Table table = new Table(player);
         playerTableMap.put(player, table);
         Main.instance.noteBlockAPI.addPlayer(this, player);
+        tryToUpdateMenu();
     }
 
     public void addSpectator(Player player) {
@@ -121,10 +122,7 @@ public class Room {
         Main.instance.noteBlockAPI.removePlayer(this, player);
         playerTableMap.get(player).destroyTable();
         playerTableMap.get(player).setGameOver(true);
-        playersAlive--;
-        if (playersAlive < 2) {
-            stopRoom();
-        }
+        eliminate(player);
         playerList.remove(player);
         playerTableMap.remove(player);
         Main.instance.inWhichRoomIs.remove(player);
@@ -136,6 +134,7 @@ public class Room {
                 host.sendMessage("[TETR] Since the old room host left, you became the new host.");
             }
         }
+        tryToUpdateMenu();
     }
 
     public void forwardGarbage(int n, Player sender) {
@@ -155,7 +154,7 @@ public class Room {
         }
     }
 
-    public void switchBracket(Player player) {
+    private void switchBracket(Player player) {
         if (playerList.contains(player)) {
             playerList.remove(player);
             playerTableMap.get(player).destroyTable();
@@ -164,6 +163,52 @@ public class Room {
         } else {
             spectatorList.remove(player);
             playerList.add(player);
+        }
+    }
+
+    public void eliminate(Player player) {
+        alivePlayers.remove(player);
+        if (alivePlayers.size() < 2) {
+            stopRoom();
+        }
+    }
+
+    private void afterLoopStopped() {
+        Main.instance.noteBlockAPI.setPlaying(this, false);
+
+        for (Player player : alivePlayers) {
+            playerTableMap.get(player).setGameOver(true);
+        }
+        tryToUpdateMenu();
+    }
+
+    public void roomLoop() {
+        isRunning = true;
+        new Thread() {
+            @Override
+            public void run() {
+                while (isRunning) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        afterLoopStopped();
+                    }
+                }.runTask(Main.instance);
+            }
+        }.start();
+    }
+    
+    private void tryToUpdateMenu() {
+        for(Player player: playerList) {
+            if(Main.instance.hasMenuOpen.get(player) == true && Main.instance.lastMenuOpened.get(player) == "room") {
+                Choice.maximizeMenu(player);
+            }
         }
     }
 

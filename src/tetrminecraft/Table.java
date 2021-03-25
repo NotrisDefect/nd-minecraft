@@ -484,6 +484,8 @@ public class Table extends GameLogic {
     }
 
     private void whenPlayerDies() {
+        Main.instance.inWhichRoomIs.get(player).eliminate(player);
+        
         switch (Constants.deathAnim) {
         case EXPLOSION:
             boolean ot = transparent;

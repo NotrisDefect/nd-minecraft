@@ -60,6 +60,8 @@ public class Choice {
             new SongMenu(player);
             break;
         }
+
+        Main.instance.hasMenuOpen.put(player, true);
     }
 
     public static void showControls(CommandSender sender) {

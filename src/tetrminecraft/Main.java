@@ -72,6 +72,8 @@ public class Main extends JavaPlugin implements Listener {
 
     public Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
     public Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
+    
+    public Map<Player, Boolean> hasMenuOpen = new HashMap<Player, Boolean>();
 
     public Functions functions;
     public Netherboard netherboard;
@@ -176,6 +178,8 @@ public class Main extends JavaPlugin implements Listener {
 
             customBlocks.remove(player);
             playerIsUsingCustomBlocks.remove(player);
+            
+            hasMenuOpen.remove(player);
         }
     }
 

@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -27,13 +28,13 @@ import tetrminecraft.menus.SkinMenu;
 import tetrminecraft.menus.SongMenu;
 
 public class Listeners implements Listener {
-    
+
     private static Listeners instance = new Listeners();
-    
+
     public static Listeners getInstance() {
         return instance;
     }
-    
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
@@ -73,7 +74,8 @@ public class Listeners implements Listener {
                 event.setCancelled(true);
                 if (JoinRoomMenu.ROOM_LOCATION_MIN <= slot
                         && slot < JoinRoomMenu.ROOM_LOCATION_MIN + JoinRoomMenu.pagesize) {
-                    Main.instance.roomByID.get(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()))
+                    Main.instance.roomByID
+                            .get(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()))
                             .addPlayer(player);
                     new RoomMenu(player);
                 } else
@@ -133,7 +135,8 @@ public class Listeners implements Listener {
                 }
 
                 if (event.getSlot() == SkinMenu.TORCH_LOCATION) {
-                    Main.instance.playerIsUsingCustomBlocks.put(player, !Main.instance.playerIsUsingCustomBlocks.get(player));
+                    Main.instance.playerIsUsingCustomBlocks.put(player,
+                            !Main.instance.playerIsUsingCustomBlocks.get(player));
                     new SkinMenu(player);
                 }
 
@@ -240,7 +243,8 @@ public class Listeners implements Listener {
                         table.m3y += by;
                         break;
                     case 53:
-                        Main.instance.inWhichRoomIs.get(player).backfire = !Main.instance.inWhichRoomIs.get(player).backfire;
+                        Main.instance.inWhichRoomIs
+                                .get(player).backfire = !Main.instance.inWhichRoomIs.get(player).backfire;
                         break;
                     case 1:
                         table.ULTRAGRAPHICS = !table.ULTRAGRAPHICS;
@@ -349,6 +353,14 @@ public class Listeners implements Listener {
                     table.userInput("shift");
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryCloseEvent(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (Main.instance.hasMenuOpen.get(player) == true) {
+            Main.instance.hasMenuOpen.put(player, false);
         }
     }
 
