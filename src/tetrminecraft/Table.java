@@ -2,6 +2,7 @@ package tetrminecraft;
 
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -524,6 +525,11 @@ public class Table extends GameLogic {
         case NONE:
             break;
         }
+    }
+    
+    @Override
+    public void sendGarbageEvent(int n) {
+        Main.inwhichroom.get(player).forwardGarbage(n, player);
     }
     
 }
