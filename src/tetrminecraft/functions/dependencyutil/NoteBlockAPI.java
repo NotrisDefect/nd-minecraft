@@ -21,4 +21,6 @@ public interface NoteBlockAPI {
     public boolean isPlaying(Room room);
     
     public void startPlaying(Room room, int index);
+    
+    public void loadSongs();
 }

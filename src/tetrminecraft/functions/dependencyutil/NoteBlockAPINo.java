@@ -42,4 +42,10 @@ public class NoteBlockAPINo implements NoteBlockAPI {
         
     }
 
+    @Override
+    public void loadSongs() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

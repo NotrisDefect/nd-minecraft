@@ -1,10 +1,6 @@
 package tetrminecraft;
 
-import java.io.File;
-
 import org.bukkit.Location;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -122,15 +118,6 @@ public class Listeners implements Listener {
                     break;
                 }
             } else if (event.getClickedInventory().getHolder() instanceof SkinMenu) {
-                if (!Main.instance.playerIsUsingCustomBlocks.get(player)) {
-                    event.setCancelled(true);
-                    File customYml = new File(
-                            Main.instance.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
-                    FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-                    customConfig.set("useSkinSlot", 0);
-
-                    Main.instance.saveCustomYml(customConfig, customYml);
-                }
                 if (event.getCurrentItem() == null) {
                     event.setCancelled(true);
                 } else if (event.getCurrentItem().getType() == XMaterial.GLASS_PANE.parseMaterial()) {

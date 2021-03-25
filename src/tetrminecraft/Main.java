@@ -84,7 +84,7 @@ public class Main extends JavaPlugin implements Listener {
         return false;
     }
 
-    public void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
+    private void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
         try {
             ymlConfig.save(ymlFile);
         } catch (IOException e) {
@@ -100,7 +100,7 @@ public class Main extends JavaPlugin implements Listener {
 
         try {
             LoadConfig.load();
-        } catch (IOException e) {
+        } catch (Exception e) {
             getLogger().severe("Error loading the config from inside jar (did you /reload?)");
             e.printStackTrace();
         }
@@ -118,7 +118,7 @@ public class Main extends JavaPlugin implements Listener {
         } else {
             getLogger().info("NoteBlockAPI OK.");
             noteBlockAPI = new NoteBlockAPIYes();
-            NoteBlockAPIYes.loadSongs();
+            noteBlockAPI.loadSongs();
         }
 
         if (getServer().getPluginManager().getPlugin("Netherboard") == null) {

@@ -68,7 +68,8 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
         return rsps.get(room).isPlaying();
     }
 
-    public static void loadSongs() {
+    @Override
+    public void loadSongs() {
         File file = new File(Main.instance.getDataFolder() + "/songs/");
         file.mkdirs();
 
