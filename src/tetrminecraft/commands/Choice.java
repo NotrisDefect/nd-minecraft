@@ -34,7 +34,7 @@ import tetrminecraft.menus.SongMenu;
 public class Choice {
 
     public static void maximizeMenu(Player player) {
-        switch (Main.lastMenuOpened.get(player)) {
+        switch (Main.instance.lastMenuOpened.get(player)) {
         case "home":
             new HomeMenu(player);
             break;
@@ -42,7 +42,7 @@ public class Choice {
             new MultiplayerMenu(player);
             break;
         case "joinroom":
-            new JoinRoomMenu(player, Main.joinRoomPage.get(player));
+            new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player));
             break;
         case "room":
             new RoomMenu(player);
@@ -162,6 +162,6 @@ public class Choice {
     }
     
     public static void disablePlugin() {
-        Bukkit.getServer().getPluginManager().disablePlugin(Main.plugin);
+        Bukkit.getServer().getPluginManager().disablePlugin(Main.instance);
     }
 }

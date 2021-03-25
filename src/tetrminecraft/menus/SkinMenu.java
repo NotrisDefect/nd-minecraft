@@ -22,7 +22,7 @@ public class SkinMenu implements InventoryHolder {
     
     public SkinMenu(Player player){
         
-        Main.lastMenuOpened.put(player, "skin");
+        Main.instance.lastMenuOpened.put(player, "skin");
         Inventory inventory=Bukkit.createInventory(this, 54, "Skin editor");
         ItemStack border=XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass
@@ -30,18 +30,18 @@ public class SkinMenu implements InventoryHolder {
             inventory.setItem(i, border);
         }
         
-        ItemStack blocks[] = Main.customBlocks.get(player);
+        ItemStack blocks[] = Main.instance.customBlocks.get(player);
         //changeable blocks
         for(int i=0;i<17;i++){
-            if(!Main.playerIsUsingCustomBlocks.get(player)) {
+            if(!Main.instance.playerIsUsingCustomBlocks.get(player)) {
                 inventory.setItem(BLOCK_LOCATIONS[i], Blocks.defaultBlocks[i]);
-            }else if(Main.playerIsUsingCustomBlocks.get(player)) {
+            }else if(Main.instance.playerIsUsingCustomBlocks.get(player)) {
                 inventory.setItem(BLOCK_LOCATIONS[i], blocks[i]);
             }
         }
         
         inventory.setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        inventory.setItem(TORCH_LOCATION, BaseMenu.createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.playerIsUsingCustomBlocks.get(player)?ChatColor.BOLD:"") + "Default", ChatColor.WHITE + "" + (Main.playerIsUsingCustomBlocks.get(player)?ChatColor.BOLD:"") + "Custom"));
+        inventory.setItem(TORCH_LOCATION, BaseMenu.createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.instance.playerIsUsingCustomBlocks.get(player)?ChatColor.BOLD:"") + "Default", ChatColor.WHITE + "" + (Main.instance.playerIsUsingCustomBlocks.get(player)?ChatColor.BOLD:"") + "Custom"));
         
         player.openInventory(inventory);
     }

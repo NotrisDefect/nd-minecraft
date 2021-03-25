@@ -19,7 +19,7 @@ public class HomeMenu implements InventoryHolder {
     public final static int SKINEDITOR_LOCATION = 23;
     
     public HomeMenu(Player player){
-        Main.lastMenuOpened.put(player, "home");
+        Main.instance.lastMenuOpened.put(player, "home");
         Inventory inventory=Bukkit.createInventory(this, 54, "Home");
         ItemStack border=XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass

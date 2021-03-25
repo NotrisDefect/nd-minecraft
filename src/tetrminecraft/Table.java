@@ -103,7 +103,7 @@ public class Table extends GameLogic {
         }
         transparent = ot;
         setGameover(true);
-        Main.netherboard.removeBoard(player);
+        Main.instance.netherboard.removeBoard(player);
         destroying = true;
     }
 
@@ -314,13 +314,13 @@ public class Table extends GameLogic {
                     looptick++;
                 }
             }
-        }.runTaskTimer(Main.plugin, 0, 1);
+        }.runTaskTimer(Main.instance, 0, 1);
     }
 
     // rendering functions
 
     private void initScoreboard() {
-        Main.netherboard.createBoard(player, "Stats");
+        Main.instance.netherboard.createBoard(player, "Stats");
     }
 
     private void playSound(XSound xSound, float volume, float pitch) {
@@ -337,14 +337,14 @@ public class Table extends GameLogic {
     private void printSingleBlock(int x, int y, int z, int color) {
         if (color == 7 && transparent) {
             Block b = world.getBlockAt(x, y, z);
-            for (Player player : Main.inWhichRoomIs.get(player).playerList) {
-                Main.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), b);
+            for (Player player : Main.instance.inWhichRoomIs.get(player).playerList) {
+                Main.instance.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), b);
             }
             return;
         }
 
-        for (Player player : Main.inWhichRoomIs.get(player).playerList) {
-            Main.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), color);
+        for (Player player : Main.instance.inWhichRoomIs.get(player).playerList) {
+            Main.instance.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), color);
         }
     }
 
@@ -453,7 +453,7 @@ public class Table extends GameLogic {
         text.put(1, "Time: " + looptick);
         text.put(0, "getcounter: " + getCounter());
     
-        Main.netherboard.sendScoreboard(player, text);
+        Main.instance.netherboard.sendScoreboard(player, text);
     }
 
     @SuppressWarnings("deprecation")
@@ -528,7 +528,7 @@ public class Table extends GameLogic {
     
     @Override
     public void sendGarbageEvent(int n) {
-        Main.inWhichRoomIs.get(player).forwardGarbage(n, player);
+        Main.instance.inWhichRoomIs.get(player).forwardGarbage(n, player);
     }
     
 }

@@ -19,7 +19,7 @@ public class SimpleSettingsMenu implements InventoryHolder {
     public final static int TORCH_LOCATION = 8;
     
     public SimpleSettingsMenu(Player player) {
-        Main.lastMenuOpened.put(player, "simsettings");
+        Main.instance.lastMenuOpened.put(player, "simsettings");
         Inventory inventory=Bukkit.createInventory(this, 54, "Settings");
         ItemStack border=XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass
@@ -33,7 +33,7 @@ public class SimpleSettingsMenu implements InventoryHolder {
         //clickable items
         
 
-        Table table=Main.inWhichRoomIs.get(player).playerTableMap.get(player);
+        Table table=Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
         
         inventory.setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
         inventory.setItem(TORCH_LOCATION, BaseMenu.createItem(XMaterial.TORCH, ChatColor.YELLOW + "This is standard settings menu", ChatColor.DARK_RED + "" + ChatColor.BOLD + "Click to go to advanced menu"));

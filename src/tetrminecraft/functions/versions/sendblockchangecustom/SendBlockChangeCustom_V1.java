@@ -14,11 +14,11 @@ public class SendBlockChangeCustom_V1 {
     
     @SuppressWarnings("deprecation")
     public static void sendBlockChangeCustom(Player player, Location loc, int color) {
-        ItemStack blocks[] = Main.customBlocks.get(player);
+        ItemStack blocks[] = Main.instance.customBlocks.get(player);
         
-        if(Main.playerIsUsingCustomBlocks.get(player)) {
+        if(Main.instance.playerIsUsingCustomBlocks.get(player)) {
             player.sendBlockChange(loc, blocks[color].getType(), blocks[color].getData().getData());
-        }else if(!Main.playerIsUsingCustomBlocks.get(player)) {
+        }else if(!Main.instance.playerIsUsingCustomBlocks.get(player)) {
             player.sendBlockChange(loc, Blocks.defaultBlocks[color].getType(), Blocks.defaultBlocks[color].getData().getData());
         }
     }

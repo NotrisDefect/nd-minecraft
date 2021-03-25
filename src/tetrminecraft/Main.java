@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Consumer;
 
-import tetrminecraft.Constants;
 import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
 import tetrminecraft.functions.dependencyutil.Netherboard;
@@ -60,23 +59,23 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public static JavaPlugin plugin;
-    public static ConsoleCommandSender console;
+    public static Main instance;
+    public ConsoleCommandSender console;
 
-    public static Set<Player> interactedWithPlugin = new HashSet<Player>();
+    public Set<Player> interactedWithPlugin = new HashSet<Player>();
 
-    public static Map<String, Room> roomByID = new LinkedHashMap<String, Room>();
-    public static Map<Player, Room> inWhichRoomIs = new HashMap<Player, Room>();
+    public Map<String, Room> roomByID = new LinkedHashMap<String, Room>();
+    public Map<Player, Room> inWhichRoomIs = new HashMap<Player, Room>();
 
-    public static Map<Player, String> lastMenuOpened = new HashMap<Player, String>();
-    public static Map<Player, Integer> joinRoomPage = new HashMap<Player, Integer>();
+    public Map<Player, String> lastMenuOpened = new HashMap<Player, String>();
+    public Map<Player, Integer> joinRoomPage = new HashMap<Player, Integer>();
 
-    public static Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
-    public static Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
+    public Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
+    public Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
 
-    public static Functions functions;
-    public static Netherboard netherboard;
-    public static NoteBlockAPI noteBlockAPI;
+    public Functions functions;
+    public Netherboard netherboard;
+    public NoteBlockAPI noteBlockAPI;
 
     public static boolean isDeveloper(CommandSender sender) {
         if (Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"))) {
@@ -85,7 +84,7 @@ public class Main extends JavaPlugin implements Listener {
         return false;
     }
 
-    public static void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
+    public void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
         try {
             ymlConfig.save(ymlFile);
         } catch (IOException e) {
@@ -96,8 +95,8 @@ public class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         long timeStart = System.nanoTime();
-
-        plugin = this;
+        
+        instance = this;
 
         try {
             LoadConfig.load();
@@ -164,34 +163,34 @@ public class Main extends JavaPlugin implements Listener {
             }
             inWhichRoomIs.remove(player);
             interactedWithPlugin.remove(player);
-            
-            //save
+
+            // save
             File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
             FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
             ItemStack[] blocks = customBlocks.get(player);
-            for(int i=0;i<blocks.length;i++) {
+            for (int i = 0; i < blocks.length; i++) {
                 customConfig.set(Constants.NAMES[i], blocks[i]);
             }
             customConfig.set("playerIsUsingCustomBlocks", playerIsUsingCustomBlocks.get(player));
-            Main.saveCustomYml(customConfig, customYml);
-            
+            saveCustomYml(customConfig, customYml);
+
             customBlocks.remove(player);
             playerIsUsingCustomBlocks.remove(player);
         }
     }
 
-    public static void firstInteraction(Player player) {
+    public void firstInteraction(Player player) {
         interactedWithPlugin.add(player);
         lastMenuOpened.put(player, "home");
 
-        File customYml = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
+        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
         ItemStack[] blocks = new ItemStack[17];
-        for(int i=0;i<blocks.length;i++) {
+        for (int i = 0; i < blocks.length; i++) {
             blocks[i] = customConfig.getItemStack(Constants.NAMES[i]);
         }
         customBlocks.put(player, blocks);
-        Main.playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
+        playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
     }
 
     private boolean versionIsSupported() {

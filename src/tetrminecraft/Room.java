@@ -23,7 +23,7 @@ public class Room {
     }
 
     private static boolean isUnique(String id) {
-        Object[] keys = Main.roomByID.keySet().toArray();
+        Object[] keys = Main.instance.roomByID.keySet().toArray();
         for (int i = 0; i < keys.length; i++) {
             String key = (String) keys[i];
             if (id.equals(key)) {
@@ -51,7 +51,7 @@ public class Room {
     public int index;
 
     public Room(Player host, boolean isSingleplayer) {
-        Main.noteBlockAPI.newRSP(this);
+        Main.instance.noteBlockAPI.newRSP(this);
         
         String mkID;
         do {
@@ -61,7 +61,7 @@ public class Room {
 
         this.host = host;
         addPlayer(host);
-        Main.roomByID.put(roomID, this);
+        Main.instance.roomByID.put(roomID, this);
         this.isSingleplayer = isSingleplayer;
         if (isSingleplayer) {
             roomName = "Singleplayer #" + roomID;
@@ -72,7 +72,7 @@ public class Room {
     }
 
     public void stopRoom() {
-        Main.noteBlockAPI.setPlaying(this, false);
+        Main.instance.noteBlockAPI.setPlaying(this, false);
 
         for (Player player : playerList) {
             playerTableMap.get(player).setGameOver(true);
@@ -83,7 +83,7 @@ public class Room {
 
     public void startRoom() {
         
-        Main.noteBlockAPI.startPlaying(this, index);
+        Main.instance.noteBlockAPI.startPlaying(this, index);
 
         Random x = new Random();
         long seed = x.nextInt();
@@ -92,7 +92,7 @@ public class Room {
         for (Player player : playerList) {
             Table table = playerTableMap.get(player);
             table.initTable(seed, seed2);
-            table.getPlayer().sendMessage(Main.noteBlockAPI.getPlayingNow(this));
+            table.getPlayer().sendMessage(Main.instance.noteBlockAPI.getPlayingNow(this));
         }
 
         playersAlive = playerList.size();
@@ -101,11 +101,11 @@ public class Room {
     }
 
     public void addPlayer(Player player) {
-        Main.inWhichRoomIs.put(player, this);
+        Main.instance.inWhichRoomIs.put(player, this);
         playerList.add(player);
         Table table = new Table(player);
         playerTableMap.put(player, table);
-        Main.noteBlockAPI.addPlayer(this, player);
+        Main.instance.noteBlockAPI.addPlayer(this, player);
     }
 
     public void addSpectator(Player player) {
@@ -118,7 +118,7 @@ public class Room {
     }
 
     public void removePlayer(Player player) {
-        Main.noteBlockAPI.removePlayer(this, player);
+        Main.instance.noteBlockAPI.removePlayer(this, player);
         playerTableMap.get(player).destroyTable();
         playerTableMap.get(player).setGameOver(true);
         playersAlive--;
@@ -127,10 +127,10 @@ public class Room {
         }
         playerList.remove(player);
         playerTableMap.remove(player);
-        Main.inWhichRoomIs.remove(player);
+        Main.instance.inWhichRoomIs.remove(player);
         if (player == host) {
             if (playerList.size() == 0) {
-                Main.roomByID.remove(roomID);
+                Main.instance.roomByID.remove(roomID);
             } else {
                 host = playerList.get(0);
                 host.sendMessage("[TETR] Since the old room host left, you became the new host.");

@@ -77,7 +77,7 @@ public class Listeners implements Listener {
                 event.setCancelled(true);
                 if (JoinRoomMenu.ROOM_LOCATION_MIN <= slot
                         && slot < JoinRoomMenu.ROOM_LOCATION_MIN + JoinRoomMenu.pagesize) {
-                    Main.roomByID.get(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()))
+                    Main.instance.roomByID.get(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()))
                             .addPlayer(player);
                     new RoomMenu(player);
                 } else
@@ -86,10 +86,10 @@ public class Listeners implements Listener {
                         new MultiplayerMenu(player);
                         break;
                     case JoinRoomMenu.MINUSPAGE_LOCATION:
-                        new JoinRoomMenu(player, Main.joinRoomPage.get(player) - 1);
+                        new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player) - 1);
                         break;
                     case JoinRoomMenu.PLUSPAGE_LOCATION:
-                        new JoinRoomMenu(player, Main.joinRoomPage.get(player) + 1);
+                        new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player) + 1);
                         break;
 
                     }
@@ -97,19 +97,19 @@ public class Listeners implements Listener {
                 event.setCancelled(true);
                 switch (slot) {
                 case RoomMenu.BACK_LOCATION:
-                    if (Main.inWhichRoomIs.get(player).isSingleplayer) {
+                    if (Main.instance.inWhichRoomIs.get(player).isSingleplayer) {
                         new HomeMenu(player);
                     } else {
                         new MultiplayerMenu(player);
                     }
-                    Main.inWhichRoomIs.get(player).removePlayer(player);
+                    Main.instance.inWhichRoomIs.get(player).removePlayer(player);
                     break;
                 case 49:
-                    if (Main.inWhichRoomIs.get(player).host.equals(player)) {
-                        if (Main.inWhichRoomIs.get(player).isRunning) {
-                            Main.inWhichRoomIs.get(player).stopRoom();
+                    if (Main.instance.inWhichRoomIs.get(player).host.equals(player)) {
+                        if (Main.instance.inWhichRoomIs.get(player).isRunning) {
+                            Main.instance.inWhichRoomIs.get(player).stopRoom();
                         } else {
-                            Main.inWhichRoomIs.get(player).startRoom();
+                            Main.instance.inWhichRoomIs.get(player).startRoom();
                         }
                         new RoomMenu(player);
                     }
@@ -122,14 +122,14 @@ public class Listeners implements Listener {
                     break;
                 }
             } else if (event.getClickedInventory().getHolder() instanceof SkinMenu) {
-                if (!Main.playerIsUsingCustomBlocks.get(player)) {
+                if (!Main.instance.playerIsUsingCustomBlocks.get(player)) {
                     event.setCancelled(true);
                     File customYml = new File(
-                            Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
+                            Main.instance.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
                     FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
                     customConfig.set("useSkinSlot", 0);
 
-                    Main.saveCustomYml(customConfig, customYml);
+                    Main.instance.saveCustomYml(customConfig, customYml);
                 }
                 if (event.getCurrentItem() == null) {
                     event.setCancelled(true);
@@ -146,13 +146,13 @@ public class Listeners implements Listener {
                 }
 
                 if (event.getSlot() == SkinMenu.TORCH_LOCATION) {
-                    Main.playerIsUsingCustomBlocks.put(player, !Main.playerIsUsingCustomBlocks.get(player));
+                    Main.instance.playerIsUsingCustomBlocks.put(player, !Main.instance.playerIsUsingCustomBlocks.get(player));
                     new SkinMenu(player);
                 }
 
                 if (event.getSlot() == SkinMenu.BACK_LOCATION) {
-                    ItemStack[] blocks = Main.customBlocks.get(player);
-                    if (Main.playerIsUsingCustomBlocks.get(player)) {
+                    ItemStack[] blocks = Main.instance.customBlocks.get(player);
+                    if (Main.instance.playerIsUsingCustomBlocks.get(player)) {
                         Inventory inv = event.getClickedInventory();
                         // save blocks
                         for (int i = 0; i < 7; i++) {
@@ -212,7 +212,7 @@ public class Listeners implements Listener {
                 if (item != null) {
                     ItemMeta itemmeta = item.getItemMeta();
 
-                    Table table = Main.inWhichRoomIs.get(player).playerTableMap.get(player);
+                    Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
 
                     switch (event.getSlot()) {
                     case SettingsMenu.BACK_LOCATION:
@@ -253,7 +253,7 @@ public class Listeners implements Listener {
                         table.m3y += by;
                         break;
                     case 53:
-                        Main.inWhichRoomIs.get(player).backfire = !Main.inWhichRoomIs.get(player).backfire;
+                        Main.instance.inWhichRoomIs.get(player).backfire = !Main.instance.inWhichRoomIs.get(player).backfire;
                         break;
                     case 1:
                         table.ULTRAGRAPHICS = !table.ULTRAGRAPHICS;
@@ -276,7 +276,7 @@ public class Listeners implements Listener {
                     by = -1;
                 }
 
-                Table table = Main.inWhichRoomIs.get(player).playerTableMap.get(player);
+                Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
 
                 switch (event.getSlot()) {
                 case SimpleSettingsMenu.BACK_LOCATION:
@@ -315,8 +315,8 @@ public class Listeners implements Listener {
     @EventHandler
     public void onItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
-        if (Main.inWhichRoomIs.containsKey(player)) {
-            Table table = Main.inWhichRoomIs.get(player).playerTableMap.get(player);
+        if (Main.instance.inWhichRoomIs.containsKey(player)) {
+            Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
             if (table != null && !table.getGameover()) {
                 int itemId = event.getNewSlot();
                 switch (itemId) {
@@ -355,8 +355,8 @@ public class Listeners implements Listener {
     @EventHandler
     public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
-        if (Main.inWhichRoomIs.containsKey(player)) {
-            Table table = Main.inWhichRoomIs.get(player).playerTableMap.get(player);
+        if (Main.instance.inWhichRoomIs.containsKey(player)) {
+            Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
             if (player.isSneaking()) {
                 if (table != null && !table.getGameover()) {
                     table.userInput("shift");
@@ -375,8 +375,8 @@ public class Listeners implements Listener {
     @EventHandler
     public void onPlayerMovement(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (Main.inWhichRoomIs.containsKey(player)) {
-            Table table = Main.inWhichRoomIs.get(player).playerTableMap.get(player);
+        if (Main.instance.inWhichRoomIs.containsKey(player)) {
+            Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
             if (table != null && !table.getGameover()) {
                 Location fromLocation = event.getFrom();
                 Location toLocation = event.getTo();

@@ -69,7 +69,7 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
     }
 
     public static void loadSongs() {
-        File file = new File(Main.plugin.getDataFolder() + "/songs/");
+        File file = new File(Main.instance.getDataFolder() + "/songs/");
         file.mkdirs();
 
         int numberOfSongsCustom = file.listFiles().length;
@@ -84,15 +84,15 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
         String[] pathNames;
         String song;
 
-        Main.plugin.getLogger()
+        Main.instance.getLogger()
                 .info(numberOfSongsClasspath + " song" + (numberOfSongsClasspath == 1 ? "" : "s") + " in classpath");
-        Main.plugin.getLogger()
+        Main.instance.getLogger()
                 .info(numberOfSongsCustom + " song" + (numberOfSongsCustom == 1 ? "" : "s") + " in TETR/songs");
 
         pathNames = new String[numberOfSongsCustom];
         pathNames = file.list();
         for (int i = 0; i < numberOfSongsCustom; i++) {
-            song = Main.plugin.getDataFolder() + "/songs/" + pathNames[i];
+            song = Main.instance.getDataFolder() + "/songs/" + pathNames[i];
             songArray[numberOfSongsClasspath + i] = NBSDecoder.parse(new File(song));
         }
 
