@@ -34,7 +34,7 @@ import tetrminecraft.menus.SongMenu;
 public class Choice {
 
     public static void maximizeMenu(Player player) {
-        switch (Main.lastui.get(player)) {
+        switch (Main.lastMenuOpened.get(player)) {
         case "home":
             new HomeMenu(player);
             break;
@@ -42,7 +42,7 @@ public class Choice {
             new MultiplayerMenu(player);
             break;
         case "joinroom":
-            new JoinRoomMenu(player, Main.joinroompage.get(player));
+            new JoinRoomMenu(player, Main.joinRoomPage.get(player));
             break;
         case "room":
             new RoomMenu(player);

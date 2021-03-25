@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -17,13 +19,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Consumer;
 
-import tetrcore.Constants;
+import tetrminecraft.Constants;
 import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
 import tetrminecraft.functions.dependencyutil.Netherboard;
@@ -62,18 +63,20 @@ public class Main extends JavaPlugin implements Listener {
     public static JavaPlugin plugin;
     public static ConsoleCommandSender console;
 
-    public static Map<String, Room> roomMap = new LinkedHashMap<String, Room>();
-    public static Map<Player, Room> inwhichroom = new HashMap<Player, Room>();
+    public static Set<Player> interactedWithPlugin = new HashSet<Player>();
 
-    public static Map<Player, String> lastui = new HashMap<Player, String>();
-    public static Map<Player, Integer> joinroompage = new HashMap<Player, Integer>();
+    public static Map<String, Room> roomByID = new LinkedHashMap<String, Room>();
+    public static Map<Player, Room> inWhichRoomIs = new HashMap<Player, Room>();
 
-    public static Map<Player, Boolean> playerUsesCustom = new HashMap<Player, Boolean>();
+    public static Map<Player, String> lastMenuOpened = new HashMap<Player, String>();
+    public static Map<Player, Integer> joinRoomPage = new HashMap<Player, Integer>();
+
+    public static Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
     public static Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
 
     public static Functions functions;
     public static Netherboard netherboard;
-    public static NoteBlockAPI noteblockapi;
+    public static NoteBlockAPI noteBlockAPI;
 
     public static boolean isDeveloper(CommandSender sender) {
         if (Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"))) {
@@ -112,10 +115,10 @@ public class Main extends JavaPlugin implements Listener {
 
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
             getLogger().severe("NoteBlockAPI not found, if you see any errors report it immediately!");
-            noteblockapi = new NoteBlockAPINo();
+            noteBlockAPI = new NoteBlockAPINo();
         } else {
             getLogger().info("NoteBlockAPI OK.");
-            noteblockapi = new NoteBlockAPIYes();
+            noteBlockAPI = new NoteBlockAPIYes();
             NoteBlockAPIYes.loadSongs();
         }
 
@@ -135,17 +138,6 @@ public class Main extends JavaPlugin implements Listener {
             Bukkit.getPluginManager().disablePlugin(this);
         }
 
-        // has players on reload
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            lastui.put(player, "home");
-
-            if (!Main.playerUsesCustom.containsKey(player)) {
-                Main.playerUsesCustom.put(player, false);
-            }
-
-            initSkin(player);
-        }
-
         long timeEnd = System.nanoTime();
 
         long timeElapsed = timeEnd - timeStart;
@@ -163,47 +155,43 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-
-        lastui.put(player, "home");
-        initSkin(player);
-    }
-
-    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (lastui.containsKey(player)) {
-            lastui.remove(player);
-        }
-        if (inwhichroom.containsKey(player)) {
-            Main.inwhichroom.get(player).removePlayer(player);
+        if (interactedWithPlugin.contains(player)) {
+            lastMenuOpened.remove(player);
+            if (inWhichRoomIs.get(player) != null) {
+                inWhichRoomIs.get(player).removePlayer(player);
+            }
+            inWhichRoomIs.remove(player);
+            interactedWithPlugin.remove(player);
+            
+            //save
+            File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
+            FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
+            ItemStack[] blocks = customBlocks.get(player);
+            for(int i=0;i<blocks.length;i++) {
+                customConfig.set(Constants.NAMES[i], blocks[i]);
+            }
+            customConfig.set("playerIsUsingCustomBlocks", playerIsUsingCustomBlocks.get(player));
+            Main.saveCustomYml(customConfig, customYml);
+            
+            customBlocks.remove(player);
+            playerIsUsingCustomBlocks.remove(player);
         }
     }
 
-    private void initSkin(Player player) {
+    public static void firstInteraction(Player player) {
+        interactedWithPlugin.add(player);
+        lastMenuOpened.put(player, "home");
+
         File customYml = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
         ItemStack[] blocks = new ItemStack[17];
-        blocks[0] = customConfig.getItemStack("blockZ");
-        blocks[1] = customConfig.getItemStack("blockL");
-        blocks[2] = customConfig.getItemStack("blockO");
-        blocks[3] = customConfig.getItemStack("blockS");
-        blocks[4] = customConfig.getItemStack("blockI");
-        blocks[5] = customConfig.getItemStack("blockJ");
-        blocks[6] = customConfig.getItemStack("blockT");
-        blocks[7] = customConfig.getItemStack("background");
-        blocks[8] = customConfig.getItemStack("garbage");
-        blocks[9] = customConfig.getItemStack("ghostZ");
-        blocks[10] = customConfig.getItemStack("ghostL");
-        blocks[11] = customConfig.getItemStack("ghostO");
-        blocks[12] = customConfig.getItemStack("ghostS");
-        blocks[13] = customConfig.getItemStack("ghostI");
-        blocks[14] = customConfig.getItemStack("ghostJ");
-        blocks[15] = customConfig.getItemStack("ghostT");
-        blocks[16] = customConfig.getItemStack("zone");
+        for(int i=0;i<blocks.length;i++) {
+            blocks[i] = customConfig.getItemStack(Constants.NAMES[i]);
+        }
         customBlocks.put(player, blocks);
-        Main.playerUsesCustom.put(player, customConfig.getBoolean("useSkinSlot"));
+        Main.playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
     }
 
     private boolean versionIsSupported() {

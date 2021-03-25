@@ -7,12 +7,16 @@ public class Constants {
     public static String idCharSet = "ABCDEF";
     public static boolean iKnowWhatIAmDoing = true;
 
+    public static String[] NAMES = { 
+            "blockZ", "blockL", "blockO", "blockS", "blockI", "blockJ", "blockT", "background",
+            "garbage", "ghostZ", "ghostL", "ghostO", "ghostS", "ghostI", "ghostJ", "ghostT", "zone" };
+
     public enum DeathAnimation {
         NONE, EXPLOSION, GRAYSCALE, CLEAR, DISAPPEAR
     }
 
     public static DeathAnimation deathAnim = DeathAnimation.GRAYSCALE;
-    
+
     public static Color intToColor(int number) {
         switch (number) {
         case 0:

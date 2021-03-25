@@ -2,7 +2,6 @@ package tetrminecraft;
 
 import java.awt.Point;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -338,13 +337,13 @@ public class Table extends GameLogic {
     private void printSingleBlock(int x, int y, int z, int color) {
         if (color == 7 && transparent) {
             Block b = world.getBlockAt(x, y, z);
-            for (Player player : Main.inwhichroom.get(player).playerList) {
+            for (Player player : Main.inWhichRoomIs.get(player).playerList) {
                 Main.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), b);
             }
             return;
         }
 
-        for (Player player : Main.inwhichroom.get(player).playerList) {
+        for (Player player : Main.inWhichRoomIs.get(player).playerList) {
             Main.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), color);
         }
     }
@@ -529,7 +528,7 @@ public class Table extends GameLogic {
     
     @Override
     public void sendGarbageEvent(int n) {
-        Main.inwhichroom.get(player).forwardGarbage(n, player);
+        Main.inWhichRoomIs.get(player).forwardGarbage(n, player);
     }
     
 }

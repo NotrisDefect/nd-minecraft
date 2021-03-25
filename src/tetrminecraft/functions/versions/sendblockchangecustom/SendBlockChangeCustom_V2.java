@@ -15,9 +15,9 @@ public class SendBlockChangeCustom_V2 {
     public static void sendBlockChangeCustom(Player player, Location loc, int color) {
         ItemStack blocks[] = Main.customBlocks.get(player);
         
-        if(Main.playerUsesCustom.get(player)) {
+        if(Main.playerIsUsingCustomBlocks.get(player)) {
             player.sendBlockChange(loc, blocks[color].getType().createBlockData());
-        }else if(!Main.playerUsesCustom.get(player)) {
+        }else if(!Main.playerIsUsingCustomBlocks.get(player)) {
             player.sendBlockChange(loc, Blocks.defaultBlocks[color].getType().createBlockData());
         }
     }

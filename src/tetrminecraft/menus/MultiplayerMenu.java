@@ -19,7 +19,7 @@ public class MultiplayerMenu implements InventoryHolder{
     public final static int LISTROOMS_LOCATION = 23;
     
     public MultiplayerMenu(Player player){
-        Main.lastui.put(player, "multiplayer");
+        Main.lastMenuOpened.put(player, "multiplayer");
         Inventory inventory=Bukkit.createInventory(this, 54, "Multiplayer");
         ItemStack border=XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass

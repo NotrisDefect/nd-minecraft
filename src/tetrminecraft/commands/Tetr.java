@@ -28,6 +28,10 @@ public class Tetr implements CommandExecutor, Listener {
             player = (Player) sender;
         }
         
+        if(player != null && !Main.interactedWithPlugin.contains(player)) {
+            Main.firstInteraction(player);
+        }
+        
         if (!sender.hasPermission("tetr.banned")) {
             if (args.length == 0 && player != null) {
                 Choice.maximizeMenu(player);
@@ -40,7 +44,7 @@ public class Tetr implements CommandExecutor, Listener {
                     player.sendMessage("Room id is missing!");
                 } else {
                     try {
-                        Main.roomMap.get(args[1]).addSpectator(player);
+                        Main.roomByID.get(args[1]).addSpectator(player);
                     } catch (NullPointerException e) {
                         player.sendMessage("Null pointer exception! This room id most likely doesn't exist");
                     }
@@ -49,8 +53,8 @@ public class Tetr implements CommandExecutor, Listener {
                 Choice.disablePlugin();
             } else if (args[0].equalsIgnoreCase("fastjoin") && Main.isDeveloper(sender) && player != null) {
                 try {
-                    Main.roomMap.get(args[1]).addPlayer(player);
-                    Main.lastui.put(player, "room");
+                    Main.roomByID.get(args[1]).addPlayer(player);
+                    Main.lastMenuOpened.put(player, "room");
                 } catch (Exception e) {
                     player.sendMessage("Error");
                 }

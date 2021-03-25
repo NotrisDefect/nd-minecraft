@@ -20,7 +20,7 @@ public class SettingsMenu implements InventoryHolder {
     public final static int TORCH_LOCATION = 8;
     
     public SettingsMenu(Player player){
-        Main.lastui.put(player, "settings");
+        Main.lastMenuOpened.put(player, "settings");
         Inventory inventory=Bukkit.createInventory(this, 54, "Settings");
         ItemStack border=XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass
@@ -32,7 +32,7 @@ public class SettingsMenu implements InventoryHolder {
         }
         
 
-        Table table=Main.inwhichroom.get(player).playerTableMap.get(player);
+        Table table=Main.inWhichRoomIs.get(player).playerTableMap.get(player);
         
         inventory.setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
         inventory.setItem(TORCH_LOCATION, BaseMenu.createItem(XMaterial.REDSTONE_TORCH, ChatColor.DARK_RED + "This is advanced settings menu", ChatColor.YELLOW + "" + ChatColor.BOLD + "Click to go to standard menu"));
@@ -47,7 +47,7 @@ public class SettingsMenu implements InventoryHolder {
         inventory.setItem(41, BaseMenu.createItem(XMaterial.DIRT, "M1Y: "+table.m1y));
         inventory.setItem(42, BaseMenu.createItem(XMaterial.DIRT, "M2Y: "+table.m2y));
         inventory.setItem(43, BaseMenu.createItem(XMaterial.DIRT, "M3Y: "+table.m3y));
-        inventory.setItem(53, BaseMenu.createItem(XMaterial.DIRT, "BACKFIRE: "+Main.inwhichroom.get(player).backfire));
+        inventory.setItem(53, BaseMenu.createItem(XMaterial.DIRT, "BACKFIRE: "+Main.inWhichRoomIs.get(player).backfire));
         inventory.setItem(1, BaseMenu.createItem(XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks: "+table.ULTRAGRAPHICS));
         
         

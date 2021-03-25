@@ -21,7 +21,7 @@ private Inventory inventory = null;
     public final static int BACK_LOCATION = 0;
     
     public SongMenu(Player player) {
-        Main.lastui.put(player, "song");
+        Main.lastMenuOpened.put(player, "song");
         Inventory inventory=Bukkit.createInventory(this, 54, "Choose song");
         ItemStack border=XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass

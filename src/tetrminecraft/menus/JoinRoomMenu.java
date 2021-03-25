@@ -24,7 +24,7 @@ public class JoinRoomMenu implements InventoryHolder {
     
     
     public JoinRoomMenu(Player player, int p){
-        Main.lastui.put(player, "joinroom");
+        Main.lastMenuOpened.put(player, "joinroom");
         Inventory inventory=Bukkit.createInventory(this, 54, "Join room");
         ItemStack border=XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass
@@ -41,13 +41,13 @@ public class JoinRoomMenu implements InventoryHolder {
             inventory.setItem(MINUSPAGE_LOCATION, BaseMenu.createItem(XMaterial.ARROW, ChatColor.WHITE + "Previous page"));
         }
         
-        Main.joinroompage.put(player, p);
+        Main.joinRoomPage.put(player, p);
         int page = p;
         int display = 0;
         int counter = 0;
         int i = 0;
         
-        Object[] roomlist = Main.roomMap.values().toArray();
+        Object[] roomlist = Main.roomByID.values().toArray();
         while(true) {
             if(i<roomlist.length) {
             Room room = (Room) roomlist[i];

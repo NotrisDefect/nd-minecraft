@@ -18,7 +18,7 @@ public class SongMenuInventoryClickEvent implements Listener {
         } else {
             if (event.getClickedInventory().getHolder() instanceof SongMenu) {
                 event.setCancelled(true);
-                Room room = Main.inwhichroom.get(player);
+                Room room = Main.inWhichRoomIs.get(player);
                 if (event.getSlot() == SongMenu.BACK_LOCATION) {
                     new RoomMenu(player);
                 } else if (event.getSlot() == 9) {

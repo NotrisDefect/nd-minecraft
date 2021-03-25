@@ -23,8 +23,8 @@ public class RoomMenu implements InventoryHolder {
     public final static int SETTINGS_LOCATION = 53;
     
     public RoomMenu(Player player){
-        Main.lastui.put(player, "room");
-        Inventory inventory=Bukkit.createInventory(this, 54, Main.inwhichroom.get(player).roomName);
+        Main.lastMenuOpened.put(player, "room");
+        Inventory inventory=Bukkit.createInventory(this, 54, Main.inWhichRoomIs.get(player).roomName);
         ItemStack border=XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass
         for(int i=0;i<9;i++){
@@ -40,10 +40,10 @@ public class RoomMenu implements InventoryHolder {
         
         item=XMaterial.PLAYER_HEAD.parseItem();
         int i=0;
-        for(Player p: Main.inwhichroom.get(player).playerList){
+        for(Player p: Main.inWhichRoomIs.get(player).playerList){
             itemmeta=item.getItemMeta();
             itemmeta.setDisplayName(ChatColor.WHITE + p.getName());
-            if(Main.inwhichroom.get(player).host.equals(p)){
+            if(Main.inWhichRoomIs.get(player).host.equals(p)){
                 itemmeta.setLore(Arrays.asList(ChatColor.DARK_RED + "HOST"));
             }else{
                 itemmeta.setLore(null);
@@ -54,11 +54,11 @@ public class RoomMenu implements InventoryHolder {
             i++;
         }
         
-        if(Main.inwhichroom.get(player).host.equals(player)){
-            if(Main.inwhichroom.get(player).isRunning){
+        if(Main.inWhichRoomIs.get(player).host.equals(player)){
+            if(Main.inWhichRoomIs.get(player).isRunning){
                 inventory.setItem(GAME_LOCATION, BaseMenu.createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"));
             }else{
-                if(!Main.inwhichroom.get(player).isSingleplayer && Main.inwhichroom.get(player).playerList.size() == 1) {
+                if(!Main.inWhichRoomIs.get(player).isSingleplayer && Main.inWhichRoomIs.get(player).playerList.size() == 1) {
                     inventory.setItem(GAME_LOCATION, BaseMenu.createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed"));
                 }else {
                     inventory.setItem(GAME_LOCATION, BaseMenu.createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"));
