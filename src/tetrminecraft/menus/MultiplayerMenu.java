@@ -28,9 +28,9 @@ public class MultiplayerMenu extends BaseMenu {
         
         //clickable items
         
-        getInventory().setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        getInventory().setItem(CREATEROOM_LOCATION, BaseMenu.createItem(XMaterial.COAL_ORE, ChatColor.WHITE + "Create new room"));
-        getInventory().setItem(LISTROOMS_LOCATION, BaseMenu.createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + "Join a room"));
+        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
+        getInventory().setItem(CREATEROOM_LOCATION, createItem(XMaterial.COAL_ORE, ChatColor.WHITE + "Create new room"));
+        getInventory().setItem(LISTROOMS_LOCATION, createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + "Join a room"));
         
         
         player.openInventory(getInventory());

@@ -29,8 +29,8 @@ public class SongMenu extends BaseMenu {
 
         // clickable items
 
-        getInventory().setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        getInventory().setItem(9, BaseMenu.createItem(XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "Random"));
+        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
+        getInventory().setItem(9, createItem(XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "Random"));
 
         Playlist playlist = NoteBlockAPIYes.playlist;
         for (int i = 0; i < playlist.getCount(); i++) {
@@ -40,7 +40,7 @@ public class SongMenu extends BaseMenu {
             } else {
                 name = playlist.get(i).getPath().getName().replaceAll(".nbs$", "");
             }
-            getInventory().setItem(10 + i, BaseMenu.createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + name));
+            getInventory().setItem(10 + i, createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + name));
         }
 
         player.openInventory(getInventory());

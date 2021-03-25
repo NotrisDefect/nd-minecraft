@@ -25,7 +25,7 @@ public class Table extends GameLogic {
     private static final int VISIBLEROWS = 30;
 
     private static final int BACKGROUNDROWS = 20;
-    
+
     boolean destroying = false;
     private World world;
     private Player player;
@@ -47,7 +47,6 @@ public class Table extends GameLogic {
     private int conj;
 
     private int conk;
-    public int[][] lastStageState = new int[GameLogic.STAGESIZEY][GameLogic.STAGESIZEX];
     public boolean ULTRAGRAPHICS = true;
 
     double maxvelocity = 0;
@@ -92,7 +91,7 @@ public class Table extends GameLogic {
         }
         setGameover(true);
     }
-    
+
     public void destroyTable() {
         boolean ot = transparent;
         transparent = true;
@@ -122,11 +121,11 @@ public class Table extends GameLogic {
     public int getLooptick() {
         return looptick;
     }
-    
+
     public Player getPlayer() {
         return player;
     }
-    
+
     public void moveTable(int x, int y, int z) {
         boolean ot = transparent;
         transparent = true;
@@ -145,11 +144,11 @@ public class Table extends GameLogic {
         }
         transparent = ot;
     }
-    
+
     public void moveTableRelative(int x, int y, int z) {
         moveTable(gx + x, gy + y, gz + z);
     }
-    
+
     public void initTable(long seed, long seed2) {
 
         coni = Math.max(Math.abs(m1x), Math.abs(m1y));
@@ -164,7 +163,7 @@ public class Table extends GameLogic {
         initScoreboard();
         gameLoop();
     }
-    
+
     public void rotateTable(String input) {
         boolean ot = transparent;
         transparent = true;
@@ -362,17 +361,19 @@ public class Table extends GameLogic {
         }
     }
 
+    int[][] oldStageDisplay = new int[GameLogic.STAGESIZEY][GameLogic.STAGESIZEX];
+
     private void render() {
-        int[][] newStageState = new int[40][10];
         Point cpp = getCurrentPiecePosition();
         int rot = getCurrentPieceRotation();
         int piece = getCurrentPieceInt();
         int[][] stage = getStage();
+        int[][] newStageDisplay = new int[40][10];
 
         // update stage
         for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
             for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
-                newStageState[i][j] = stage[i][j];
+                newStageDisplay[i][j] = stage[i][j];
             }
         }
 
@@ -387,12 +388,12 @@ public class Table extends GameLogic {
 
         // update ghost
         for (Point point : getPiece(piece, rot)) {
-            newStageState[point.y + getCurrentPieceLowestPossiblePosition()][point.x + cpp.x] = 9 + piece;
+            newStageDisplay[point.y + getCurrentPieceLowestPossiblePosition()][point.x + cpp.x] = 9 + piece;
         }
 
         // update current piece
         for (Point point : getPiece(piece, rot)) {
-            newStageState[point.y + cpp.y][point.x + cpp.x] = piece;
+            newStageDisplay[point.y + cpp.y][point.x + cpp.x] = piece;
         }
 
         // print garbage meter
@@ -413,11 +414,11 @@ public class Table extends GameLogic {
         // print stage+piece+ghost
         for (int i = 0; i < GameLogic.STAGESIZEY; i++) {
             for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
-                lastStageState[i][j] = newStageState[i][j];
 
-                if ((newStageState[i][j] == 7 && i >= GameLogic.STAGESIZEY - BACKGROUNDROWS)
-                        || (i >= GameLogic.STAGESIZEY - VISIBLEROWS)) {
-                    colPrintNewRender(j, i, newStageState[i][j]);
+                if (((newStageDisplay[i][j] == 7 && i >= GameLogic.STAGESIZEY - BACKGROUNDROWS)
+                        || (i >= GameLogic.STAGESIZEY - VISIBLEROWS))
+                        && newStageDisplay[i][j] != oldStageDisplay[i][j]) {
+                    colPrintNewRender(j, i, newStageDisplay[i][j]);
                 }
             }
         }
@@ -428,11 +429,13 @@ public class Table extends GameLogic {
 
         // send magic string action bar
         ActionBar.sendActionBar(player, getMagicString());
+
+        oldStageDisplay = newStageDisplay;
     }
 
     private void sendScoreboard() {
         Map<Integer, String> text = new HashMap<Integer, String>();
-        
+
         if (getCombo() > 0) {
             text.put(7, "Combo: " + getCombo());
         } else {
@@ -452,7 +455,7 @@ public class Table extends GameLogic {
 
         text.put(1, "Time: " + looptick);
         text.put(0, "getcounter: " + getCounter());
-    
+
         Main.instance.netherboard.sendScoreboard(player, text);
     }
 
@@ -525,10 +528,10 @@ public class Table extends GameLogic {
             break;
         }
     }
-    
+
     @Override
     public void sendGarbageEvent(int n) {
         Main.instance.inWhichRoomIs.get(player).forwardGarbage(n, player);
     }
-    
+
 }

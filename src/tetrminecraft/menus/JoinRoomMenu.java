@@ -32,9 +32,9 @@ public class JoinRoomMenu extends BaseMenu {
         }
         
         //clickable items
-        getInventory().setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
+        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
         if(p>0) {
-            getInventory().setItem(MINUSPAGE_LOCATION, BaseMenu.createItem(XMaterial.ARROW, ChatColor.WHITE + "Previous page"));
+            getInventory().setItem(MINUSPAGE_LOCATION, createItem(XMaterial.ARROW, ChatColor.WHITE + "Previous page"));
         }
         
         Main.instance.joinRoomPage.put(player, p);
@@ -50,7 +50,7 @@ public class JoinRoomMenu extends BaseMenu {
                 if(!room.isSingleplayer) {
                     if(counter<pagesize) {
                         if(display==page) {
-                            getInventory().setItem(ROOM_LOCATION_MIN+counter, BaseMenu.createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.roomID));
+                            getInventory().setItem(ROOM_LOCATION_MIN+counter, createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.roomID));
                         }
                     }else {
                         if(display==page) {
@@ -69,7 +69,7 @@ public class JoinRoomMenu extends BaseMenu {
         }
         
         if(counter==pagesize) {
-            getInventory().setItem(PLUSPAGE_LOCATION, BaseMenu.createItem(XMaterial.ARROW, ChatColor.WHITE + "Next page"));
+            getInventory().setItem(PLUSPAGE_LOCATION, createItem(XMaterial.ARROW, ChatColor.WHITE + "Next page"));
         }
         
         player.openInventory(getInventory());

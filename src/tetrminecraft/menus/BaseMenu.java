@@ -14,7 +14,7 @@ public class BaseMenu implements InventoryHolder {
 
     private Inventory inventory = null;
 
-    public static ItemStack createItem(final XMaterial material, final String name, final String... lore) {
+    public ItemStack createItem(final XMaterial material, final String name, final String... lore) {
         ItemStack item = material.parseItem();
         ItemMeta meta;
         meta = item.getItemMeta();

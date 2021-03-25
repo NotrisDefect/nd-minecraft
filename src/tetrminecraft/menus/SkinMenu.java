@@ -35,8 +35,8 @@ public class SkinMenu extends BaseMenu {
             }
         }
         
-        getInventory().setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        getInventory().setItem(TORCH_LOCATION, BaseMenu.createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.instance.playerIsUsingCustomBlocks.get(player)?ChatColor.BOLD:"") + "Default", ChatColor.WHITE + "" + (Main.instance.playerIsUsingCustomBlocks.get(player)?ChatColor.BOLD:"") + "Custom"));
+        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
+        getInventory().setItem(TORCH_LOCATION, createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.instance.playerIsUsingCustomBlocks.get(player)?ChatColor.BOLD:"") + "Default", ChatColor.WHITE + "" + (Main.instance.playerIsUsingCustomBlocks.get(player)?ChatColor.BOLD:"") + "Custom"));
         
         player.openInventory(getInventory());
     }

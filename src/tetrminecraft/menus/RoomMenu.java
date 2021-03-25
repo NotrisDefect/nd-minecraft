@@ -52,21 +52,21 @@ public class RoomMenu extends BaseMenu {
         
         if(Main.instance.inWhichRoomIs.get(player).host.equals(player)){
             if(Main.instance.inWhichRoomIs.get(player).isRunning){
-                getInventory().setItem(GAME_LOCATION, BaseMenu.createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"));
+                getInventory().setItem(GAME_LOCATION, createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"));
             }else{
                 if(!Main.instance.inWhichRoomIs.get(player).isSingleplayer && Main.instance.inWhichRoomIs.get(player).playerList.size() == 1) {
-                    getInventory().setItem(GAME_LOCATION, BaseMenu.createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed"));
+                    getInventory().setItem(GAME_LOCATION, createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed"));
                 }else {
-                    getInventory().setItem(GAME_LOCATION, BaseMenu.createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"));
+                    getInventory().setItem(GAME_LOCATION, createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"));
                 }
             }
         }else{
-            getInventory().setItem(GAME_LOCATION, BaseMenu.createItem(XMaterial.BARRIER, ChatColor.WHITE + "YOU ARE NOT THE HOST"));
+            getInventory().setItem(GAME_LOCATION, createItem(XMaterial.BARRIER, ChatColor.WHITE + "YOU ARE NOT THE HOST"));
         }
         
-        getInventory().setItem(BACK_LOCATION, BaseMenu.createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        getInventory().setItem(SONG_LOCATION, BaseMenu.createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song"));
-        getInventory().setItem(SETTINGS_LOCATION, BaseMenu.createItem(XMaterial.COMPASS, ChatColor.WHITE + "Table settings"));
+        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
+        getInventory().setItem(SONG_LOCATION, createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song"));
+        getInventory().setItem(SETTINGS_LOCATION, createItem(XMaterial.COMPASS, ChatColor.WHITE + "Table settings"));
         
         player.openInventory(getInventory());
     }

@@ -27,10 +27,10 @@ public class HomeMenu extends BaseMenu {
         }
 
         getInventory().setItem(MULTIPLAYER_LOCATION,
-                BaseMenu.createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer"));
+                createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer"));
         getInventory().setItem(SINGLEPLAYER_LOCATION,
-                BaseMenu.createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer"));
-        getInventory().setItem(SKINEDITOR_LOCATION, BaseMenu.createItem(XMaterial.SHEARS, ChatColor.WHITE + "Skin editor"));
+                createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer"));
+        getInventory().setItem(SKINEDITOR_LOCATION, createItem(XMaterial.SHEARS, ChatColor.WHITE + "Skin editor"));
 
         player.openInventory(getInventory());
     }
