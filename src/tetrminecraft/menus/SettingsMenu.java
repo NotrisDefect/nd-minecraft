@@ -44,7 +44,7 @@ public class SettingsMenu extends BaseMenu {
         getInventory().setItem(42, createItem(XMaterial.DIRT, "M2Y: "+table.m2y));
         getInventory().setItem(43, createItem(XMaterial.DIRT, "M3Y: "+table.m3y));
         getInventory().setItem(53, createItem(XMaterial.DIRT, "BACKFIRE: "+Main.instance.inWhichRoomIs.get(player).backfire));
-        getInventory().setItem(1, createItem(XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks: "+table.ULTRAGRAPHICS));
+        getInventory().setItem(1, createItem(XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks: "+table.enableFallingSand));
         
         
         player.openInventory(getInventory());

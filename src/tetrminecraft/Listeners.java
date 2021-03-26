@@ -247,7 +247,7 @@ public class Listeners implements Listener {
                                 .get(player).backfire = !Main.instance.inWhichRoomIs.get(player).backfire;
                         break;
                     case 1:
-                        table.ULTRAGRAPHICS = !table.ULTRAGRAPHICS;
+                        table.enableFallingSand = !table.enableFallingSand;
                         break;
                     default:
                         return;
