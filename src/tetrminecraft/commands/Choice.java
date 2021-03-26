@@ -61,7 +61,7 @@ public class Choice {
             break;
         }
 
-        Main.instance.hasMenuOpen.put(player, true);
+        Main.instance.hasCustomMenuOpen.put(player, true);
     }
 
     public static void showControls(CommandSender sender) {

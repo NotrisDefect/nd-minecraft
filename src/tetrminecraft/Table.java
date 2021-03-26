@@ -460,11 +460,10 @@ public class Table extends GameLogic {
     }
 
     @SuppressWarnings("deprecation")
-    private void turnToFallingBlock(int x, int y, double d) {
+    private void turnToFallingBlock(int x, int y, double d, int color) {
         if (ULTRAGRAPHICS == true) {
             int tex, tey, tez;
             ItemStack blocks[] = Blocks.defaultBlocks;
-            int color = getStage()[y][x];
             for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
                 tex = gx + x * m1x + y * m1y + i;
                 for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
@@ -473,7 +472,7 @@ public class Table extends GameLogic {
                         tez = gz + x * m3x + y * m3y + k;
                         FallingBlock lol = world.spawnFallingBlock(new Location(world, tex, tey, tez),
                                 blocks[color].getType(), blocks[color].getData().getData());
-                        lol.setVelocity(new Vector(d * (2 - Math.random() * 4), d * (5 - Math.random() * 10),
+                        lol.setVelocity(new Vector(d * (2 - Math.random() * 4), d * (8 - Math.random() * 10),
                                 d * (2 - Math.random() * 4)));
                         lol.setDropItem(false);
                         lol.addScoreboardTag("sand");
@@ -485,7 +484,7 @@ public class Table extends GameLogic {
 
     private void whenPlayerDies() {
         Main.instance.inWhichRoomIs.get(player).eliminate(player);
-        
+
         switch (Constants.deathAnim) {
         case EXPLOSION:
             boolean ot = transparent;
@@ -499,7 +498,7 @@ public class Table extends GameLogic {
 
             for (int i = GameLogic.STAGESIZEY - VISIBLEROWS; i < GameLogic.STAGESIZEY; i++) {
                 for (int j = 0; j < GameLogic.STAGESIZEX; j++) {
-                    turnToFallingBlock(j, i, 1);
+                    turnToFallingBlock(j, i, 1, getStage()[i][j]);
                 }
             }
             break;
@@ -534,6 +533,18 @@ public class Table extends GameLogic {
     @Override
     public void sendGarbageEvent(int n) {
         Main.instance.inWhichRoomIs.get(player).forwardGarbage(n, player);
+    }
+
+    @Override
+    public void onLineClearEvent(int lineNumber, int[] line) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < STAGESIZEX; i++) {
+                    turnToFallingBlock(i, lineNumber, 0.3, line[i]);
+                }
+            }
+        }.runTask(Main.instance);
     }
 
 }

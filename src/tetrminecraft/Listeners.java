@@ -359,8 +359,10 @@ public class Listeners implements Listener {
     @EventHandler
     public void onInventoryCloseEvent(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        if (Main.instance.hasMenuOpen.get(player) == true) {
-            Main.instance.hasMenuOpen.put(player, false);
+        if (Main.instance.interactedWithPlugin.contains(player)) {
+            if (Main.instance.hasCustomMenuOpen.get(player) == true) {
+                Main.instance.hasCustomMenuOpen.put(player, false);
+            }
         }
     }
 

@@ -154,6 +154,7 @@ public class Room {
         }
     }
 
+    @SuppressWarnings("unused")
     private void switchBracket(Player player) {
         if (playerList.contains(player)) {
             playerList.remove(player);
@@ -182,7 +183,7 @@ public class Room {
         tryToUpdateMenu();
     }
 
-    public void roomLoop() {
+    private void roomLoop() {
         isRunning = true;
         new Thread() {
             @Override
@@ -206,7 +207,7 @@ public class Room {
     
     private void tryToUpdateMenu() {
         for(Player player: playerList) {
-            if(Main.instance.hasMenuOpen.get(player) == true && Main.instance.lastMenuOpened.get(player) == "room") {
+            if(Main.instance.hasCustomMenuOpen.get(player) == true && Main.instance.lastMenuOpened.get(player) == "room") {
                 Choice.maximizeMenu(player);
             }
         }
