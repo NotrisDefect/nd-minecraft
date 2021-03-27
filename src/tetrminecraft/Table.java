@@ -24,20 +24,20 @@ public class Table extends GameLogic {
     private static final int VISIBLEROWS = 30;
     private static final int BACKGROUNDROWS = 20;
 
-    boolean destroying = false;
+    boolean isGettingDestroyed = false;
     private World world;
     private Player player;
     private int looptick;
 
-    private int gx = 100;
-    private int gy = 50;
-    private int gz = 0;
-    public int m1x = 1;
-    public int m1y = 0;
-    public int m2x = 0;
-    public int m2y = -1;
-    public int m3x = 0;
-    public int m3y = 0;
+    private int gx;
+    private int gy;
+    private int gz;
+    public int mwx = 1;
+    public int mhx = 0;
+    public int mwy = 0;
+    public int mhy = -1;
+    public int mwz = 0;
+    public int mhz = 0;
     public int thickness = 1;
 
     private int coni;
@@ -45,49 +45,81 @@ public class Table extends GameLogic {
     private int conk;
     public boolean enableFallingSand = true;
 
-    int[][] oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
-    int[] oldGQDisplay = new int[GameLogic.PLAYABLEROWS];
-    int[][] oldNextDisplay = new int[GameLogic.NEXTPIECESMAX * 4][4];
-    int[][] oldHoldDisplay = new int[4][4];
+    private int[][] oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
+    private int[] oldGQDisplay = new int[GameLogic.PLAYABLEROWS];
+    private int[][] oldNextDisplay = new int[GameLogic.NEXTPIECESMAX * 4][4];
+    private int[][] oldHoldDisplay = new int[4][4];
 
-    Table(Player p) {
+    public Table(Player p) {
         super();
         player = p;
         world = p.getWorld();
         Location location = player.getLocation();
         float yaw = player.getLocation().getYaw();
         yaw = (yaw % 360 + 360) % 360;
+        int temp;
         if (45 <= yaw && yaw < 135) {
-            rotateTable("Y");
-            rotateTable("Y");
-            rotateTable("Y");
-            moveTable(location.getBlockX() - STAGESIZEY, location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2,
-                    location.getBlockZ() + STAGESIZEX / 2);
+            temp = -mwz;
+            mwz = mwx;
+            mwx = temp;
+            temp = -mhz;
+            mhz = mhx;
+            mhx = temp;
+            temp = -mwz;
+            mwz = mwx;
+            mwx = temp;
+            temp = -mhz;
+            mhz = mhx;
+            mhx = temp;
+            temp = -mwz;
+            mwz = mwx;
+            mwx = temp;
+            temp = -mhz;
+            mhz = mhx;
+            mhx = temp;
+            gx = location.getBlockX() - STAGESIZEY;
+            gy = location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2;
+            gz = location.getBlockZ() + STAGESIZEX / 2;
         } else if (135 <= yaw && yaw < 225) {
-            moveTable(location.getBlockX() - STAGESIZEX / 2, location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2,
-                    location.getBlockZ() - STAGESIZEY);
+            gx = location.getBlockX() - STAGESIZEX / 2;
+            gy = location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2;
+            gz = location.getBlockZ() - STAGESIZEY;
         } else if (225 <= yaw && yaw < 315) {
-            rotateTable("Y");
-            moveTable(location.getBlockX() + STAGESIZEY, location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2,
-                    location.getBlockZ() - STAGESIZEX / 2);
+            temp = -mwz;
+            mwz = mwx;
+            mwx = temp;
+            temp = -mhz;
+            mhz = mhx;
+            mhx = temp;
+            gx = location.getBlockX() + STAGESIZEY;
+            gy = location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2;
+            gz = location.getBlockZ() - STAGESIZEX / 2;
         } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
-            rotateTable("Y");
-            rotateTable("Y");
-            moveTable(location.getBlockX() + STAGESIZEX / 2, location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2,
-                    location.getBlockZ() + STAGESIZEY);
+            temp = -mwz;
+            mwz = mwx;
+            mwx = temp;
+            temp = -mhz;
+            mhz = mhx;
+            mhx = temp;
+            temp = -mwz;
+            mwz = mwx;
+            mwx = temp;
+            temp = -mhz;
+            mhz = mhx;
+            mhx = temp;
+            gx = location.getBlockX() + STAGESIZEX / 2;
+            gy = location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2;
+            gz = location.getBlockZ() + STAGESIZEY;
         }
+        drawAll(16);
         setGameover(true);
     }
 
     public void destroyTable() {
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewForce(j, i);
-            }
-        }
+        cleanAll();
         setGameover(true);
         Main.instance.netherboard.removeBoard(player);
-        destroying = true;
+        isGettingDestroyed = true;
     }
 
     public int getGx() {
@@ -112,9 +144,9 @@ public class Table extends GameLogic {
 
     public void initTable(long seed, long seed2) {
 
-        coni = Math.max(Math.abs(m1x), Math.abs(m1y));
-        conj = Math.max(Math.abs(m2x), Math.abs(m2y));
-        conk = Math.max(Math.abs(m3x), Math.abs(m3y));
+        coni = Math.max(Math.abs(mwx), Math.abs(mhx));
+        conj = Math.max(Math.abs(mwy), Math.abs(mhy));
+        conk = Math.max(Math.abs(mwz), Math.abs(mhz));
 
         player.getInventory().setHeldItemSlot(8);
 
@@ -123,19 +155,23 @@ public class Table extends GameLogic {
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
                 oldStageDisplay[i][j] = 7;
+                colPrintNewRender(j, i, 7);
             }
         }
         for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
             oldGQDisplay[i] = 7;
+            colPrintNewRender(-2, STAGESIZEY - 1 - i, 7);
         }
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 4; j++) {
                 oldNextDisplay[i][j] = 7;
+                colPrintNewRender(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i, 7);
             }
         }
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 oldHoldDisplay[i][j] = 7;
+                colPrintNewRender(-7 + j, STAGESIZEY / 2 + i, 7);
             }
         }
 
@@ -145,19 +181,11 @@ public class Table extends GameLogic {
     }
 
     public void moveTable(int x, int y, int z) {
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewForce(j, i);
-            }
-        }
+        cleanAll();
         gx = x;
         gy = y;
         gz = z;
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewRender(j, i, 16);
-            }
-        }
+        drawAll(16);
     }
 
     public void moveTableRelative(int x, int y, int z) {
@@ -177,45 +205,37 @@ public class Table extends GameLogic {
     }
 
     public void rotateTable(String input) {
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewForce(j, i);
-            }
-        }
+        cleanAll();
 
         int temp;
         switch (input) {
         case "X":
-            temp = -m3x;
-            m3x = m2x;
-            m2x = temp;
-            temp = -m3y;
-            m3y = m2y;
-            m2y = temp;
+            temp = -mwz;
+            mwz = mwy;
+            mwy = temp;
+            temp = -mhz;
+            mhz = mhy;
+            mhy = temp;
             break;
         case "Y":
-            temp = -m3x;
-            m3x = m1x;
-            m1x = temp;
-            temp = -m3y;
-            m3y = m1y;
-            m1y = temp;
+            temp = -mwz;
+            mwz = mwx;
+            mwx = temp;
+            temp = -mhz;
+            mhz = mhx;
+            mhx = temp;
             break;
         case "Z":
-            temp = -m2x;
-            m2x = m1x;
-            m1x = temp;
-            temp = -m2y;
-            m2y = m1y;
-            m1y = temp;
+            temp = -mwy;
+            mwy = mwx;
+            mwx = temp;
+            temp = -mhy;
+            mhy = mhx;
+            mhx = temp;
             break;
         }
 
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewRender(j, i, 16);
-            }
-        }
+        drawAll(16);
     }
 
     @Override
@@ -292,30 +312,36 @@ public class Table extends GameLogic {
         return false;
     }
 
-    private void colPrintNewRender(float x, float y, int color) {
-        int tex, tey, tez;
-
-        for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
-            tex = gx + (int) Math.floor(x * m1x) + (int) Math.floor(y * m1y) + i;
-            for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
-                tey = gy + (int) Math.floor(x * m2x) + (int) Math.floor(y * m2y) + j;
-                for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
-                    tez = gz + (int) Math.floor(x * m3x) + (int) Math.floor(y * m3y) + k;
-                    printSingleBlock(tex, tey, tez, color);
-                }
+    private void cleanAll() {
+        for (int i = 0; i < STAGESIZEY; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                colPrintNewForce(j, i);
+            }
+        }
+        for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
+            colPrintNewForce(-2, STAGESIZEY - 1 - i);
+        }
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 4; j++) {
+                colPrintNewForce(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                colPrintNewForce(-7 + j, STAGESIZEY / 2 + i);
             }
         }
     }
-    
+
     private void colPrintNewForce(float x, float y) {
         int tex, tey, tez;
 
         for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
-            tex = gx + (int) Math.floor(x * m1x) + (int) Math.floor(y * m1y) + i;
+            tex = gx + (int) Math.floor(x * mwx) + (int) Math.floor(y * mhx) + i;
             for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
-                tey = gy + (int) Math.floor(x * m2x) + (int) Math.floor(y * m2y) + j;
+                tey = gy + (int) Math.floor(x * mwy) + (int) Math.floor(y * mhy) + j;
                 for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
-                    tez = gz + (int) Math.floor(x * m3x) + (int) Math.floor(y * m3y) + k;
+                    tez = gz + (int) Math.floor(x * mwz) + (int) Math.floor(y * mhz) + k;
                     Block b = world.getBlockAt(tex, tey, tez);
                     for (Player player : Main.instance.inWhichRoomIs.get(player).playerList) {
                         Main.instance.functions.sendBlockChangeCustom(player, new Location(world, tex, tey, tez), b);
@@ -324,20 +350,53 @@ public class Table extends GameLogic {
             }
         }
     }
-    
-    
+
+    private void colPrintNewRender(float x, float y, int color) {
+        int tex, tey, tez;
+
+        for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
+            tex = gx + (int) Math.floor(x * mwx) + (int) Math.floor(y * mhx) + i;
+            for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
+                tey = gy + (int) Math.floor(x * mwy) + (int) Math.floor(y * mhy) + j;
+                for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
+                    tez = gz + (int) Math.floor(x * mwz) + (int) Math.floor(y * mhz) + k;
+                    printSingleBlock(tex, tey, tez, color);
+                }
+            }
+        }
+    }
 
     @SuppressWarnings("unused")
     private void debug(String s) {
         System.out.println(s);
     }
 
+    private void drawAll(int color) {
+        for (int i = 0; i < STAGESIZEY; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                colPrintNewRender(j, i, color);
+            }
+        }
+        for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
+            colPrintNewRender(-2, STAGESIZEY - 1 - i, color);
+        }
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 4; j++) {
+                colPrintNewRender(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i, color);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                colPrintNewRender(-7 + j, STAGESIZEY / 2 + i, color);
+            }
+        }
+    }
+
     private void gameLoop() {
-        // thread unsafe code
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (destroying) {
+                if (isGettingDestroyed) {
                     this.cancel();
                 } else if (getGameover()) {
                     this.cancel();
@@ -376,10 +435,10 @@ public class Table extends GameLogic {
     }
 
     private void render() {
-        Point cpp = getCurrentPiecePosition();
-        int rot = getCurrentPieceRotation();
-        int piece = getCurrentPieceInt();
-        int[][] stage = getStage();
+        final Point cpp = getCurrentPiecePosition();
+        final int rot = getCurrentPieceRotation();
+        final int piece = getCurrentPieceInt();
+        final int[][] stage = getStage();
 
         int[][] newStageDisplay = new int[STAGESIZEY][STAGESIZEX];
         int[] newGQDisplay = new int[GameLogic.PLAYABLEROWS];
@@ -525,11 +584,11 @@ public class Table extends GameLogic {
             int tex, tey, tez;
             ItemStack blocks[] = Blocks.defaultBlocks;
             for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
-                tex = gx + x * m1x + y * m1y + i;
+                tex = gx + x * mwx + y * mhx + i;
                 for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
-                    tey = gy + x * m2x + y * m2y + j;
+                    tey = gy + x * mwy + y * mhy + j;
                     for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
-                        tez = gz + x * m3x + y * m3y + k;
+                        tez = gz + x * mwz + y * mhz + k;
                         FallingBlock lol = world.spawnFallingBlock(new Location(world, tex, tey, tez),
                                 blocks[color].getType(), blocks[color].getData().getData());
                         lol.setVelocity(new Vector(d * (2 - Math.random() * 4) * coni,

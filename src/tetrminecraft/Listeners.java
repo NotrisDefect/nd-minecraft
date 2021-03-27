@@ -39,9 +39,7 @@ public class Listeners implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getSlot();
-        if (event.getClickedInventory() == null) {
-            player.sendMessage("clicked outside of inventory");
-        } else {
+        if (event.getClickedInventory() != null)  {
             if (event.getClickedInventory().getHolder() instanceof HomeMenu) {
                 event.setCancelled(true);
                 switch (slot) {
@@ -225,22 +223,22 @@ public class Listeners implements Listener {
                         table.moveTableRelative(0, 0, by);
                         break;
                     case 37:
-                        table.m1x += by;
+                        table.mwx += by;
                         break;
                     case 38:
-                        table.m2x += by;
+                        table.mwy += by;
                         break;
                     case 39:
-                        table.m3x += by;
+                        table.mwz += by;
                         break;
                     case 41:
-                        table.m1y += by;
+                        table.mhx += by;
                         break;
                     case 42:
-                        table.m2y += by;
+                        table.mhy += by;
                         break;
                     case 43:
-                        table.m3y += by;
+                        table.mhz += by;
                         break;
                     case 53:
                         Main.instance.inWhichRoomIs
