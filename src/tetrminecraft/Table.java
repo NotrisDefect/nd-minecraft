@@ -21,7 +21,6 @@ import tetrcore.GameLogic;
 
 public class Table extends GameLogic {
 
-    public static boolean transparent = false;
     private static final int VISIBLEROWS = 30;
     private static final int BACKGROUNDROWS = 20;
 
@@ -81,14 +80,11 @@ public class Table extends GameLogic {
     }
 
     public void destroyTable() {
-        boolean ot = transparent;
-        transparent = true;
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewRender(j, i, 7);
+                colPrintNewForce(j, i);
             }
         }
-        transparent = ot;
         setGameover(true);
         Main.instance.netherboard.removeBoard(player);
         destroying = true;
@@ -149,11 +145,9 @@ public class Table extends GameLogic {
     }
 
     public void moveTable(int x, int y, int z) {
-        boolean ot = transparent;
-        transparent = true;
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewRender(j, i, 7);
+                colPrintNewForce(j, i);
             }
         }
         gx = x;
@@ -164,7 +158,6 @@ public class Table extends GameLogic {
                 colPrintNewRender(j, i, 16);
             }
         }
-        transparent = ot;
     }
 
     public void moveTableRelative(int x, int y, int z) {
@@ -184,11 +177,9 @@ public class Table extends GameLogic {
     }
 
     public void rotateTable(String input) {
-        boolean ot = transparent;
-        transparent = true;
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewRender(j, i, 7);
+                colPrintNewForce(j, i);
             }
         }
 
@@ -225,7 +216,6 @@ public class Table extends GameLogic {
                 colPrintNewRender(j, i, 16);
             }
         }
-        transparent = ot;
     }
 
     @Override
@@ -316,6 +306,26 @@ public class Table extends GameLogic {
             }
         }
     }
+    
+    private void colPrintNewForce(float x, float y) {
+        int tex, tey, tez;
+
+        for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
+            tex = gx + (int) Math.floor(x * m1x) + (int) Math.floor(y * m1y) + i;
+            for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
+                tey = gy + (int) Math.floor(x * m2x) + (int) Math.floor(y * m2y) + j;
+                for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
+                    tez = gz + (int) Math.floor(x * m3x) + (int) Math.floor(y * m3y) + k;
+                    Block b = world.getBlockAt(tex, tey, tez);
+                    for (Player player : Main.instance.inWhichRoomIs.get(player).playerList) {
+                        Main.instance.functions.sendBlockChangeCustom(player, new Location(world, tex, tey, tez), b);
+                    }
+                }
+            }
+        }
+    }
+    
+    
 
     @SuppressWarnings("unused")
     private void debug(String s) {
@@ -352,7 +362,7 @@ public class Table extends GameLogic {
     }
 
     private void printSingleBlock(int x, int y, int z, int color) {
-        if (color == 7 && transparent) {
+        if (color == 7 && Main.instance.playerTransparentBackground.get(player)) {
             Block b = world.getBlockAt(x, y, z);
             for (Player player : Main.instance.inWhichRoomIs.get(player).playerList) {
                 Main.instance.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), b);
@@ -537,14 +547,11 @@ public class Table extends GameLogic {
 
         switch (Constants.deathAnim) {
         case EXPLOSION:
-            boolean ot = transparent;
-            transparent = true;
             for (int i = 0; i < STAGESIZEY; i++) {
                 for (int j = 0; j < STAGESIZEX; j++) {
-                    colPrintNewRender(j, i, 7);
+                    colPrintNewForce(j, i);
                 }
             }
-            transparent = ot;
 
             for (int i = STAGESIZEY - VISIBLEROWS; i < STAGESIZEY; i++) {
                 for (int j = 0; j < STAGESIZEX; j++) {

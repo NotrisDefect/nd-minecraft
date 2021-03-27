@@ -72,6 +72,7 @@ public class Main extends JavaPlugin implements Listener {
 
     public Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
     public Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
+    public Map<Player, Boolean> playerTransparentBackground = new HashMap<Player, Boolean>();
     
     public Map<Player, Boolean> hasCustomMenuOpen = new HashMap<Player, Boolean>();
 
@@ -174,10 +175,12 @@ public class Main extends JavaPlugin implements Listener {
                 customConfig.set(Constants.NAMES[i], blocks[i]);
             }
             customConfig.set("playerIsUsingCustomBlocks", playerIsUsingCustomBlocks.get(player));
+            customConfig.set("playerTransparentBackground", playerTransparentBackground.get(player));
             saveCustomYml(customConfig, customYml);
 
             customBlocks.remove(player);
             playerIsUsingCustomBlocks.remove(player);
+            playerTransparentBackground.remove(player);
             
             hasCustomMenuOpen.remove(player);
         }
@@ -196,6 +199,7 @@ public class Main extends JavaPlugin implements Listener {
         }
         customBlocks.put(player, blocks);
         playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
+        playerTransparentBackground.put(player, customConfig.getBoolean("playerTransparentBackground"));
     }
 
     private boolean versionIsSupported() {

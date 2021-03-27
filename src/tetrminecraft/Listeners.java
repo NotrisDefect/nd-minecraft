@@ -126,8 +126,8 @@ public class Listeners implements Listener {
                     event.setCancelled(true);
                 } else if (event.getCurrentItem().getType() == XMaterial.AIR.parseMaterial()) {
                     if (slot == 11 && event.getCursor().getType() == XMaterial.AIR.parseMaterial()) {
-                        Table.transparent = !Table.transparent;
-                        player.sendMessage("Transparency turned " + (Table.transparent ? "on" : "off"));
+                        Main.instance.playerTransparentBackground.put(player, !Main.instance.playerTransparentBackground.get(player));
+                        player.sendMessage("Transparency turned " + (Main.instance.playerTransparentBackground.get(player) ? "on" : "off"));
                         return;
                     }
                 } else if (event.getSlot() == SkinMenu.BACK_LOCATION || event.getSlot() == SkinMenu.TORCH_LOCATION) {
