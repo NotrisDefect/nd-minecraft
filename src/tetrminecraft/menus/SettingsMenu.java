@@ -77,8 +77,9 @@ public class SettingsMenu extends BaseMenu {
             new SimpleSettingsMenu(player);
             return;
         case 11:
-            table.moveTable(player.getLocation().getBlockX(), player.getLocation().getBlockY(),
-                    player.getLocation().getBlockZ());
+            table.cleanAll();
+            table.reposition();
+            table.drawAll(16);
             break;
         case 12:
             table.moveTableRelative(by, 0, 0);
