@@ -33,7 +33,6 @@ import tetrminecraft.functions.dependencyutil.NoteBlockAPI;
 import tetrminecraft.functions.dependencyutil.NoteBlockAPINo;
 import tetrminecraft.functions.dependencyutil.NoteBlockAPIYes;
 import tetrminecraft.functions.versions.Functions;
-import tetrminecraft.menus.SongMenuInventoryClickEvent;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -60,26 +59,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     public static Main instance;
-    public ConsoleCommandSender console;
-
-    public Set<Player> interactedWithPlugin = new HashSet<Player>();
-
-    public Map<String, Room> roomByID = new LinkedHashMap<String, Room>();
-    public Map<Player, Room> inWhichRoomIs = new HashMap<Player, Room>();
-
-    public Map<Player, String> lastMenuOpened = new HashMap<Player, String>();
-    public Map<Player, Integer> joinRoomPage = new HashMap<Player, Integer>();
-
-    public Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
-    public Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
-    public Map<Player, Boolean> playerTransparentBackground = new HashMap<Player, Boolean>();
     
-    public Map<Player, Boolean> hasCustomMenuOpen = new HashMap<Player, Boolean>();
-
-    public Functions functions;
-    public Netherboard netherboard;
-    public NoteBlockAPI noteBlockAPI;
-
     public static boolean isDeveloper(CommandSender sender) {
         if (Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"))) {
             return true;
@@ -87,18 +67,46 @@ public class Main extends JavaPlugin implements Listener {
         return false;
     }
 
-    private void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
-        try {
-            ymlConfig.save(ymlFile);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public ConsoleCommandSender console;
+
+    public Set<Player> interactedWithPlugin = new HashSet<Player>();
+    public Map<String, Room> roomByID = new LinkedHashMap<String, Room>();
+
+    public Map<Player, Room> inWhichRoomIs = new HashMap<Player, Room>();
+    public Map<Player, String> lastMenuOpened = new HashMap<Player, String>();
+
+    public Map<Player, Integer> joinRoomPage = new HashMap<Player, Integer>();
+    public Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
+    public Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
+
+    public Map<Player, Boolean> playerTransparentBackground = new HashMap<Player, Boolean>();
+
+    public Map<Player, Boolean> hasCustomMenuOpen = new HashMap<Player, Boolean>();
+    public Functions functions;
+    public Netherboard netherboard;
+
+    public NoteBlockAPI noteBlockAPI;
+
+    public void firstInteraction(Player player) {
+        interactedWithPlugin.add(player);
+        lastMenuOpened.put(player, "home");
+        Main.instance.hasCustomMenuOpen.put(player, false);
+
+        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
+        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
+        ItemStack[] blocks = new ItemStack[17];
+        for (int i = 0; i < blocks.length; i++) {
+            blocks[i] = customConfig.getItemStack(Constants.NAMES[i]);
         }
+        customBlocks.put(player, blocks);
+        playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
+        playerTransparentBackground.put(player, customConfig.getBoolean("playerTransparentBackground"));
     }
 
     @Override
     public void onEnable() {
         long timeStart = System.nanoTime();
-        
+
         instance = this;
 
         try {
@@ -130,7 +138,6 @@ public class Main extends JavaPlugin implements Listener {
         } else {
             getLogger().info("Netherboard OK.");
             netherboard = new NetherboardYes();
-            Bukkit.getPluginManager().registerEvents(new SongMenuInventoryClickEvent(), this);
         }
 
         if (versionIsSupported()) {
@@ -181,25 +188,17 @@ public class Main extends JavaPlugin implements Listener {
             customBlocks.remove(player);
             playerIsUsingCustomBlocks.remove(player);
             playerTransparentBackground.remove(player);
-            
+
             hasCustomMenuOpen.remove(player);
         }
     }
 
-    public void firstInteraction(Player player) {
-        interactedWithPlugin.add(player);
-        lastMenuOpened.put(player, "home");
-        Main.instance.hasCustomMenuOpen.put(player, false);
-
-        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
-        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-        ItemStack[] blocks = new ItemStack[17];
-        for (int i = 0; i < blocks.length; i++) {
-            blocks[i] = customConfig.getItemStack(Constants.NAMES[i]);
+    private void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
+        try {
+            ymlConfig.save(ymlFile);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        customBlocks.put(player, blocks);
-        playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
-        playerTransparentBackground.put(player, customConfig.getBoolean("playerTransparentBackground"));
     }
 
     private boolean versionIsSupported() {

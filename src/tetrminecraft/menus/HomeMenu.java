@@ -1,12 +1,14 @@
 package tetrminecraft.menus;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.cryptomorin.xseries.XMaterial;
 
 import net.md_5.bungee.api.ChatColor;
 import tetrminecraft.Main;
+import tetrminecraft.Room;
 
 public class HomeMenu extends BaseMenu {
 
@@ -33,5 +35,23 @@ public class HomeMenu extends BaseMenu {
         getInventory().setItem(SKINEDITOR_LOCATION, createItem(XMaterial.SHEARS, ChatColor.WHITE + "Skin editor"));
 
         player.openInventory(getInventory());
+    }
+    
+    public static void event(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        int slot = event.getSlot();
+        event.setCancelled(true);
+        switch (slot) {
+        case HomeMenu.MULTIPLAYER_LOCATION:
+            new MultiplayerMenu(player);
+            break;
+        case HomeMenu.SINGLEPLAYER_LOCATION:
+            new Room(player, true);
+            new RoomMenu(player);
+            break;
+        case HomeMenu.SKINEDITOR_LOCATION:
+            new SkinMenu(player);
+            break;
+        }
     }
 }

@@ -2,12 +2,14 @@ package tetrminecraft.menus;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 
 import tetrminecraft.Main;
+import tetrminecraft.Room;
 import tetrminecraft.functions.dependencyutil.NoteBlockAPIYes;
 
 //used only if noteblockapi is present
@@ -44,5 +46,19 @@ public class SongMenu extends BaseMenu {
         }
 
         player.openInventory(getInventory());
+    }
+
+    public static void event(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        event.setCancelled(true);
+        Room room = Main.instance.inWhichRoomIs.get(player);
+        if (event.getSlot() == SongMenu.BACK_LOCATION) {
+            new RoomMenu(player);
+        } else if (event.getSlot() == 9) {
+            room.index = -1;
+        } else if (event.getSlot() - 10 < NoteBlockAPIYes.playlist.getCount()) {
+            room.index = event.getSlot() - 10;
+        }
+
     }
 }

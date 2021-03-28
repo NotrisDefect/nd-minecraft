@@ -1,12 +1,14 @@
 package tetrminecraft.menus;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.cryptomorin.xseries.XMaterial;
 
 import net.md_5.bungee.api.ChatColor;
 import tetrminecraft.Main;
+import tetrminecraft.Room;
 
 public class MultiplayerMenu extends BaseMenu {
     
@@ -34,5 +36,23 @@ public class MultiplayerMenu extends BaseMenu {
         
         
         player.openInventory(getInventory());
+    }
+    
+    public static void event(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        int slot = event.getSlot();
+        event.setCancelled(true);
+        switch (slot) {
+        case MultiplayerMenu.BACK_LOCATION:
+            new HomeMenu(player);
+            break;
+        case MultiplayerMenu.CREATEROOM_LOCATION:
+            new Room(player, false);
+            new RoomMenu(player);
+            break;
+        case MultiplayerMenu.LISTROOMS_LOCATION:
+            new JoinRoomMenu(player, 0);
+            break;
+        }
     }
 }
