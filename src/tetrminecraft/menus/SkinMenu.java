@@ -3,6 +3,7 @@ package tetrminecraft.menus;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,6 +13,7 @@ import tetrminecraft.Blocks;
 import tetrminecraft.Main;
 
 public class SkinMenu extends BaseMenu {
+    
     public final static int BACK_LOCATION = 0;
     public final static int TORCH_LOCATION = 8;
     public final static int BLOCK_LOCATIONS[] = { 28, 29, 30, 31, 32, 33, 34, 11, 13, 37, 38, 39, 40, 41, 42, 43, 15 };
@@ -46,7 +48,7 @@ public class SkinMenu extends BaseMenu {
         player.openInventory(getInventory());
     }
 
-    public static void event(InventoryClickEvent event) {
+    public static void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getSlot();
         if (event.getCurrentItem() == null) {
@@ -111,12 +113,14 @@ public class SkinMenu extends BaseMenu {
                     blocks[16] = new ItemStack(XMaterial.AIR.parseMaterial());
                 }
 
-                player.sendMessage("Skin saved (in memory)");
-
             }
             new HomeMenu(player);
 
             return;
         }
+    }
+    
+    public static void onInventoryClose(InventoryCloseEvent event) {
+        
     }
 }

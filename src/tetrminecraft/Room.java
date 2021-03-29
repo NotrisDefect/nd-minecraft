@@ -15,15 +15,7 @@ import tetrminecraft.commands.Choice;
 
 public class Room {
 
-    private static String makeID() {
-        String charSet = Constants.idCharSet;
-        StringBuilder result = new StringBuilder(Constants.idLength);
-        for (int i = 0; i < Constants.idLength; i++) {
-            int index = (int) (charSet.length() * Math.random());
-            result.append(charSet.charAt(index));
-        }
-        return result.toString();
-    }
+    private static MapView mapView;
 
     private static boolean isUnique(String id) {
         Object[] keys = Main.instance.roomByID.keySet().toArray();
@@ -36,8 +28,16 @@ public class Room {
         return true;
     }
 
+    private static String makeID() {
+        String charSet = Constants.idCharSet;
+        StringBuilder result = new StringBuilder(Constants.idLength);
+        for (int i = 0; i < Constants.idLength; i++) {
+            int index = (int) (charSet.length() * Math.random());
+            result.append(charSet.charAt(index));
+        }
+        return result.toString();
+    }
     ItemStack mapItem;
-    private static MapView mapView;
     private boolean dontRender = false;
 
     public List<Player> playerList = new ArrayList<Player>();
@@ -74,8 +74,65 @@ public class Room {
         index = -1;
     }
 
-    public void stopRoom() {
-        isRunning = false;
+    public void addPlayer(Player player) {
+        Main.instance.inWhichRoomIs.put(player, this);
+        playerList.add(player);
+        Table table = new Table(player, this);
+        playerTableMap.put(player, table);
+        Main.instance.noteBlockAPI.addPlayer(this, player);
+        tryToUpdateMenu();
+    }
+
+    public void addSpectator(Player player) {
+        spectatorList.add(player);
+        player.sendMessage("Added, but this feature is work in progress");
+    }
+
+    public void eliminate(Player player) {
+        alivePlayers.remove(player);
+        if (alivePlayers.size() < 2) {
+            stopRoom();
+        }
+    }
+
+    public void forwardGarbage(int n, Player sender) {
+        if (n > 0) {
+            int random = (int) (Math.random() * playerList.size());
+            Table table = playerTableMap.get(playerList.get(random));
+            Player receiver = table.getPlayer();
+            if (receiver != sender || (receiver == sender && backfire)) {
+                if (!table.getGameover()) {
+                    table.receiveGarbage(n);
+                } else if (isRunning) {
+                    forwardGarbage(n, sender);
+                }
+            } else if (!isSingleplayer) {
+                forwardGarbage(n, sender);
+            }
+        }
+    }
+
+    public void removePlayer(Player player) {
+        Main.instance.noteBlockAPI.removePlayer(this, player);
+        playerTableMap.get(player).destroyTable();
+        playerTableMap.get(player).setGameOver(true);
+        eliminate(player);
+        playerList.remove(player);
+        playerTableMap.remove(player);
+        Main.instance.inWhichRoomIs.remove(player);
+        if (player == host) {
+            if (playerList.size() == 0) {
+                Main.instance.roomByID.remove(roomID);
+            } else {
+                host = playerList.get(0);
+                host.sendMessage("[TETR] Since the old room host left, you became the new host.");
+            }
+        }
+        tryToUpdateMenu();
+    }
+
+    public void removeSpectator(Player player) {
+        spectatorList.remove(player);
     }
 
     public void startRoom() {
@@ -100,78 +157,8 @@ public class Room {
         tryToUpdateMenu();
     }
 
-    public void addPlayer(Player player) {
-        Main.instance.inWhichRoomIs.put(player, this);
-        playerList.add(player);
-        Table table = new Table(player);
-        playerTableMap.put(player, table);
-        Main.instance.noteBlockAPI.addPlayer(this, player);
-        tryToUpdateMenu();
-    }
-
-    public void addSpectator(Player player) {
-        spectatorList.add(player);
-        player.sendMessage("Added, but this feature is work in progress");
-    }
-
-    public void removeSpectator(Player player) {
-        spectatorList.remove(player);
-    }
-
-    public void removePlayer(Player player) {
-        Main.instance.noteBlockAPI.removePlayer(this, player);
-        playerTableMap.get(player).destroyTable();
-        playerTableMap.get(player).setGameOver(true);
-        eliminate(player);
-        playerList.remove(player);
-        playerTableMap.remove(player);
-        Main.instance.inWhichRoomIs.remove(player);
-        if (player == host) {
-            if (playerList.size() == 0) {
-                Main.instance.roomByID.remove(roomID);
-            } else {
-                host = playerList.get(0);
-                host.sendMessage("[TETR] Since the old room host left, you became the new host.");
-            }
-        }
-        tryToUpdateMenu();
-    }
-
-    public void forwardGarbage(int n, Player sender) {
-        if (n > 0) {
-            int random = (int) (Math.random() * playerList.size());
-            Table table = playerTableMap.get(playerList.get(random));
-            Player receiver = table.getPlayer();
-            if (receiver != sender || (receiver == sender && backfire)) {
-                if (!table.getGameover()) {
-                    table.receiveGarbage(n);
-                } else if (isRunning) {
-                    forwardGarbage(n, sender);
-                }
-            } else if (!isSingleplayer) {
-                forwardGarbage(n, sender);
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    private void switchBracket(Player player) {
-        if (playerList.contains(player)) {
-            playerList.remove(player);
-            playerTableMap.get(player).destroyTable();
-            playerTableMap.remove(player);
-            spectatorList.add(player);
-        } else {
-            spectatorList.remove(player);
-            playerList.add(player);
-        }
-    }
-
-    public void eliminate(Player player) {
-        alivePlayers.remove(player);
-        if (alivePlayers.size() < 2) {
-            stopRoom();
-        }
+    public void stopRoom() {
+        isRunning = false;
     }
 
     private void afterLoopStopped() {
@@ -203,6 +190,19 @@ public class Room {
                 }.runTask(Main.instance);
             }
         }.start();
+    }
+
+    @SuppressWarnings("unused")
+    private void switchBracket(Player player) {
+        if (playerList.contains(player)) {
+            playerList.remove(player);
+            playerTableMap.get(player).destroyTable();
+            playerTableMap.remove(player);
+            spectatorList.add(player);
+        } else {
+            spectatorList.remove(player);
+            playerList.add(player);
+        }
     }
     
     private void tryToUpdateMenu() {

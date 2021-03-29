@@ -56,7 +56,7 @@ public class SettingsMenu extends BaseMenu {
         player.openInventory(getInventory());
     }
 
-    public static void event(InventoryClickEvent event) {
+    public static void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         event.setCancelled(true);
 
