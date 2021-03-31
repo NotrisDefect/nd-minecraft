@@ -37,25 +37,25 @@ public class Room {
         }
         return result.toString();
     }
+    
     ItemStack mapItem;
     private boolean dontRender = false;
 
     public List<Player> playerList = new ArrayList<Player>();
-    public List<Player> spectatorList = new ArrayList<Player>();
+    private List<Player> spectatorList = new ArrayList<Player>();
     public Map<Player, Table> playerTableMap = new HashMap<Player, Table>();
-    public String roomID;
-    public String roomName;
-    public Player host;
-    public boolean isRunning;
+    private String roomID;
+    private String roomName;
+    private Player host;
+    private boolean isRunning;
     public List<Player> alivePlayers = new ArrayList<Player>();
-    public boolean backfire = false;
-    public boolean isSingleplayer;
+    private boolean backfire;
+    private boolean isSingleplayer;
 
     public int index;
-
+    
     public Room(Player host, boolean isSingleplayer) {
         Main.instance.noteBlockAPI.newRSP(this);
-
         String mkID;
         do {
             mkID = makeID();
@@ -73,7 +73,7 @@ public class Room {
         }
         index = -1;
     }
-
+    
     public void addPlayer(Player player) {
         Main.instance.inWhichRoomIs.put(player, this);
         playerList.add(player);
@@ -82,34 +82,52 @@ public class Room {
         Main.instance.noteBlockAPI.addPlayer(this, player);
         tryToUpdateMenu();
     }
-
+    
     public void addSpectator(Player player) {
         spectatorList.add(player);
         player.sendMessage("Added, but this feature is work in progress");
     }
-
+    
     public void eliminate(Player player) {
         alivePlayers.remove(player);
         if (alivePlayers.size() < 2) {
             stopRoom();
         }
     }
-
+    
     public void forwardGarbage(int n, Player sender) {
         if (n > 0) {
-            int random = (int) (Math.random() * playerList.size());
-            Table table = playerTableMap.get(playerList.get(random));
+            int random = (int) (Math.random() * alivePlayers.size());
+            Table table = playerTableMap.get(alivePlayers.get(random));
             Player receiver = table.getPlayer();
-            if (receiver != sender || (receiver == sender && backfire)) {
-                if (!table.getGameover()) {
-                    table.receiveGarbage(n);
-                } else if (isRunning) {
-                    forwardGarbage(n, sender);
-                }
-            } else if (!isSingleplayer) {
-                forwardGarbage(n, sender);
+            if (receiver != sender || backfire) {
+                table.receiveGarbage(n);
             }
         }
+    }
+    
+    public boolean getBackfire() {
+        return backfire;
+    }
+    
+    public Player getHost() {
+        return host;
+    }
+
+    public boolean getIsRunning() {
+        return isRunning;
+    }
+
+    public boolean getIsSingleplayer() {
+        return isSingleplayer;
+    }
+
+    public String getRoomID() {
+        return roomID;
+    }
+
+    public String getRoomName() {
+        return roomName;
     }
 
     public void removePlayer(Player player) {
@@ -149,7 +167,6 @@ public class Room {
             for (Player player : playerList) {
                 Table table = playerTableMap.get(player);
                 table.initTable(seed, seed2);
-                table.getPlayer().sendMessage(Main.instance.noteBlockAPI.getPlayingNow(this));
             }
             alivePlayers = new ArrayList<Player>(playerList);
             roomLoop();
@@ -159,6 +176,10 @@ public class Room {
 
     public void stopRoom() {
         isRunning = false;
+    }
+
+    public void toggleBackfire() {
+        backfire ^= true;
     }
 
     private void afterLoopStopped() {

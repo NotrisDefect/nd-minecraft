@@ -18,13 +18,15 @@ import tetrminecraft.Room;
 
 public class NoteBlockAPIYes implements NoteBlockAPI {
 
-    private static Map<Room, RadioSongPlayer> rsps = new HashMap<Room, RadioSongPlayer>();
+    private Map<Room, RadioSongPlayer> rsps = new HashMap<Room, RadioSongPlayer>();
 
     public static Playlist playlist;
 
-    private static int numberOfSongsAll;
+    public static String[] classpathSongs = { "cancan", "newgrass", "c01" };
 
-    private static Song[] songArray;
+    private int numberOfSongs;
+
+    private Song[] songArray;
 
     @Override
     public void newRSP(Room room) {
@@ -42,15 +44,6 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
     @Override
     public void removePlayer(Room room, Player player) {
         rsps.get(room).removePlayer(player);
-    }
-
-    @Override
-    public String getPlayingNow(Room room) {
-        if (rsps.get(room).getSong().getPath() == null) {
-            return "[TETR] Playing: Internal song (Can can)";
-        } else {
-            return "[TETR] Playing: " + rsps.get(room).getSong().getPath().getName().replaceAll(".nbs$", "");
-        }
     }
 
     @Override
@@ -72,45 +65,75 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
     public void loadSongs() {
         File file = new File(Main.instance.getDataFolder() + "/songs/");
         file.mkdirs();
+        numberOfSongs = file.listFiles().length;
+        if (numberOfSongs > 0) {
+            Main.instance.getLogger()
+                    .info(numberOfSongs + " song" + (numberOfSongs == 1 ? "" : "s") + " in TETR/songs");
+            String[] pathNames;
+            String song;
+            songArray = new Song[numberOfSongs];
+            pathNames = new String[numberOfSongs];
+            pathNames = file.list();
+            for (int i = 0; i < numberOfSongs; i++) {
+                song = Main.instance.getDataFolder() + "/songs/" + pathNames[i];
+                songArray[i] = NBSDecoder.parse(new File(song));
+            }
+        } else {
+            Main.instance.getLogger().info("0 songs in TETR/songs");
+            // classpath
+            String path;
+            songArray = new Song[3];
+            path = "tetrminecraft/functions/dependencyutil/internalmusic/cancan.nbs";
+            if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
+                System.out.println("Server was reloaded and an error happened");
+                songArray = new Song[0];
+            } else {
+                songArray[0] = NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
 
-        int numberOfSongsCustom = file.listFiles().length;
-        int numberOfSongsClasspath = 1;
-        numberOfSongsAll = numberOfSongsClasspath + numberOfSongsCustom;
-        songArray = new Song[numberOfSongsAll];
+                path = "tetrminecraft/functions/dependencyutil/internalmusic/newgrass.nbs";
+                if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
+                    System.out.println("Server was reloaded and an error happened");
+                    songArray = new Song[0];
+                } else {
+                    songArray[1] = NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
 
-        // classpath song 1
-        String path = "tetrminecraft/functions/dependencyutil/internalmusic/cancan.nbs";
-        songArray[0] = NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
-
-        String[] pathNames;
-        String song;
-
-        Main.instance.getLogger()
-                .info(numberOfSongsClasspath + " song" + (numberOfSongsClasspath == 1 ? "" : "s") + " in classpath");
-        Main.instance.getLogger()
-                .info(numberOfSongsCustom + " song" + (numberOfSongsCustom == 1 ? "" : "s") + " in TETR/songs");
-
-        pathNames = new String[numberOfSongsCustom];
-        pathNames = file.list();
-        for (int i = 0; i < numberOfSongsCustom; i++) {
-            song = Main.instance.getDataFolder() + "/songs/" + pathNames[i];
-            songArray[numberOfSongsClasspath + i] = NBSDecoder.parse(new File(song));
+                    path = "tetrminecraft/functions/dependencyutil/internalmusic/c01.nbs";
+                    if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
+                        System.out.println("Server was reloaded and an error happened");
+                        songArray = new Song[0];
+                    } else {
+                        songArray[2] = NBSDecoder
+                                .parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
+                    }
+                }
+            }
         }
-
+        numberOfSongs = 3;
         playlist = new Playlist(songArray);
     }
 
     @Override
     public void startPlaying(Room room, int index) {
+        int random;
         if (index == -1) {
-            int random = (int) (Math.random() * numberOfSongsAll);
+            random = (int) (Math.random() * numberOfSongs);
             playSong(room, random);
         } else {
+            random = index;
             playSong(room, index);
         }
         setRepeatMode(room, RepeatMode.ONE);
         if (isPlaying(room) == false) {
             setPlaying(room, true);
+        }
+
+        for (Player player : room.playerList) {
+            if (rsps.get(room).getSong().getPath() == null) {
+                player.sendMessage("[TETR] Playing: " + classpathSongs[random]);
+            } else {
+                player.sendMessage(
+                        "[TETR] Playing: " + rsps.get(room).getSong().getPath().getName().replaceAll(".nbs$", ""));
+            }
         }
     }
 

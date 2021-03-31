@@ -37,8 +37,8 @@ public class Listeners implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        InventoryHolder holder = event.getClickedInventory().getHolder();
         if (event.getClickedInventory() != null) {
+            InventoryHolder holder = event.getClickedInventory().getHolder();
             if (holder instanceof HomeMenu) {
                 HomeMenu.event(event);
             } else if (holder instanceof MultiplayerMenu) {

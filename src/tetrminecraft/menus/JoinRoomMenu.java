@@ -47,11 +47,11 @@ public class JoinRoomMenu extends BaseMenu {
         while (true) {
             if (i < roomlist.length) {
                 Room room = (Room) roomlist[i];
-                if (!room.isSingleplayer) {
+                if (!room.getIsSingleplayer()) {
                     if (counter < pagesize) {
                         if (display == page) {
                             getInventory().setItem(ROOM_LOCATION_MIN + counter,
-                                    createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.roomID));
+                                    createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.getRoomID()));
                         }
                     } else {
                         if (display == page) {

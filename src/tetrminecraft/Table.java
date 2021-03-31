@@ -122,12 +122,12 @@ public class Table extends GameLogic {
     private int gy;
     private int gz;
 
-    public int mwx = 1;
-    public int mhx = 0;
-    public int mwy = 0;
-    public int mhy = -1;
-    public int mwz = 0;
-    public int mhz = 0;
+    public int mwx;
+    public int mhx;
+    public int mwy;
+    public int mhy;
+    public int mwz;
+    public int mhz;
     public int thickness = 1;
 
     private int coni;
@@ -180,7 +180,7 @@ public class Table extends GameLogic {
     }
 
     public void drawAll(int color) {
-        for (int i = 0; i < STAGESIZEY; i++) {
+        for (int i = STAGESIZEY - BACKGROUNDROWS; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
                 colPrintNewRender(j, i, color);
             }
@@ -221,45 +221,44 @@ public class Table extends GameLogic {
     }
 
     public void initTable(long seed, long seed2) {
-        if (!isThereAProblem()) {
-
-            coni = Math.max(Math.abs(mwx), Math.abs(mhx));
-            conj = Math.max(Math.abs(mwy), Math.abs(mhy));
-            conk = Math.max(Math.abs(mwz), Math.abs(mhz));
-
-            player.getInventory().setHeldItemSlot(8);
-
-            looptick = 0;
-
-            for (int i = 0; i < STAGESIZEY; i++) {
-                for (int j = 0; j < STAGESIZEX; j++) {
-                    oldStageDisplay[i][j] = 7;
-                    colPrintNewRender(j, i, 7);
-                }
-            }
-            for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
-                oldGQDisplay[i] = 7;
-                colPrintNewRender(-2, STAGESIZEY - 1 - i, 7);
-            }
-            for (int i = 0; i < 20; i++) {
-                for (int j = 0; j < 4; j++) {
-                    oldNextDisplay[i][j] = 7;
-                    colPrintNewRender(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i, 7);
-                }
-            }
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    oldHoldDisplay[i][j] = 7;
-                    colPrintNewRender(-7 + j, STAGESIZEY / 2 + i, 7);
-                }
-            }
-
-            initGame();
-            Main.instance.netherboard.createBoard(player, "Stats");
-            gameLoop();
-        } else {
+        if (isThereAProblem()) {
             player.sendMessage("there was a problem");
         }
+
+        coni = Math.max(Math.abs(mwx), Math.abs(mhx));
+        conj = Math.max(Math.abs(mwy), Math.abs(mhy));
+        conk = Math.max(Math.abs(mwz), Math.abs(mhz));
+
+        player.getInventory().setHeldItemSlot(8);
+
+        looptick = 0;
+
+        for (int i = STAGESIZEY - BACKGROUNDROWS; i < STAGESIZEY; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                oldStageDisplay[i][j] = 7;
+                colPrintNewRender(j, i, 7);
+            }
+        }
+        for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
+            oldGQDisplay[i] = 7;
+            colPrintNewRender(-2, STAGESIZEY - 1 - i, 7);
+        }
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 4; j++) {
+                oldNextDisplay[i][j] = 7;
+                colPrintNewRender(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i, 7);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                oldHoldDisplay[i][j] = 7;
+                colPrintNewRender(-7 + j, STAGESIZEY / 2 + i, 7);
+            }
+        }
+
+        initGame();
+        Main.instance.netherboard.createBoard(player, "Stats");
+        gameLoop();
     }
 
     public void moveTable(int x, int y, int z) {
@@ -290,58 +289,45 @@ public class Table extends GameLogic {
         Location location = player.getLocation();
         float yaw = player.getLocation().getYaw();
         yaw = (yaw % 360 + 360) % 360;
-        int temp;
         if (45 <= yaw && yaw < 135) {
-            temp = -mwz;
-            mwz = mwx;
-            mwx = temp;
-            temp = -mhz;
-            mhz = mhx;
-            mhx = temp;
-            temp = -mwz;
-            mwz = mwx;
-            mwx = temp;
-            temp = -mhz;
-            mhz = mhx;
-            mhx = temp;
-            temp = -mwz;
-            mwz = mwx;
-            mwx = temp;
-            temp = -mhz;
-            mhz = mhx;
-            mhx = temp;
+            mwx = 0;
+            mhx = 0;
+            mwy = 0;
+            mhy = -1;
+            mwz = -1;
+            mhz = 0;
             gx = location.getBlockX() - STAGESIZEY;
-            gy = location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2;
+            gy = location.getBlockY() + STAGESIZEY - BACKGROUNDROWS / 2;
             gz = location.getBlockZ() + STAGESIZEX / 2;
         } else if (135 <= yaw && yaw < 225) {
+            mwx = 1;
+            mhx = 0;
+            mwy = 0;
+            mhy = -1;
+            mwz = 0;
+            mhz = 0;
             gx = location.getBlockX() - STAGESIZEX / 2;
-            gy = location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2;
+            gy = location.getBlockY() + STAGESIZEY - BACKGROUNDROWS / 2;
             gz = location.getBlockZ() - STAGESIZEY;
         } else if (225 <= yaw && yaw < 315) {
-            temp = -mwz;
-            mwz = mwx;
-            mwx = temp;
-            temp = -mhz;
-            mhz = mhx;
-            mhx = temp;
+            mwx = 0;
+            mhx = 0;
+            mwy = 0;
+            mhy = -1;
+            mwz = 1;
+            mhz = 0;
             gx = location.getBlockX() + STAGESIZEY;
-            gy = location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2;
+            gy = location.getBlockY() + STAGESIZEY - BACKGROUNDROWS / 2;
             gz = location.getBlockZ() - STAGESIZEX / 2;
         } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
-            temp = -mwz;
-            mwz = mwx;
-            mwx = temp;
-            temp = -mhz;
-            mhz = mhx;
-            mhx = temp;
-            temp = -mwz;
-            mwz = mwx;
-            mwx = temp;
-            temp = -mhz;
-            mhz = mhx;
-            mhx = temp;
+            mwx = -1;
+            mhx = 0;
+            mwy = 0;
+            mhy = -1;
+            mwz = 0;
+            mhz = 0;
             gx = location.getBlockX() + STAGESIZEX / 2;
-            gy = location.getBlockY() + STAGESIZEY - VISIBLEROWS / 2;
+            gy = location.getBlockY() + STAGESIZEY - BACKGROUNDROWS / 2;
             gz = location.getBlockZ() + STAGESIZEY;
         }
     }
@@ -620,16 +606,22 @@ public class Table extends GameLogic {
         // print stage
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
-
-                if (((newStageDisplay[i][j] == 7 && i >= STAGESIZEY - BACKGROUNDROWS)
-                        || (i >= STAGESIZEY - VISIBLEROWS)) && newStageDisplay[i][j] != oldStageDisplay[i][j]) {
-                    colPrintNewRender(j, i, newStageDisplay[i][j]);
+                if (newStageDisplay[i][j] != oldStageDisplay[i][j]) {
+                    if (newStageDisplay[i][j] == 7 && i >= STAGESIZEY - BACKGROUNDROWS) {
+                        colPrintNewRender(j, i, newStageDisplay[i][j]);
+                    } else if (i >= STAGESIZEY - VISIBLEROWS) {
+                        if (newStageDisplay[i][j] != 7) {
+                            colPrintNewRender(j, i, newStageDisplay[i][j]);
+                        } else {
+                            colPrintNewForce(j, i);
+                        }
+                    }
                 }
             }
         }
 
         // print garbage meter
-        for (int i = total; i < GameLogic.PLAYABLEROWS; i++) {
+        for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
             if (newGQDisplay[i] != oldGQDisplay[i]) {
                 colPrintNewRender(-2, STAGESIZEY - 1 - i, newGQDisplay[i]);
             }
@@ -741,15 +733,15 @@ public class Table extends GameLogic {
         case CLEAR:
             for (int i = 0; i < STAGESIZEY; i++) {
                 for (int j = 0; j < STAGESIZEX; j++) {
-                    if (getStage()[i][j] != 7)
+                    if (getStage()[i][j] != 7) {
                         colPrintNewRender(j, i, 7);
+                    }
                 }
             }
         case DISAPPEAR:
             for (int i = 0; i < STAGESIZEY; i++) {
                 for (int j = 0; j < STAGESIZEX; j++) {
-                    if (getStage()[i][j] != 7)
-                        colPrintNewRender(j, i, 7);
+                    colPrintNewForce(j, i);
                 }
             }
 

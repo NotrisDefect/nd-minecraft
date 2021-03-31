@@ -21,7 +21,7 @@ public class RoomMenu extends BaseMenu {
 
     public RoomMenu(Player player) {
         Main.instance.lastMenuOpened.put(player, "room");
-        createInventory(this, 54, Main.instance.inWhichRoomIs.get(player).roomName);
+        createInventory(this, 54, Main.instance.inWhichRoomIs.get(player).getRoomName());
         ItemStack border = XMaterial.GLASS_PANE.parseItem();
         // fill the border with glass
         for (int i = 0; i < 9; i++) {
@@ -40,7 +40,7 @@ public class RoomMenu extends BaseMenu {
         for (Player p : Main.instance.inWhichRoomIs.get(player).playerList) {
             itemmeta = item.getItemMeta();
             itemmeta.setDisplayName(ChatColor.WHITE + p.getName());
-            if (Main.instance.inWhichRoomIs.get(player).host.equals(p)) {
+            if (Main.instance.inWhichRoomIs.get(player).getHost().equals(p)) {
                 itemmeta.setLore(Arrays.asList(ChatColor.DARK_RED + "HOST"));
             } else {
                 itemmeta.setLore(null);
@@ -51,11 +51,11 @@ public class RoomMenu extends BaseMenu {
             i++;
         }
 
-        if (Main.instance.inWhichRoomIs.get(player).host.equals(player)) {
-            if (Main.instance.inWhichRoomIs.get(player).isRunning) {
+        if (Main.instance.inWhichRoomIs.get(player).getHost().equals(player)) {
+            if (Main.instance.inWhichRoomIs.get(player).getIsRunning()) {
                 getInventory().setItem(GAME_LOCATION, createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"));
             } else {
-                if (!Main.instance.inWhichRoomIs.get(player).isSingleplayer
+                if (!Main.instance.inWhichRoomIs.get(player).getIsSingleplayer()
                         && Main.instance.inWhichRoomIs.get(player).playerList.size() == 1) {
                     getInventory().setItem(GAME_LOCATION,
                             createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed"));
@@ -82,7 +82,7 @@ public class RoomMenu extends BaseMenu {
         event.setCancelled(true);
         switch (slot) {
         case RoomMenu.BACK_LOCATION:
-            if (Main.instance.inWhichRoomIs.get(player).isSingleplayer) {
+            if (Main.instance.inWhichRoomIs.get(player).getIsSingleplayer()) {
                 new HomeMenu(player);
             } else {
                 new MultiplayerMenu(player);
@@ -90,8 +90,8 @@ public class RoomMenu extends BaseMenu {
             Main.instance.inWhichRoomIs.get(player).removePlayer(player);
             break;
         case 49:
-            if (Main.instance.inWhichRoomIs.get(player).host.equals(player)) {
-                if (Main.instance.inWhichRoomIs.get(player).isRunning) {
+            if (Main.instance.inWhichRoomIs.get(player).getHost().equals(player)) {
+                if (Main.instance.inWhichRoomIs.get(player).getIsRunning()) {
                     Main.instance.inWhichRoomIs.get(player).stopRoom();
                 } else {
                     Main.instance.inWhichRoomIs.get(player).startRoom();

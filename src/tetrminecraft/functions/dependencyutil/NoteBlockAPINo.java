@@ -19,11 +19,6 @@ public class NoteBlockAPINo implements NoteBlockAPI {
     }
 
     @Override
-    public String getPlayingNow(Room room) {
-        return null;
-    }
-
-    @Override
     public void setPlaying(Room room, boolean b) {
     }
 

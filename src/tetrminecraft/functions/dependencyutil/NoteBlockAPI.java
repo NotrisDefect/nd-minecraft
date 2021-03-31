@@ -12,8 +12,6 @@ public interface NoteBlockAPI {
     
     public void removePlayer(Room room, Player player);
     
-    public String getPlayingNow(Room room);
-    
     public void setPlaying(Room room, boolean b);
     
     public void playSong(Room room, int index);

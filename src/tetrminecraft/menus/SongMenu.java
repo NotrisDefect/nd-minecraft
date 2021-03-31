@@ -38,7 +38,7 @@ public class SongMenu extends BaseMenu {
         for (int i = 0; i < playlist.getCount(); i++) {
             String name;
             if (playlist.get(i).getPath() == null) {
-                name = "Internal song (Can can)";
+                name = NoteBlockAPIYes.classpathSongs[i];
             } else {
                 name = playlist.get(i).getPath().getName().replaceAll(".nbs$", "");
             }
