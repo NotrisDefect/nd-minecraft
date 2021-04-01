@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -59,7 +60,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     public static Main instance;
-    
+
     public static boolean isDeveloper(CommandSender sender) {
         if (Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"))) {
             return true;
@@ -78,7 +79,10 @@ public class Main extends JavaPlugin implements Listener {
     public Map<Player, Integer> joinRoomPage = new HashMap<Player, Integer>();
     public Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
     public Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
-
+    public Map<Player, ItemStack[]> skinMenuBuffer = new HashMap<Player, ItemStack[]>();
+    public Map<Player, Boolean> useSkinMenuBuffer = new HashMap<Player, Boolean>();
+    
+    
     public Map<Player, Boolean> playerTransparentBackground = new HashMap<Player, Boolean>();
 
     public Map<Player, Boolean> hasCustomMenuOpen = new HashMap<Player, Boolean>();
@@ -91,7 +95,7 @@ public class Main extends JavaPlugin implements Listener {
         interactedWithPlugin.add(player);
         lastMenuOpened.put(player, "home");
         Main.instance.hasCustomMenuOpen.put(player, false);
-
+        
         File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
         ItemStack[] blocks = new ItemStack[17];
@@ -163,6 +167,24 @@ public class Main extends JavaPlugin implements Listener {
         });
     }
 
+    @Override
+    public void onDisable() {
+        for (Entry<Player, ItemStack[]> entry : skinMenuBuffer.entrySet()) {
+            saveSkin(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private void saveSkin(Player player, ItemStack[] blocks) {
+        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
+        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
+        for (int i = 0; i < blocks.length; i++) {
+            customConfig.set(Constants.NAMES[i], blocks[i]);
+        }
+        customConfig.set("playerIsUsingCustomBlocks", playerIsUsingCustomBlocks.get(player));
+        customConfig.set("playerTransparentBackground", playerTransparentBackground.get(player));
+        saveCustomYml(customConfig, customYml);
+    }
+
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
@@ -175,15 +197,7 @@ public class Main extends JavaPlugin implements Listener {
             interactedWithPlugin.remove(player);
 
             // save
-            File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
-            FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-            ItemStack[] blocks = customBlocks.get(player);
-            for (int i = 0; i < blocks.length; i++) {
-                customConfig.set(Constants.NAMES[i], blocks[i]);
-            }
-            customConfig.set("playerIsUsingCustomBlocks", playerIsUsingCustomBlocks.get(player));
-            customConfig.set("playerTransparentBackground", playerTransparentBackground.get(player));
-            saveCustomYml(customConfig, customYml);
+            saveSkin(player, customBlocks.get(player));
 
             customBlocks.remove(player);
             playerIsUsingCustomBlocks.remove(player);

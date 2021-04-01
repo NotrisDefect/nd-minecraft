@@ -13,7 +13,7 @@ import tetrminecraft.Blocks;
 import tetrminecraft.Main;
 
 public class SkinMenu extends BaseMenu {
-    
+
     public final static int BACK_LOCATION = 0;
     public final static int TORCH_LOCATION = 8;
     public final static int BLOCK_LOCATIONS[] = { 28, 29, 30, 31, 32, 33, 34, 11, 13, 37, 38, 39, 40, 41, 42, 43, 15 };
@@ -21,6 +21,7 @@ public class SkinMenu extends BaseMenu {
     public SkinMenu(Player player) {
 
         Main.instance.lastMenuOpened.put(player, "skin");
+        Main.instance.useSkinMenuBuffer.put(player, true);
         createInventory(this, 54, "Skin editor");
         ItemStack border = XMaterial.GLASS_PANE.parseItem();
         // fill the border with glass
@@ -29,10 +30,13 @@ public class SkinMenu extends BaseMenu {
         }
 
         ItemStack blocks[] = Main.instance.customBlocks.get(player);
+        ItemStack buffer[] = Main.instance.skinMenuBuffer.get(player);
         // changeable blocks
         for (int i = 0; i < 17; i++) {
             if (!Main.instance.playerIsUsingCustomBlocks.get(player)) {
                 getInventory().setItem(BLOCK_LOCATIONS[i], Blocks.defaultBlocks[i]);
+            } else if (Main.instance.skinMenuBuffer.containsKey(player)) {
+                getInventory().setItem(BLOCK_LOCATIONS[i], buffer[i]);
             } else if (Main.instance.playerIsUsingCustomBlocks.get(player)) {
                 getInventory().setItem(BLOCK_LOCATIONS[i], blocks[i]);
             }
@@ -69,10 +73,12 @@ public class SkinMenu extends BaseMenu {
 
         if (event.getSlot() == SkinMenu.TORCH_LOCATION) {
             Main.instance.playerIsUsingCustomBlocks.put(player, !Main.instance.playerIsUsingCustomBlocks.get(player));
+            Main.instance.useSkinMenuBuffer.put(player, true);
             new SkinMenu(player);
         }
 
         if (event.getSlot() == SkinMenu.BACK_LOCATION) {
+            Main.instance.useSkinMenuBuffer.put(player, false);
             ItemStack[] blocks = Main.instance.customBlocks.get(player);
             if (Main.instance.playerIsUsingCustomBlocks.get(player)) {
                 Inventory inv = event.getClickedInventory();
@@ -112,15 +118,61 @@ public class SkinMenu extends BaseMenu {
                 } else {
                     blocks[16] = new ItemStack(XMaterial.AIR.parseMaterial());
                 }
-
+                if (Main.instance.skinMenuBuffer.containsKey(player)) {
+                    Main.instance.skinMenuBuffer.remove(player);
+                }
             }
             new HomeMenu(player);
 
             return;
         }
     }
-    
+
     public static void onInventoryClose(InventoryCloseEvent event) {
-        
+        Player player = (Player) event.getPlayer();
+        if (Main.instance.useSkinMenuBuffer.containsKey(player) && Main.instance.useSkinMenuBuffer.get(player)) {
+            ItemStack[] blocks = new ItemStack[17];
+            if (Main.instance.playerIsUsingCustomBlocks.get(player)) {
+                Inventory inv = event.getInventory();
+                // save blocks
+                for (int i = 0; i < 7; i++) {
+                    if (inv.getItem(28 + i) != null) {
+                        blocks[i] = inv.getItem(28 + i);
+                    } else {
+                        blocks[i] = new ItemStack(XMaterial.AIR.parseMaterial());
+                    }
+                }
+
+                // save ghost
+                for (int i = 0; i < 7; i++) {
+                    if (inv.getItem(37 + i) != null) {
+                        blocks[i + 9] = inv.getItem(37 + i);
+                    } else {
+                        blocks[i + 9] = new ItemStack(XMaterial.AIR.parseMaterial());
+                    }
+                }
+
+                // other
+                if (inv.getItem(11) != null) {
+                    blocks[7] = inv.getItem(11);
+                } else {
+                    blocks[7] = new ItemStack(XMaterial.AIR.parseMaterial());
+                }
+
+                if (inv.getItem(13) != null) {
+                    blocks[8] = inv.getItem(13);
+                } else {
+                    blocks[8] = new ItemStack(XMaterial.AIR.parseMaterial());
+                }
+
+                if (inv.getItem(15) != null) {
+                    blocks[16] = inv.getItem(15);
+                } else {
+                    blocks[16] = new ItemStack(XMaterial.AIR.parseMaterial());
+                }
+
+            }
+            Main.instance.skinMenuBuffer.put(player, blocks);
+        }
     }
 }
