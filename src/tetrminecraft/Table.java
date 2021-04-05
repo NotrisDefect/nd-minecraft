@@ -693,7 +693,7 @@ public class Table extends GameLogic {
                     tey = gy + x * mwy + y * mhy + j;
                     for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
                         tez = gz + x * mwz + y * mhz + k;
-                        FallingBlock lol = world.spawnFallingBlock(new Location(world, tex, tey, tez),
+                        FallingBlock lol = world.spawnFallingBlock(new Location(world, tex-mwz, tey, tez+mwx),
                                 blocks[color].getType(), blocks[color].getData().getData());
                         lol.setVelocity(new Vector(d * (2 - Math.random() * 4) * coni,
                                 d * (8 - Math.random() * 10) * conj, d * (2 - Math.random() * 4) * conk));

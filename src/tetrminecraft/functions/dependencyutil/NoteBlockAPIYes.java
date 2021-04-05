@@ -129,7 +129,7 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
 
         for (Player player : room.playerList) {
             if (rsps.get(room).getSong().getPath() == null) {
-                player.sendMessage("[TETR] Playing: " + classpathSongs[random]);
+                player.sendMessage("[TETR] Playing: " + classpathSongs[random] + " - input your own in plugins/TETR/songs");
             } else {
                 player.sendMessage(
                         "[TETR] Playing: " + rsps.get(room).getSong().getPath().getName().replaceAll(".nbs$", ""));
