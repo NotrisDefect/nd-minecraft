@@ -10,19 +10,11 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.InventoryHolder;
-
-import tetrminecraft.menus.HomeMenu;
-import tetrminecraft.menus.JoinRoomMenu;
-import tetrminecraft.menus.MultiplayerMenu;
-import tetrminecraft.menus.RoomMenu;
-import tetrminecraft.menus.SettingsMenu;
-import tetrminecraft.menus.SimpleSettingsMenu;
-import tetrminecraft.menus.SkinMenu;
-import tetrminecraft.menus.SongMenu;
+import tetrminecraft.menus.*;
 
 public class Listeners implements Listener {
 
-    private static Listeners instance = new Listeners();
+    private static final Listeners instance = new Listeners();
 
     public static Listeners getInstance() {
         return instance;
@@ -63,7 +55,7 @@ public class Listeners implements Listener {
     public void onInventoryCloseEvent(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
         if (Main.instance.interactedWithPlugin.contains(player)) {
-            if (Main.instance.hasCustomMenuOpen.get(player) == true) {
+            if (Main.instance.hasCustomMenuOpen.get(player)) {
                 Main.instance.hasCustomMenuOpen.put(player, false);
             }
             InventoryHolder holder = event.getInventory().getHolder();

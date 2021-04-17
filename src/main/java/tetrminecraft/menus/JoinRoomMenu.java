@@ -38,7 +38,6 @@ public class JoinRoomMenu extends BaseMenu {
         }
 
         Main.instance.joinRoomPage.put(player, p);
-        int page = p;
         int display = 0;
         int counter = 0;
         int i = 0;
@@ -49,12 +48,12 @@ public class JoinRoomMenu extends BaseMenu {
                 Room room = (Room) roomlist[i];
                 if (!room.getIsSingleplayer()) {
                     if (counter < pagesize) {
-                        if (display == page) {
+                        if (display == p) {
                             getInventory().setItem(ROOM_LOCATION_MIN + counter,
                                     createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.getRoomID()));
                         }
                     } else {
-                        if (display == page) {
+                        if (display == p) {
                             break;
                         }
                         counter = -1;

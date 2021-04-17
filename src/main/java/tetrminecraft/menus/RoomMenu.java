@@ -1,6 +1,6 @@
 package tetrminecraft.menus;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -41,7 +41,7 @@ public class RoomMenu extends BaseMenu {
             itemmeta = item.getItemMeta();
             itemmeta.setDisplayName(ChatColor.WHITE + p.getName());
             if (Main.instance.inWhichRoomIs.get(player).getHost().equals(p)) {
-                itemmeta.setLore(Arrays.asList(ChatColor.DARK_RED + "HOST"));
+                itemmeta.setLore(Collections.singletonList(ChatColor.DARK_RED + "HOST"));
             } else {
                 itemmeta.setLore(null);
             }

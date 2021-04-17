@@ -1,9 +1,7 @@
 package tetrminecraft;
 
-import java.awt.Point;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.ActionBar;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -16,16 +14,49 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import com.cryptomorin.xseries.XSound;
-import com.cryptomorin.xseries.messages.ActionBar;
-
 import tetrcore.GameLogic;
+
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Table extends GameLogic {
 
     private static final int VISIBLEROWS = 30;
     private static final int BACKGROUNDROWS = 20;
+    private final Room room;
+    private final Player player;
+    private final World world;
+    public int mwx;
+    public int mhx;
+    public int mwy;
+    public int mhy;
+    public int mwz;
+    public int mhz;
+    public int thickness = 1;
+    public boolean enableFallingSand = true;
+    boolean isGettingDestroyed = false;
+    private int looptick;
+    private int gx;
+    private int gy;
+    private int gz;
+    private int coni;
+    private int conj;
+    private int conk;
+    private int[][] oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
+    private int[] oldGQDisplay = new int[GameLogic.PLAYABLEROWS];
+    private int[][] oldNextDisplay = new int[GameLogic.NEXTPIECESMAX * 4][4];
+    private int[][] oldHoldDisplay = new int[4][4];
+
+    public Table(Player p, Room r) {
+        super();
+        player = p;
+        room = r;
+        world = p.getWorld();
+        reposition();
+        drawAll(16);
+        setGameover(true);
+    }
 
     public static void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
@@ -33,32 +64,32 @@ public class Table extends GameLogic {
         if (table != null && !table.getGameover()) {
             int itemId = event.getNewSlot();
             switch (itemId) {
-            case 0:
-                table.userInput("left");
-                break;
-            case 1:
-                table.userInput("right");
-                break;
-            case 2:
-                table.userInput("instant");
-                break;
-            case 3:
-                table.userInput("space");
-                break;
-            case 4:
-                table.userInput("y");
-                break;
-            case 5:
-                table.userInput("x");
-                break;
-            case 6:
-                table.userInput("up");
-                break;
-            case 7:
-                table.userInput("c");
-                break;
-            case 8:
-                return;
+                case 0:
+                    table.userInput("left");
+                    break;
+                case 1:
+                    table.userInput("right");
+                    break;
+                case 2:
+                    table.userInput("instant");
+                    break;
+                case 3:
+                    table.userInput("space");
+                    break;
+                case 4:
+                    table.userInput("y");
+                    break;
+                case 5:
+                    table.userInput("x");
+                    break;
+                case 6:
+                    table.userInput("up");
+                    break;
+                case 7:
+                    table.userInput("c");
+                    break;
+                case 8:
+                    return;
             }
             player.getInventory().setHeldItemSlot(8);
         }
@@ -97,58 +128,18 @@ public class Table extends GameLogic {
                 } else {
                     table.userInput("left");
                 }
-                return;
             }
         }
     }
 
     public static void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-        Player player = (Player) event.getPlayer();
+        Player player = event.getPlayer();
         Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
         if (player.isSneaking()) {
             if (table != null && !table.getGameover()) {
                 table.userInput("shift");
             }
         }
-    }
-
-    boolean isGettingDestroyed = false;
-
-    private Room room;
-    private World world;
-    private Player player;
-    private int looptick;
-    private int gx;
-    private int gy;
-    private int gz;
-
-    public int mwx;
-    public int mhx;
-    public int mwy;
-    public int mhy;
-    public int mwz;
-    public int mhz;
-    public int thickness = 1;
-
-    private int coni;
-    private int conj;
-    private int conk;
-
-    public boolean enableFallingSand = true;
-
-    private int[][] oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
-    private int[] oldGQDisplay = new int[GameLogic.PLAYABLEROWS];
-    private int[][] oldNextDisplay = new int[GameLogic.NEXTPIECESMAX * 4][4];
-    private int[][] oldHoldDisplay = new int[4][4];
-
-    public Table(Player p, Room r) {
-        super();
-        player = p;
-        room = r;
-        world = p.getWorld();
-        reposition();
-        drawAll(16);
-        setGameover(true);
     }
 
     public void cleanAll() {
@@ -337,30 +328,30 @@ public class Table extends GameLogic {
 
         int temp;
         switch (input) {
-        case "X":
-            temp = -mwz;
-            mwz = mwy;
-            mwy = temp;
-            temp = -mhz;
-            mhz = mhy;
-            mhy = temp;
-            break;
-        case "Y":
-            temp = -mwz;
-            mwz = mwx;
-            mwx = temp;
-            temp = -mhz;
-            mhz = mhx;
-            mhx = temp;
-            break;
-        case "Z":
-            temp = -mwy;
-            mwy = mwx;
-            mwx = temp;
-            temp = -mhy;
-            mhy = mhx;
-            mhx = temp;
-            break;
+            case "X":
+                temp = -mwz;
+                mwz = mwy;
+                mwy = temp;
+                temp = -mhz;
+                mhz = mhy;
+                mhy = temp;
+                break;
+            case "Y":
+                temp = -mwz;
+                mwz = mwx;
+                mwx = temp;
+                temp = -mhz;
+                mhz = mhx;
+                mhx = temp;
+                break;
+            case "Z":
+                temp = -mwy;
+                mwy = mwx;
+                mwx = temp;
+                temp = -mhy;
+                mhy = mhx;
+                mhx = temp;
+                break;
         }
 
         drawAll(16);
@@ -376,68 +367,67 @@ public class Table extends GameLogic {
     }
 
     @SuppressWarnings("deprecation")
-    public boolean userInput(String input) {
+    public void userInput(String input) {
         if (!getGameover()) {
             switch (input) {
-            case "y":
-                if (rotatePiece(-1)) {
-                    boolean v = checkTSpin();
-                    if (v) {
-                        playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
-                        settSpin(v);
+                case "y":
+                    if (rotatePiece(-1)) {
+                        boolean v = checkTSpin();
+                        if (v) {
+                            playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
+                            settSpin(v);
+                        }
                     }
-                }
-                break;
-            case "x":
-                if (rotatePiece(+1)) {
-                    boolean v = checkTSpin();
-                    if (v) {
-                        playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
-                        settSpin(v);
+                    break;
+                case "x":
+                    if (rotatePiece(+1)) {
+                        boolean v = checkTSpin();
+                        if (v) {
+                            playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
+                            settSpin(v);
+                        }
                     }
-                }
-                break;
-            case "c":
-                if (!holdPiece()) {
-                    playSound(XSound.ENTITY_SPLASH_POTION_BREAK, 1f, 1f);
-                }
-                break;
-            case "left":
-                movePieceRelative(-1, 0);
-                break;
-            case "right":
-                movePieceRelative(+1, 0);
-                break;
+                    break;
+                case "c":
+                    if (!holdPiece()) {
+                        playSound(XSound.ENTITY_SPLASH_POTION_BREAK, 1f, 1f);
+                    }
+                    break;
+                case "left":
+                    movePieceRelative(-1, 0);
+                    break;
+                case "right":
+                    movePieceRelative(+1, 0);
+                    break;
 
-            case "up":
-                if (rotatePiece(+2)) {
-                    boolean v = checkTSpin();
-                    if (v) {
-                        playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
-                        settSpin(v);
+                case "up":
+                    if (rotatePiece(+2)) {
+                        boolean v = checkTSpin();
+                        if (v) {
+                            playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
+                            settSpin(v);
+                        }
                     }
-                }
-                break;
-            case "down":
-                movePieceRelative(0, +1);
-                break;
+                    break;
+                case "down":
+                    movePieceRelative(0, +1);
+                    break;
 
-            case "space":
-                hardDropPiece();
-                break;
-            case "l":
-                setGameOver(true);
-                break;
-            case "instant":
-                sonicDrop();
-                break;
-            case "shift":
-                startZone();
-            default:
-                System.out.println("wee woo wee woo");
+                case "space":
+                    hardDropPiece();
+                    break;
+                case "l":
+                    setGameOver(true);
+                    break;
+                case "instant":
+                    sonicDrop();
+                    break;
+                case "shift":
+                    startZone();
+                default:
+                    System.out.println("wee woo wee woo");
             }
         }
-        return false;
     }
 
     private void colPrintNewForce(float x, float y) {
@@ -545,9 +535,7 @@ public class Table extends GameLogic {
 
         // update stage
         for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                newStageDisplay[i][j] = stage[i][j];
-            }
+            if (STAGESIZEX >= 0) System.arraycopy(stage[i], 0, newStageDisplay[i], 0, STAGESIZEX);
         }
 
         for (Point point : getPiece(piece, rot)) {
@@ -657,7 +645,7 @@ public class Table extends GameLogic {
     }
 
     private void sendScoreboard() {
-        Map<Integer, String> text = new HashMap<Integer, String>();
+        Map<Integer, String> text = new HashMap<>();
 
         if (getCombo() > 0) {
             text.put(7, "Combo: " + getCombo());
@@ -684,16 +672,16 @@ public class Table extends GameLogic {
 
     @SuppressWarnings("deprecation")
     private void turnToFallingBlock(int x, int y, double d, int color) {
-        if (enableFallingSand == true) {
+        if (enableFallingSand) {
             int tex, tey, tez;
-            ItemStack blocks[] = Blocks.defaultBlocks;
+            ItemStack[] blocks = Blocks.defaultBlocks;
             for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
                 tex = gx + x * mwx + y * mhx + i;
                 for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
                     tey = gy + x * mwy + y * mhy + j;
                     for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
                         tez = gz + x * mwz + y * mhz + k;
-                        FallingBlock lol = world.spawnFallingBlock(new Location(world, tex-mwz, tey, tez+mwx),
+                        FallingBlock lol = world.spawnFallingBlock(new Location(world, tex - mwz, tey, tez + mwx),
                                 blocks[color].getType(), blocks[color].getData().getData());
                         lol.setVelocity(new Vector(d * (2 - Math.random() * 4) * coni,
                                 d * (8 - Math.random() * 10) * conj, d * (2 - Math.random() * 4) * conk));
@@ -709,44 +697,44 @@ public class Table extends GameLogic {
         room.eliminate(player);
 
         switch (Constants.deathAnim) {
-        case EXPLOSION:
-            for (int i = 0; i < STAGESIZEY; i++) {
-                for (int j = 0; j < STAGESIZEX; j++) {
-                    colPrintNewForce(j, i);
-                }
-            }
-
-            for (int i = STAGESIZEY - VISIBLEROWS; i < STAGESIZEY; i++) {
-                for (int j = 0; j < STAGESIZEX; j++) {
-                    turnToFallingBlock(j, i, 1, getStage()[i][j]);
-                }
-            }
-            break;
-        case GRAYSCALE:
-            for (int i = 0; i < STAGESIZEY; i++) {
-                for (int j = 0; j < STAGESIZEX; j++) {
-                    if (getStage()[i][j] != 7)
-                        colPrintNewRender(j, i, 8);
-                }
-            }
-            break;
-        case CLEAR:
-            for (int i = 0; i < STAGESIZEY; i++) {
-                for (int j = 0; j < STAGESIZEX; j++) {
-                    if (getStage()[i][j] != 7) {
-                        colPrintNewRender(j, i, 7);
+            case EXPLOSION:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        colPrintNewForce(j, i);
                     }
                 }
-            }
-        case DISAPPEAR:
-            for (int i = 0; i < STAGESIZEY; i++) {
-                for (int j = 0; j < STAGESIZEX; j++) {
-                    colPrintNewForce(j, i);
-                }
-            }
 
-        case NONE:
-            break;
+                for (int i = STAGESIZEY - VISIBLEROWS; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        turnToFallingBlock(j, i, 1, getStage()[i][j]);
+                    }
+                }
+                break;
+            case GRAYSCALE:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        if (getStage()[i][j] != 7)
+                            colPrintNewRender(j, i, 8);
+                    }
+                }
+                break;
+            case CLEAR:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        if (getStage()[i][j] != 7) {
+                            colPrintNewRender(j, i, 7);
+                        }
+                    }
+                }
+            case DISAPPEAR:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        colPrintNewForce(j, i);
+                    }
+                }
+
+            case NONE:
+                break;
         }
     }
 }

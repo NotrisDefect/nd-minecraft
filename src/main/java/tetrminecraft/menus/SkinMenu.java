@@ -16,7 +16,7 @@ public class SkinMenu extends BaseMenu {
 
     public final static int BACK_LOCATION = 0;
     public final static int TORCH_LOCATION = 8;
-    public final static int BLOCK_LOCATIONS[] = { 28, 29, 30, 31, 32, 33, 34, 11, 13, 37, 38, 39, 40, 41, 42, 43, 15 };
+    public final static int[] BLOCK_LOCATIONS = { 28, 29, 30, 31, 32, 33, 34, 11, 13, 37, 38, 39, 40, 41, 42, 43, 15 };
 
     public SkinMenu(Player player) {
 
@@ -29,8 +29,8 @@ public class SkinMenu extends BaseMenu {
             getInventory().setItem(i, border);
         }
 
-        ItemStack blocks[] = Main.instance.customBlocks.get(player);
-        ItemStack buffer[] = Main.instance.skinMenuBuffer.get(player);
+        ItemStack[] blocks = Main.instance.customBlocks.get(player);
+        ItemStack[] buffer = Main.instance.skinMenuBuffer.get(player);
         // changeable blocks
         for (int i = 0; i < 17; i++) {
             if (!Main.instance.playerIsUsingCustomBlocks.get(player)) {
@@ -118,13 +118,10 @@ public class SkinMenu extends BaseMenu {
                 } else {
                     blocks[16] = new ItemStack(XMaterial.AIR.parseMaterial());
                 }
-                if (Main.instance.skinMenuBuffer.containsKey(player)) {
-                    Main.instance.skinMenuBuffer.remove(player);
-                }
+                Main.instance.skinMenuBuffer.remove(player);
             }
             new HomeMenu(player);
 
-            return;
         }
     }
 

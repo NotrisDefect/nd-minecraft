@@ -1,17 +1,5 @@
 package tetrminecraft;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Scanner;
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -23,23 +11,24 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.Consumer;
-
 import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
-import tetrminecraft.functions.dependencyutil.Netherboard;
-import tetrminecraft.functions.dependencyutil.NetherboardNo;
-import tetrminecraft.functions.dependencyutil.NetherboardYes;
-import tetrminecraft.functions.dependencyutil.NoteBlockAPI;
-import tetrminecraft.functions.dependencyutil.NoteBlockAPINo;
-import tetrminecraft.functions.dependencyutil.NoteBlockAPIYes;
+import tetrminecraft.functions.dependencyutil.*;
 import tetrminecraft.functions.versions.Functions;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 public class Main extends JavaPlugin implements Listener {
 
-    private class UpdateChecker {
+    private static class UpdateChecker {
 
-        private JavaPlugin plugin;
+        private final JavaPlugin plugin;
 
         public UpdateChecker(JavaPlugin plugin) {
             this.plugin = plugin;
@@ -62,30 +51,27 @@ public class Main extends JavaPlugin implements Listener {
     public static Main instance;
 
     public static boolean isDeveloper(CommandSender sender) {
-        if (Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"))) {
-            return true;
-        }
-        return false;
+        return Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"));
     }
 
     public ConsoleCommandSender console;
 
-    public Set<Player> interactedWithPlugin = new HashSet<Player>();
-    public Map<String, Room> roomByID = new LinkedHashMap<String, Room>();
+    public final Set<Player> interactedWithPlugin = new HashSet<>();
+    public final Map<String, Room> roomByID = new LinkedHashMap<>();
 
-    public Map<Player, Room> inWhichRoomIs = new HashMap<Player, Room>();
-    public Map<Player, String> lastMenuOpened = new HashMap<Player, String>();
+    public final Map<Player, Room> inWhichRoomIs = new HashMap<>();
+    public final Map<Player, String> lastMenuOpened = new HashMap<>();
 
-    public Map<Player, Integer> joinRoomPage = new HashMap<Player, Integer>();
-    public Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<Player, Boolean>();
-    public Map<Player, ItemStack[]> customBlocks = new HashMap<Player, ItemStack[]>();
-    public Map<Player, ItemStack[]> skinMenuBuffer = new HashMap<Player, ItemStack[]>();
-    public Map<Player, Boolean> useSkinMenuBuffer = new HashMap<Player, Boolean>();
+    public final Map<Player, Integer> joinRoomPage = new HashMap<>();
+    public final Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<>();
+    public final Map<Player, ItemStack[]> customBlocks = new HashMap<>();
+    public final Map<Player, ItemStack[]> skinMenuBuffer = new HashMap<>();
+    public final Map<Player, Boolean> useSkinMenuBuffer = new HashMap<>();
     
     
-    public Map<Player, Boolean> playerTransparentBackground = new HashMap<Player, Boolean>();
+    public final Map<Player, Boolean> playerTransparentBackground = new HashMap<>();
 
-    public Map<Player, Boolean> hasCustomMenuOpen = new HashMap<Player, Boolean>();
+    public final Map<Player, Boolean> hasCustomMenuOpen = new HashMap<>();
     public Functions functions;
     public Netherboard netherboard;
 
@@ -224,11 +210,7 @@ public class Main extends JavaPlugin implements Listener {
             functions = (Functions) Class.forName("tetrminecraft.functions.versions.Functions_" + version.substring(1))
                     .newInstance();
             return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        } catch (InstantiationException e) {
-            return false;
-        } catch (IllegalAccessException e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             return false;
         }
     }

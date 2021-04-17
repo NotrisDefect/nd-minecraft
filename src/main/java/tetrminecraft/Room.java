@@ -19,8 +19,8 @@ public class Room {
 
     private static boolean isUnique(String id) {
         Object[] keys = Main.instance.roomByID.keySet().toArray();
-        for (int i = 0; i < keys.length; i++) {
-            String key = (String) keys[i];
+        for (Object o : keys) {
+            String key = (String) o;
             if (id.equals(key)) {
                 return false;
             }
@@ -41,16 +41,16 @@ public class Room {
     ItemStack mapItem;
     private boolean dontRender = false;
 
-    public List<Player> playerList = new ArrayList<Player>();
-    private List<Player> spectatorList = new ArrayList<Player>();
-    public Map<Player, Table> playerTableMap = new HashMap<Player, Table>();
-    private String roomID;
-    private String roomName;
+    public final List<Player> playerList = new ArrayList<>();
+    private final List<Player> spectatorList = new ArrayList<>();
+    public final Map<Player, Table> playerTableMap = new HashMap<>();
+    private final String roomID;
+    private final String roomName;
     private Player host;
     private boolean isRunning;
-    public List<Player> alivePlayers = new ArrayList<Player>();
+    public List<Player> alivePlayers = new ArrayList<>();
     private boolean backfire;
-    private boolean isSingleplayer;
+    private final boolean isSingleplayer;
 
     public int index;
     
@@ -168,7 +168,7 @@ public class Room {
                 Table table = playerTableMap.get(player);
                 table.initTable(seed, seed2);
             }
-            alivePlayers = new ArrayList<Player>(playerList);
+            alivePlayers = new ArrayList<>(playerList);
             roomLoop();
         }
         tryToUpdateMenu();
@@ -193,24 +193,21 @@ public class Room {
 
     private void roomLoop() {
         isRunning = true;
-        new Thread() {
-            @Override
-            public void run() {
-                while (isRunning) {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        new Thread(() -> {
+            while (isRunning) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        afterLoopStopped();
-                    }
-                }.runTask(Main.instance);
             }
-        }.start();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    afterLoopStopped();
+                }
+            }.runTask(Main.instance);
+        }).start();
     }
 
     @SuppressWarnings("unused")
@@ -228,7 +225,7 @@ public class Room {
     
     private void tryToUpdateMenu() {
         for(Player player: playerList) {
-            if(Main.instance.hasCustomMenuOpen.get(player) == true && Main.instance.lastMenuOpened.get(player) == "room") {
+            if(Main.instance.hasCustomMenuOpen.get(player) && Main.instance.lastMenuOpened.get(player).equals("room")) {
                 Choice.maximizeMenu(player);
             }
         }

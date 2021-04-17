@@ -1,32 +1,28 @@
 package tetrminecraft.functions.dependencyutil;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.bukkit.entity.Player;
-
 import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
 import com.xxmicloxx.NoteBlockAPI.model.playmode.MonoStereoMode;
 import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
 import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
-
+import org.bukkit.entity.Player;
 import tetrminecraft.Main;
 import tetrminecraft.Room;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 public class NoteBlockAPIYes implements NoteBlockAPI {
 
-    private Map<Room, RadioSongPlayer> rsps = new HashMap<Room, RadioSongPlayer>();
+    private final Map<Room, RadioSongPlayer> rsps = new HashMap<>();
 
     public static Playlist playlist;
 
-    public static String[] classpathSongs = { "cancan", "newgrass", "c01" };
+    public static final String[] classpathSongs = { "cancan", "newgrass", "c01" };
 
     private int numberOfSongs;
-
-    private Song[] songArray;
 
     @Override
     public void newRSP(Room room) {
@@ -66,6 +62,7 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
         File file = new File(Main.instance.getDataFolder() + "/songs/");
         file.mkdirs();
         numberOfSongs = file.listFiles().length;
+        Song[] songArray;
         if (numberOfSongs > 0) {
             Main.instance.getLogger()
                     .info(numberOfSongs + " song" + (numberOfSongs == 1 ? "" : "s") + " in TETR/songs");
@@ -123,7 +120,7 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
             playSong(room, index);
         }
         setRepeatMode(room, RepeatMode.ONE);
-        if (isPlaying(room) == false) {
+        if (!isPlaying(room)) {
             setPlaying(room, true);
         }
 

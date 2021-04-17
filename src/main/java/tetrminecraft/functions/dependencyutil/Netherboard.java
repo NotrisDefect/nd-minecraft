@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 
 public interface Netherboard {
     
-    public void sendScoreboard(Player player, Map<Integer, String> text);
+    void sendScoreboard(Player player, Map<Integer, String> text);
     
-    public void createBoard(Player player, String name);
+    void createBoard(Player player, String name);
     
-    public void removeBoard(Player player);
+    void removeBoard(Player player);
 }

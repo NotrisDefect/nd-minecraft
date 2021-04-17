@@ -3,10 +3,9 @@ package tetrminecraft.commands;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -71,10 +70,10 @@ public class Choice {
                 new TranslatableComponent("key.hotbar.6"), new TranslatableComponent("key.hotbar.7"),
                 new TranslatableComponent("key.hotbar.8"), new TranslatableComponent("key.sneak") };
 
-        String[] descriptions = { new String("Move left: "), new String("\nMove right: "), new String("\nSoft drop: "),
-                new String("\nHard drop: "), new String("\nRotate counterclockwise: "),
-                new String("\nRotate clockwise: "), new String("\nRotate 180: "), new String("\nHold: "),
-                new String("\nZone: "),
+        String[] descriptions = {"Move left: ", "\nMove right: ", "\nSoft drop: ",
+                "\nHard drop: ", "\nRotate counterclockwise: ",
+                "\nRotate clockwise: ", "\nRotate 180: ", "\nHold: ",
+                "\nZone: ",
 
         };
 
@@ -93,54 +92,49 @@ public class Choice {
     }
 
     public static void tetrioStats(CommandSender sender, String nickname) {
-        new Thread() {
-            @Override
-            public void run() {
-                URLConnection connection = null;
-                try {
-                    connection = new URL("https://ch.tetr.io/api/users/" + nickname.toLowerCase()).openConnection();
-                } catch (MalformedURLException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                connection.setRequestProperty("User-Agent", "TETR, executed by " + sender.getName());
-
-                try {
-                    connection.connect();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(
-                            new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8")));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                StringBuilder sb = new StringBuilder();
-                int idk;
-                try {
-                    while ((idk = reader.read()) != -1) {
-                        sb.append((char) idk);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String jsonString = sb.toString();
-                Gson gson = new Gson();
-                Map<?, ?> map = gson.fromJson(jsonString, Map.class);
-                Map<?, ?> data = (Map<?, ?>) map.get("data");
-                Map<?, ?> user = (Map<?, ?>) data.get("user");
-                Map<?, ?> league = (Map<?, ?>) user.get("league");
-                sender.sendMessage("nickname: " + user.get("username"));
-                sender.sendMessage("country: " + user.get("country"));
-                sender.sendMessage("rank: " + league.get("rank") + ", " + league.get("rating") + "TR");
-                sender.sendMessage("glicko: " + league.get("glicko") + "±" + league.get("rd"));
-                sender.sendMessage(league.get("apm") + "APM " + league.get("pps") + "PPS " + league.get("vs") + "VS");
+        new Thread(() -> {
+            URLConnection connection = null;
+            try {
+                connection = new URL("https://ch.tetr.io/api/users/" + nickname.toLowerCase()).openConnection();
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
-        }.start();
+            connection.setRequestProperty("User-Agent", "TETR, executed by " + sender.getName());
+
+            try {
+                connection.connect();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            StringBuilder sb = new StringBuilder();
+            int idk;
+            try {
+                while ((idk = reader.read()) != -1) {
+                    sb.append((char) idk);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String jsonString = sb.toString();
+            Gson gson = new Gson();
+            Map<?, ?> map = gson.fromJson(jsonString, Map.class);
+            Map<?, ?> data = (Map<?, ?>) map.get("data");
+            Map<?, ?> user = (Map<?, ?>) data.get("user");
+            Map<?, ?> league = (Map<?, ?>) user.get("league");
+            sender.sendMessage("nickname: " + user.get("username"));
+            sender.sendMessage("country: " + user.get("country"));
+            sender.sendMessage("rank: " + league.get("rank") + ", " + league.get("rating") + "TR");
+            sender.sendMessage("glicko: " + league.get("glicko") + "±" + league.get("rd"));
+            sender.sendMessage(league.get("apm") + "APM " + league.get("pps") + "PPS " + league.get("vs") + "VS");
+        }).start();
     }
     
     public static void help(CommandSender sender) {
