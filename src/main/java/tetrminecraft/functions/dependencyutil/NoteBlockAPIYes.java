@@ -16,12 +16,9 @@ import java.util.Map;
 
 public class NoteBlockAPIYes implements NoteBlockAPI {
 
-    private final Map<Room, RadioSongPlayer> rsps = new HashMap<>();
-
+    public static final String[] classpathSongs = {"cancan", "newgrass", "c01"};
     public static Playlist playlist;
-
-    public static final String[] classpathSongs = { "cancan", "newgrass", "c01" };
-
+    private final Map<Room, RadioSongPlayer> rsps = new HashMap<>();
     private int numberOfSongs;
 
     @Override
@@ -104,8 +101,8 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
                     }
                 }
             }
+            numberOfSongs = 3;
         }
-        numberOfSongs = 3;
         playlist = new Playlist(songArray);
     }
 

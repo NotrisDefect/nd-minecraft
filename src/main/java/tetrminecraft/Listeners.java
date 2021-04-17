@@ -3,7 +3,6 @@ package tetrminecraft;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -18,13 +17,6 @@ public class Listeners implements Listener {
 
     public static Listeners getInstance() {
         return instance;
-    }
-
-    @EventHandler
-    public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
-        if (event.getEntity().getScoreboardTags().contains("sand")) {
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler

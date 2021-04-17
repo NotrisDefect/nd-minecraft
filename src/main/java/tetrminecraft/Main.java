@@ -3,6 +3,7 @@ package tetrminecraft;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -26,62 +27,32 @@ import java.util.function.Consumer;
 
 public class Main extends JavaPlugin implements Listener {
 
-    private static class UpdateChecker {
-
-        private final JavaPlugin plugin;
-
-        public UpdateChecker(JavaPlugin plugin) {
-            this.plugin = plugin;
-        }
-
-        public void getVersion(final Consumer<String> consumer) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=84269")
-                        .openStream(); Scanner scanner = new Scanner(inputStream)) {
-                    if (scanner.hasNext()) {
-                        consumer.accept(scanner.next());
-                    }
-                } catch (IOException exception) {
-                    plugin.getLogger().info("Unable to check for updates: " + exception.getMessage());
-                }
-            });
-        }
-    }
-
     public static Main instance;
-
-    public static boolean isDeveloper(CommandSender sender) {
-        return Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"));
-    }
-
-    public ConsoleCommandSender console;
-
     public final Set<Player> interactedWithPlugin = new HashSet<>();
     public final Map<String, Room> roomByID = new LinkedHashMap<>();
-
     public final Map<Player, Room> inWhichRoomIs = new HashMap<>();
     public final Map<Player, String> lastMenuOpened = new HashMap<>();
-
     public final Map<Player, Integer> joinRoomPage = new HashMap<>();
     public final Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<>();
     public final Map<Player, ItemStack[]> customBlocks = new HashMap<>();
     public final Map<Player, ItemStack[]> skinMenuBuffer = new HashMap<>();
     public final Map<Player, Boolean> useSkinMenuBuffer = new HashMap<>();
-    
-    
     public final Map<Player, Boolean> playerTransparentBackground = new HashMap<>();
-
     public final Map<Player, Boolean> hasCustomMenuOpen = new HashMap<>();
+    public ConsoleCommandSender console;
     public Functions functions;
     public Netherboard netherboard;
-
     public NoteBlockAPI noteBlockAPI;
+
+    public static boolean isDeveloper(CommandSender sender) {
+        return Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"));
+    }
 
     public void firstInteraction(Player player) {
         interactedWithPlugin.add(player);
         lastMenuOpened.put(player, "home");
         Main.instance.hasCustomMenuOpen.put(player, false);
-        
+
         File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
         ItemStack[] blocks = new ItemStack[17];
@@ -107,12 +78,16 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         console = getServer().getConsoleSender();
-        this.getCommand("tetr").setExecutor(Tetr.getInstance());
+        PluginCommand commandTetr = getCommand("tetr");
+        if (commandTetr != null) {
+            commandTetr.setExecutor(Tetr.getInstance());
+        } else {
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
 
         // detect events
         getServer().getPluginManager().registerEvents(Listeners.getInstance(), this);
         getServer().getPluginManager().registerEvents(Tetr.getInstance(), this);
-
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
             getLogger().severe("NoteBlockAPI not found, if you see any errors report it immediately!");
             noteBlockAPI = new NoteBlockAPINo();
@@ -212,6 +187,28 @@ public class Main extends JavaPlugin implements Listener {
             return true;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             return false;
+        }
+    }
+
+    private static class UpdateChecker {
+
+        private final JavaPlugin plugin;
+
+        public UpdateChecker(JavaPlugin plugin) {
+            this.plugin = plugin;
+        }
+
+        public void getVersion(final Consumer<String> consumer) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=84269")
+                        .openStream(); Scanner scanner = new Scanner(inputStream)) {
+                    if (scanner.hasNext()) {
+                        consumer.accept(scanner.next());
+                    }
+                } catch (IOException exception) {
+                    plugin.getLogger().info("Unable to check for updates: " + exception.getMessage());
+                }
+            });
         }
     }
 }

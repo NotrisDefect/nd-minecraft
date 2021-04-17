@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-
+import org.jetbrains.annotations.NotNull;
 import tetrminecraft.Main;
 
 public class Tetr implements CommandExecutor, Listener {
@@ -21,7 +21,7 @@ public class Tetr implements CommandExecutor, Listener {
     }
     
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         Player player = null;
 
         if (sender instanceof Player) {
