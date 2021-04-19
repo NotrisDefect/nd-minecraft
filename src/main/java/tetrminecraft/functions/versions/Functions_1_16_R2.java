@@ -1,11 +1,10 @@
 package tetrminecraft.functions.versions;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import tetrminecraft.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V2;
 
 public class Functions_1_16_R2 implements Functions {
@@ -28,5 +27,9 @@ public class Functions_1_16_R2 implements Functions {
     @Override
     public void sendActionBarCustom(Player player, String message) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(message).create());
+    }
+
+    @Override
+    public void sendFallingBlockCustom(Player player, Location loc, int color, double xVel, double yVel, double zVel) {
     }
 }

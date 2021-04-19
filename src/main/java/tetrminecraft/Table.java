@@ -2,15 +2,10 @@ package tetrminecraft;
 
 import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.ActionBar;
-import net.minecraft.server.v1_8_R3.EntityFallingBlock;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityVelocity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntity;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -676,6 +671,9 @@ public class Table extends GameLogic {
     private void turnToFallingBlock(int x, int y, double d, int color) {
         if (enableFallingSand) {
             int tex, tey, tez;
+            double xv = d * (2 - Math.random() * 4) * coni;
+            double yv = d * (8 - Math.random() * 10) * conj;
+            double zv = d * (2 - Math.random() * 4) * conk;
             ItemStack[] blocks = Blocks.defaultBlocks;
             for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
                 tex = gx + x * mwx + y * mhx + i;
@@ -683,23 +681,7 @@ public class Table extends GameLogic {
                     tey = gy + x * mwy + y * mhy + j;
                     for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
                         tez = gz + x * mwz + y * mhz + k;
-
-                        net.minecraft.server.v1_8_R3.World worldL = ((CraftWorld) world).getHandle();
-                        EntityFallingBlock entityfallingblock = new EntityFallingBlock(worldL);
-                        entityfallingblock.setLocation(tex - mwz, tey, tez + mwx, 0, 0);
-                        double xv = d * (2 - Math.random() * 4) * coni;
-                        double yv = d * (8 - Math.random() * 10) * conj;
-                        double zv = d * (2 - Math.random() * 4) * conk;
-                        entityfallingblock.motX = xv;
-                        entityfallingblock.motY = yv;
-                        entityfallingblock.motZ = zv;
-                        entityfallingblock.g(xv,yv,zv);
-                        entityfallingblock.velocityChanged = true;
-
-                        PacketPlayOutSpawnEntity packet = new PacketPlayOutSpawnEntity(entityfallingblock, 70, blocks[color].getType().getId() + (blocks[color].getData().getData() << 12));
-                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-                        PacketPlayOutEntityVelocity vpacket = new PacketPlayOutEntityVelocity(entityfallingblock.getId(), xv, yv, zv);
-                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(vpacket);
+                        Main.instance.functions.sendFallingBlockCustom(player, new Location(world, tex - mwz, tey, tez + mwx), color, xv, yv, zv);
                     }
                 }
             }

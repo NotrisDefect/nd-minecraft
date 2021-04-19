@@ -29,4 +29,9 @@ public class Functions_1_16_R1 implements Functions {
     public void sendActionBarCustom(Player player, String message) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(message).create());
     }
+
+    @Override
+    public void sendFallingBlockCustom(Player player, Location loc, int color, double xVel, double yVel, double zVel) {
+
+    }
 }
