@@ -1,13 +1,11 @@
 package tetrminecraft.menus;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import com.cryptomorin.xseries.XMaterial;
-
 import tetrminecraft.Main;
 import tetrminecraft.Table;
 
@@ -70,61 +68,61 @@ public class SettingsMenu extends BaseMenu {
         Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
 
         switch (event.getSlot()) {
-        case SettingsMenu.BACK_LOCATION:
-            new RoomMenu(player);
-            return;
-        case SettingsMenu.TORCH_LOCATION:
-            new SimpleSettingsMenu(player);
-            return;
-        case 11:
-            table.cleanAll();
-            table.reposition();
-            table.drawAll(16);
-            break;
-        case 12:
-            table.moveTableRelative(by, 0, 0);
-            break;
-        case 13:
-            table.moveTableRelative(0, by, 0);
-            break;
-        case 14:
-            table.moveTableRelative(0, 0, by);
-            break;
-        case 21:
-            table.getWidthMultiplier().addX(by);
-            break;
-        case 22:
-            table.getWidthMultiplier().addY(by);
-            break;
-        case 23:
-            table.getWidthMultiplier().addZ(by);
-            break;
-        case 30:
-            table.rotateTable("X");
-            break;
-        case 31:
-            table.rotateTable("Y");
-            break;
-        case 32:
-            table.rotateTable("Z");
-            break;
-        case 39:
-            table.getHeightMultiplier().addX(by);
-            break;
-        case 40:
-            table.getHeightMultiplier().addY(by);
-            break;
-        case 41:
-            table.getHeightMultiplier().addZ(by);
-            break;
-        case 53:
-            Main.instance.inWhichRoomIs.get(player).toggleBackfire();
-            break;
-        case 1:
-            table.enableFallingSand = !table.enableFallingSand;
-            break;
-        default:
-            return;
+            case SettingsMenu.BACK_LOCATION:
+                new RoomMenu(player);
+                return;
+            case SettingsMenu.TORCH_LOCATION:
+                new SimpleSettingsMenu(player);
+                return;
+            case 11:
+                table.cleanAll();
+                table.reposition();
+                table.drawAll(16);
+                break;
+            case 12:
+                table.moveTableRelative(by, 0, 0);
+                break;
+            case 13:
+                table.moveTableRelative(0, by, 0);
+                break;
+            case 14:
+                table.moveTableRelative(0, 0, by);
+                break;
+            case 21:
+                table.getWidthMultiplier().addX(by);
+                break;
+            case 22:
+                table.getWidthMultiplier().addY(by);
+                break;
+            case 23:
+                table.getWidthMultiplier().addZ(by);
+                break;
+            case 30:
+                table.rotateTable("X");
+                break;
+            case 31:
+                table.rotateTable("Y");
+                break;
+            case 32:
+                table.rotateTable("Z");
+                break;
+            case 39:
+                table.getHeightMultiplier().addX(by);
+                break;
+            case 40:
+                table.getHeightMultiplier().addY(by);
+                break;
+            case 41:
+                table.getHeightMultiplier().addZ(by);
+                break;
+            case 53:
+                Main.instance.inWhichRoomIs.get(player).toggleBackfire();
+                break;
+            case 1:
+                table.enableFallingSand = !table.enableFallingSand;
+                break;
+            default:
+                return;
         }
 
         new SettingsMenu(player);

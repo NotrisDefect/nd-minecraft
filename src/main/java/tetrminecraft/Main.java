@@ -65,6 +65,13 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     @Override
+    public void onDisable() {
+        for (Entry<Player, ItemStack[]> entry : skinMenuBuffer.entrySet()) {
+            saveSkin(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Override
     public void onEnable() {
         long timeStart = System.nanoTime();
 
@@ -128,24 +135,6 @@ public class Main extends JavaPlugin implements Listener {
         });
     }
 
-    @Override
-    public void onDisable() {
-        for (Entry<Player, ItemStack[]> entry : skinMenuBuffer.entrySet()) {
-            saveSkin(entry.getKey(), entry.getValue());
-        }
-    }
-
-    private void saveSkin(Player player, ItemStack[] blocks) {
-        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
-        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-        for (int i = 0; i < blocks.length; i++) {
-            customConfig.set(Constants.NAMES[i], blocks[i]);
-        }
-        customConfig.set("playerIsUsingCustomBlocks", playerIsUsingCustomBlocks.get(player));
-        customConfig.set("playerTransparentBackground", playerTransparentBackground.get(player));
-        saveCustomYml(customConfig, customYml);
-    }
-
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
@@ -166,6 +155,17 @@ public class Main extends JavaPlugin implements Listener {
 
             hasCustomMenuOpen.remove(player);
         }
+    }
+
+    private void saveSkin(Player player, ItemStack[] blocks) {
+        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
+        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
+        for (int i = 0; i < blocks.length; i++) {
+            customConfig.set(Constants.NAMES[i], blocks[i]);
+        }
+        customConfig.set("playerIsUsingCustomBlocks", playerIsUsingCustomBlocks.get(player));
+        customConfig.set("playerTransparentBackground", playerTransparentBackground.get(player));
+        saveCustomYml(customConfig, customYml);
     }
 
     private void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {

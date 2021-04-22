@@ -18,7 +18,7 @@ public class Room {
     public List<Player> alivePlayers = new ArrayList<>();
     public int index;
     ItemStack mapItem;
-    private boolean dontRender = false;
+    private final boolean dontRender = false;
     private Player host;
     private boolean isRunning;
     private boolean backfire;
@@ -53,7 +53,7 @@ public class Room {
         }
         return true;
     }
-    
+
     private static String makeID() {
         String charSet = Constants.idCharSet;
         StringBuilder result = new StringBuilder(Constants.idLength);
@@ -63,7 +63,7 @@ public class Room {
         }
         return result.toString();
     }
-    
+
     public void addPlayer(Player player) {
         Main.instance.inWhichRoomIs.put(player, this);
         playerList.add(player);
@@ -72,19 +72,19 @@ public class Room {
         Main.instance.noteBlockAPI.addPlayer(this, player);
         tryToUpdateMenu();
     }
-    
+
     public void addSpectator(Player player) {
         spectatorList.add(player);
         player.sendMessage("Added, but this feature is work in progress");
     }
-    
+
     public void eliminate(Player player) {
         alivePlayers.remove(player);
         if (alivePlayers.size() < 2) {
             stopRoom();
         }
     }
-    
+
     public void forwardGarbage(int n, Player sender) {
         if (n > 0) {
             int random = (int) (Math.random() * alivePlayers.size());
@@ -95,11 +95,11 @@ public class Room {
             }
         }
     }
-    
+
     public boolean getBackfire() {
         return backfire;
     }
-    
+
     public Player getHost() {
         return host;
     }
@@ -123,7 +123,7 @@ public class Room {
     public void removePlayer(Player player) {
         Main.instance.noteBlockAPI.removePlayer(this, player);
         playerTableMap.get(player).destroyTable();
-        playerTableMap.get(player).setGameOver(true);
+        playerTableMap.get(player).gameOver();
         eliminate(player);
         playerList.remove(player);
         playerTableMap.remove(player);
@@ -177,7 +177,7 @@ public class Room {
         Main.instance.noteBlockAPI.setPlaying(this, false);
 
         for (Player player : alivePlayers) {
-            playerTableMap.get(player).setGameOver(true);
+            playerTableMap.get(player).gameOver();
         }
         tryToUpdateMenu();
     }
@@ -213,10 +213,10 @@ public class Room {
             playerList.add(player);
         }
     }
-    
+
     private void tryToUpdateMenu() {
-        for(Player player: playerList) {
-            if(Main.instance.hasCustomMenuOpen.get(player) && Main.instance.lastMenuOpened.get(player).equals("room")) {
+        for (Player player : playerList) {
+            if (Main.instance.hasCustomMenuOpen.get(player) && Main.instance.lastMenuOpened.get(player).equals("room")) {
                 Choice.maximizeMenu(player);
             }
         }

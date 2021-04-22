@@ -32,7 +32,6 @@ public class Table extends GameLogic {
     private int imi;
     private int imj;
     private int imk;
-    private boolean isGettingDestroyed = false;
     private int looptick;
     private int[][] oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
     private int[] oldGQDisplay = new int[PLAYABLEROWS];
@@ -132,14 +131,6 @@ public class Table extends GameLogic {
         }
     }
 
-    public Point3Dint getWidthMultiplier() {
-        return widthMultiplier;
-    }
-
-    public Point3Dint getHeightMultiplier() {
-        return heightMultiplier;
-    }
-
     public void cleanAll() {
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
@@ -165,7 +156,6 @@ public class Table extends GameLogic {
         cleanAll();
         setGameover(true);
         Main.instance.netherboard.removeBoard(player);
-        isGettingDestroyed = true;
     }
 
     public void drawAll(int color) {
@@ -189,6 +179,18 @@ public class Table extends GameLogic {
         }
     }
 
+    public Point3Dint getHeightMultiplier() {
+        return heightMultiplier;
+    }
+
+    public int getLooptick() {
+        return looptick;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
     public int getPosX() {
         return location.getBlockX();
     }
@@ -201,12 +203,8 @@ public class Table extends GameLogic {
         return location.getBlockZ();
     }
 
-    public int getLooptick() {
-        return looptick;
-    }
-
-    public Player getPlayer() {
-        return player;
+    public Point3Dint getWidthMultiplier() {
+        return widthMultiplier;
     }
 
     public void initTable(long seed, long seed2) {
@@ -260,18 +258,6 @@ public class Table extends GameLogic {
 
     public void moveTableRelative(int x, int y, int z) {
         moveTable(location.getBlockX() + x, location.getBlockY() + y, location.getBlockZ() + z);
-    }
-
-    @Override
-    public void onLineClearEvent(int lineNumber, int[] line) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < STAGESIZEX; i++) {
-                    turnToFallingBlock(i, lineNumber, 0.3, line[i]);
-                }
-            }
-        }.runTask(Main.instance);
     }
 
     public void reposition() {
@@ -333,8 +319,21 @@ public class Table extends GameLogic {
         room.forwardGarbage(n, player);
     }
 
-    public void setGameOver(boolean value) {
-        setGameover(value);
+    @Override
+    public void onLineClearEvent(int lineNumber, int[] line) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < STAGESIZEX; i++) {
+                    turnToFallingBlock(i, lineNumber, 0.3, line[i]);
+                }
+            }
+        }.runTask(Main.instance);
+    }
+
+    public void gameOver() {
+        setGameover(true);
+        whenPlayerDies();
     }
 
     @SuppressWarnings("deprecation")
@@ -388,7 +387,7 @@ public class Table extends GameLogic {
                     hardDropPiece();
                     break;
                 case "l":
-                    setGameOver(true);
+                    gameOver();
                     break;
                 case "instant":
                     sonicDrop();
@@ -444,9 +443,7 @@ public class Table extends GameLogic {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (isGettingDestroyed) {
-                    this.cancel();
-                } else if (getGameover()) {
+                if (getGameover()) {
                     this.cancel();
                     whenPlayerDies();
                 } else {
