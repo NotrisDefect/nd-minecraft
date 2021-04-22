@@ -36,18 +36,18 @@ public class SettingsMenu extends BaseMenu {
                         ChatColor.YELLOW + "" + ChatColor.BOLD + "Click to go to standard menu"));
 
         getInventory().setItem(11, createItem(XMaterial.DIRT, "your pos"));
-        getInventory().setItem(12, createItem(XMaterial.RED_WOOL, ChatColor.WHITE + "Move X", "X: " + table.getGx()));
-        getInventory().setItem(13, createItem(XMaterial.GREEN_WOOL, ChatColor.WHITE + "Move Y", "Y: " + table.getGy()));
-        getInventory().setItem(14, createItem(XMaterial.BLUE_WOOL, ChatColor.WHITE + "Move Z", "Z: " + table.getGz()));
-        getInventory().setItem(21, createItem(XMaterial.DIRT, "Width X multiplier: " + table.mwx));
-        getInventory().setItem(22, createItem(XMaterial.DIRT, "Width Y multiplier: " + table.mwy));
-        getInventory().setItem(23, createItem(XMaterial.DIRT, "Width Z multiplier: " + table.mwz));
+        getInventory().setItem(12, createItem(XMaterial.RED_WOOL, ChatColor.WHITE + "Move X", "X: " + table.getPosX()));
+        getInventory().setItem(13, createItem(XMaterial.GREEN_WOOL, ChatColor.WHITE + "Move Y", "Y: " + table.getPosY()));
+        getInventory().setItem(14, createItem(XMaterial.BLUE_WOOL, ChatColor.WHITE + "Move Z", "Z: " + table.getPosZ()));
+        getInventory().setItem(21, createItem(XMaterial.DIRT, "Width X multiplier: " + table.getWidthMultiplier().getX()));
+        getInventory().setItem(22, createItem(XMaterial.DIRT, "Width Y multiplier: " + table.getWidthMultiplier().getY()));
+        getInventory().setItem(23, createItem(XMaterial.DIRT, "Width Z multiplier: " + table.getWidthMultiplier().getZ()));
         getInventory().setItem(30, createItem(XMaterial.RED_CARPET, ChatColor.WHITE + "Rotate X"));
         getInventory().setItem(31, createItem(XMaterial.GREEN_CARPET, ChatColor.WHITE + "Rotate Y"));
         getInventory().setItem(32, createItem(XMaterial.BLUE_CARPET, ChatColor.WHITE + "Rotate Z"));
-        getInventory().setItem(39, createItem(XMaterial.DIRT, "Height X multiplier: " + table.mhx));
-        getInventory().setItem(40, createItem(XMaterial.DIRT, "Height Y multiplier: " + table.mhy));
-        getInventory().setItem(41, createItem(XMaterial.DIRT, "Height Z multiplier: " + table.mhz));
+        getInventory().setItem(39, createItem(XMaterial.DIRT, "Height X multiplier: " + table.getHeightMultiplier().getX()));
+        getInventory().setItem(40, createItem(XMaterial.DIRT, "Height Y multiplier: " + table.getHeightMultiplier().getY()));
+        getInventory().setItem(41, createItem(XMaterial.DIRT, "Height Z multiplier: " + table.getHeightMultiplier().getZ()));
         getInventory().setItem(53,
                 createItem(XMaterial.DIRT, "BACKFIRE: " + Main.instance.inWhichRoomIs.get(player).getBackfire()));
         getInventory().setItem(1,
@@ -91,13 +91,13 @@ public class SettingsMenu extends BaseMenu {
             table.moveTableRelative(0, 0, by);
             break;
         case 21:
-            table.mwx += by;
+            table.getWidthMultiplier().addX(by);
             break;
         case 22:
-            table.mwy += by;
+            table.getWidthMultiplier().addY(by);
             break;
         case 23:
-            table.mwz += by;
+            table.getWidthMultiplier().addZ(by);
             break;
         case 30:
             table.rotateTable("X");
@@ -109,13 +109,13 @@ public class SettingsMenu extends BaseMenu {
             table.rotateTable("Z");
             break;
         case 39:
-            table.mhx += by;
+            table.getHeightMultiplier().addX(by);
             break;
         case 40:
-            table.mhy += by;
+            table.getHeightMultiplier().addY(by);
             break;
         case 41:
-            table.mhz += by;
+            table.getHeightMultiplier().addZ(by);
             break;
         case 53:
             Main.instance.inWhichRoomIs.get(player).toggleBackfire();

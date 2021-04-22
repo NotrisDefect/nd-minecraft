@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.messages.ActionBar;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -13,6 +12,7 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import tetrcore.GameLogic;
+import tetrminecraft.functions.util.Point3Dint;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -20,37 +20,29 @@ import java.util.Map;
 
 public class Table extends GameLogic {
 
-    private static final int VISIBLEROWS = 30;
-    private static final int BACKGROUNDROWS = 20;
+    private static final int FRONTROWS = 30;
+    private static final int BACKROWS = 20;
     private final Room room;
     private final Player player;
-    private final World world;
-    public int mwx;
-    public int mhx;
-    public int mwy;
-    public int mhy;
-    public int mwz;
-    public int mhz;
-    public int thickness = 1;
+    private final int thickness = 1;
     public boolean enableFallingSand = true;
-    boolean isGettingDestroyed = false;
+    private Point3Dint widthMultiplier;
+    private Point3Dint heightMultiplier;
+    private Location location;
+    private int imi;
+    private int imj;
+    private int imk;
+    private boolean isGettingDestroyed = false;
     private int looptick;
-    private int gx;
-    private int gy;
-    private int gz;
-    private int coni;
-    private int conj;
-    private int conk;
     private int[][] oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
-    private int[] oldGQDisplay = new int[GameLogic.PLAYABLEROWS];
-    private int[][] oldNextDisplay = new int[GameLogic.NEXTPIECESMAX * 4][4];
+    private int[] oldGQDisplay = new int[PLAYABLEROWS];
+    private int[][] oldNextDisplay = new int[NEXTPIECESMAX * 4][4];
     private int[][] oldHoldDisplay = new int[4][4];
 
     public Table(Player p, Room r) {
         super();
         player = p;
         room = r;
-        world = p.getWorld();
         reposition();
         drawAll(16);
         setGameover(true);
@@ -140,13 +132,21 @@ public class Table extends GameLogic {
         }
     }
 
+    public Point3Dint getWidthMultiplier() {
+        return widthMultiplier;
+    }
+
+    public Point3Dint getHeightMultiplier() {
+        return heightMultiplier;
+    }
+
     public void cleanAll() {
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
                 colPrintNewForce(j, i);
             }
         }
-        for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
+        for (int i = 0; i < PLAYABLEROWS; i++) {
             colPrintNewForce(-2, STAGESIZEY - 1 - i);
         }
         for (int i = 0; i < 20; i++) {
@@ -169,12 +169,12 @@ public class Table extends GameLogic {
     }
 
     public void drawAll(int color) {
-        for (int i = STAGESIZEY - BACKGROUNDROWS; i < STAGESIZEY; i++) {
+        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
                 colPrintNewRender(j, i, color);
             }
         }
-        for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
+        for (int i = 0; i < PLAYABLEROWS; i++) {
             colPrintNewRender(-2, STAGESIZEY - 1 - i, color);
         }
         for (int i = 0; i < 20; i++) {
@@ -189,16 +189,16 @@ public class Table extends GameLogic {
         }
     }
 
-    public int getGx() {
-        return gx;
+    public int getPosX() {
+        return location.getBlockX();
     }
 
-    public int getGy() {
-        return gy;
+    public int getPosY() {
+        return location.getBlockY();
     }
 
-    public int getGz() {
-        return gz;
+    public int getPosZ() {
+        return location.getBlockZ();
     }
 
     public int getLooptick() {
@@ -214,21 +214,21 @@ public class Table extends GameLogic {
             player.sendMessage("there was a problem");
         }
 
-        coni = Math.max(Math.abs(mwx), Math.abs(mhx));
-        conj = Math.max(Math.abs(mwy), Math.abs(mhy));
-        conk = Math.max(Math.abs(mwz), Math.abs(mhz));
+        imi = Math.max(widthMultiplier.getAbsoluteX(), heightMultiplier.getAbsoluteX());
+        imj = Math.max(widthMultiplier.getAbsoluteY(), heightMultiplier.getAbsoluteY());
+        imk = Math.max(widthMultiplier.getAbsoluteZ(), heightMultiplier.getAbsoluteZ());
 
         player.getInventory().setHeldItemSlot(8);
 
         looptick = 0;
 
-        for (int i = STAGESIZEY - BACKGROUNDROWS; i < STAGESIZEY; i++) {
+        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
                 oldStageDisplay[i][j] = 7;
                 colPrintNewRender(j, i, 7);
             }
         }
-        for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
+        for (int i = 0; i < PLAYABLEROWS; i++) {
             oldGQDisplay[i] = 7;
             colPrintNewRender(-2, STAGESIZEY - 1 - i, 7);
         }
@@ -252,14 +252,14 @@ public class Table extends GameLogic {
 
     public void moveTable(int x, int y, int z) {
         cleanAll();
-        gx = x;
-        gy = y;
-        gz = z;
+        location.setX(x);
+        location.setY(y);
+        location.setZ(z);
         drawAll(16);
     }
 
     public void moveTableRelative(int x, int y, int z) {
-        moveTable(gx + x, gy + y, gz + z);
+        moveTable(location.getBlockX() + x, location.getBlockY() + y, location.getBlockZ() + z);
     }
 
     @Override
@@ -275,49 +275,34 @@ public class Table extends GameLogic {
     }
 
     public void reposition() {
-        Location location = player.getLocation();
+        Location playerLocation = player.getLocation();
+        this.location = new Location(playerLocation.getWorld(), 0, 0, 0);
         float yaw = player.getLocation().getYaw();
         yaw = (yaw % 360 + 360) % 360;
         if (45 <= yaw && yaw < 135) {
-            mwx = 0;
-            mhx = 0;
-            mwy = 0;
-            mhy = -1;
-            mwz = -1;
-            mhz = 0;
-            gx = location.getBlockX() - STAGESIZEY;
-            gy = location.getBlockY() + STAGESIZEY - BACKGROUNDROWS / 2;
-            gz = location.getBlockZ() + STAGESIZEX / 2;
+            widthMultiplier = new Point3Dint(0, 0, -1);
+            heightMultiplier = new Point3Dint(0, -1, 0);
+            this.location.setX(playerLocation.getBlockX() - STAGESIZEY);
+            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
+            this.location.setZ(playerLocation.getBlockZ() + STAGESIZEX / 2);
         } else if (135 <= yaw && yaw < 225) {
-            mwx = 1;
-            mhx = 0;
-            mwy = 0;
-            mhy = -1;
-            mwz = 0;
-            mhz = 0;
-            gx = location.getBlockX() - STAGESIZEX / 2;
-            gy = location.getBlockY() + STAGESIZEY - BACKGROUNDROWS / 2;
-            gz = location.getBlockZ() - STAGESIZEY;
+            widthMultiplier = new Point3Dint(1, 0, 0);
+            heightMultiplier = new Point3Dint(0, -1, 0);
+            this.location.setX(playerLocation.getBlockX() - STAGESIZEX / 2);
+            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
+            this.location.setZ(playerLocation.getBlockZ() - STAGESIZEY);
         } else if (225 <= yaw && yaw < 315) {
-            mwx = 0;
-            mhx = 0;
-            mwy = 0;
-            mhy = -1;
-            mwz = 1;
-            mhz = 0;
-            gx = location.getBlockX() + STAGESIZEY;
-            gy = location.getBlockY() + STAGESIZEY - BACKGROUNDROWS / 2;
-            gz = location.getBlockZ() - STAGESIZEX / 2;
+            widthMultiplier = new Point3Dint(0, 0, 1);
+            heightMultiplier = new Point3Dint(0, -1, 0);
+            this.location.setX(playerLocation.getBlockX() + STAGESIZEY);
+            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
+            this.location.setX(playerLocation.getBlockZ() - STAGESIZEX / 2);
         } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
-            mwx = -1;
-            mhx = 0;
-            mwy = 0;
-            mhy = -1;
-            mwz = 0;
-            mhz = 0;
-            gx = location.getBlockX() + STAGESIZEX / 2;
-            gy = location.getBlockY() + STAGESIZEY - BACKGROUNDROWS / 2;
-            gz = location.getBlockZ() + STAGESIZEY;
+            widthMultiplier = new Point3Dint(-1, 0, 0);
+            heightMultiplier = new Point3Dint(0, -1, 0);
+            this.location.setX(playerLocation.getBlockX() + STAGESIZEX / 2);
+            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
+            this.location.setZ(playerLocation.getBlockZ() + STAGESIZEY);
         }
     }
 
@@ -327,28 +312,16 @@ public class Table extends GameLogic {
         int temp;
         switch (input) {
             case "X":
-                temp = -mwz;
-                mwz = mwy;
-                mwy = temp;
-                temp = -mhz;
-                mhz = mhy;
-                mhy = temp;
+                widthMultiplier = new Point3Dint(widthMultiplier.getX(), -widthMultiplier.getZ(), widthMultiplier.getY());
+                heightMultiplier = new Point3Dint(heightMultiplier.getX(), -heightMultiplier.getZ(), heightMultiplier.getY());
                 break;
             case "Y":
-                temp = -mwz;
-                mwz = mwx;
-                mwx = temp;
-                temp = -mhz;
-                mhz = mhx;
-                mhx = temp;
+                widthMultiplier = new Point3Dint(widthMultiplier.getZ(), widthMultiplier.getY(), -widthMultiplier.getX());
+                heightMultiplier = new Point3Dint(heightMultiplier.getZ(), heightMultiplier.getY(), -heightMultiplier.getX());
                 break;
             case "Z":
-                temp = -mwy;
-                mwy = mwx;
-                mwx = temp;
-                temp = -mhy;
-                mhy = mhx;
-                mhx = temp;
+                widthMultiplier = new Point3Dint(-widthMultiplier.getY(), widthMultiplier.getX(), widthMultiplier.getZ());
+                heightMultiplier = new Point3Dint(-heightMultiplier.getY(), heightMultiplier.getX(), heightMultiplier.getZ());
                 break;
         }
 
@@ -431,16 +404,16 @@ public class Table extends GameLogic {
     private void colPrintNewForce(float x, float y) {
         int blockX, blockY, blockZ;
 
-        for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
-            blockX = gx + (int) Math.floor(x * mwx) + (int) Math.floor(y * mhx) + i;
-            for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
-                blockY = gy + (int) Math.floor(x * mwy) + (int) Math.floor(y * mhy) + j;
-                for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
-                    blockZ = gz + (int) Math.floor(x * mwz) + (int) Math.floor(y * mhz) + k;
-                    Block b = world.getBlockAt(blockX, blockY, blockZ);
+        for (int i = 0; i < (imi != 0 ? imi : thickness); i++) {
+            blockX = location.getBlockX() + (int) Math.floor(x * widthMultiplier.getX()) + (int) Math.floor(y * heightMultiplier.getX()) + i;
+            for (int j = 0; j < (imj != 0 ? imj : thickness); j++) {
+                blockY = location.getBlockY() + (int) Math.floor(x * widthMultiplier.getY()) + (int) Math.floor(y * heightMultiplier.getY()) + j;
+                for (int k = 0; k < (imk != 0 ? imk : thickness); k++) {
+                    blockZ = location.getBlockZ() + (int) Math.floor(x * widthMultiplier.getZ()) + (int) Math.floor(y * heightMultiplier.getZ()) + k;
+                    Block b = location.getWorld().getBlockAt(blockX, blockY, blockZ);
                     for (Player player : room.playerList) {
                         Main.instance.functions.sendBlockChangeCustom(player,
-                                new Location(world, blockX, blockY, blockZ), b);
+                                new Location(location.getWorld(), blockX, blockY, blockZ), b);
                     }
                 }
             }
@@ -450,13 +423,13 @@ public class Table extends GameLogic {
     private void colPrintNewRender(float x, float y, int color) {
         int blockX, blockY, blockZ;
 
-        for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
-            blockX = gx + (int) Math.floor(x * mwx) + (int) Math.floor(y * mhx) + i;
-            for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
-                blockY = gy + (int) Math.floor(x * mwy) + (int) Math.floor(y * mhy) + j;
-                for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
-                    blockZ = gz + (int) Math.floor(x * mwz) + (int) Math.floor(y * mhz) + k;
-                    printSingleBlock(blockX, blockY, blockZ, color);
+        for (int i = 0; i < (imi != 0 ? imi : thickness); i++) {
+            blockX = location.getBlockX() + (int) Math.floor(x * widthMultiplier.getX()) + (int) Math.floor(y * heightMultiplier.getX()) + i;
+            for (int j = 0; j < (imj != 0 ? imj : thickness); j++) {
+                blockY = location.getBlockY() + (int) Math.floor(x * widthMultiplier.getY()) + (int) Math.floor(y * heightMultiplier.getY()) + j;
+                for (int k = 0; k < (imk != 0 ? imk : thickness); k++) {
+                    blockZ = location.getBlockZ() + (int) Math.floor(x * widthMultiplier.getZ()) + (int) Math.floor(y * heightMultiplier.getZ()) + k;
+                    printSingleBlockToAll(blockX, blockY, blockZ, color);
                 }
             }
         }
@@ -485,12 +458,12 @@ public class Table extends GameLogic {
     }
 
     private boolean isThereAProblem() {
-        boolean bwx = mwx != 0;
-        boolean bwy = mwy != 0;
-        boolean bwz = mwz != 0;
-        boolean bhx = mhx != 0;
-        boolean bhy = mhy != 0;
-        boolean bhz = mhz != 0;
+        boolean bwx = widthMultiplier.isNonZeroX();
+        boolean bwy = widthMultiplier.isNonZeroY();
+        boolean bwz = widthMultiplier.isNonZeroZ();
+        boolean bhx = heightMultiplier.isNonZeroX();
+        boolean bhy = heightMultiplier.isNonZeroY();
+        boolean bhz = heightMultiplier.isNonZeroZ();
 
         return (!bwx && !bwy && !bwz) || (!bhx && !bhy && !bhz);
     }
@@ -506,17 +479,18 @@ public class Table extends GameLogic {
         }
     }
 
-    private void printSingleBlock(int x, int y, int z, int color) {
+    private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
         if (color == 7 && Main.instance.playerTransparentBackground.get(player)) {
-            Block b = world.getBlockAt(x, y, z);
-            for (Player player : room.playerList) {
-                Main.instance.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), b);
-            }
-            return;
+            Block b = location.getWorld().getBlockAt(x, y, z);
+            Main.instance.functions.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
+        } else {
+            Main.instance.functions.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), color);
         }
+    }
 
+    private void printSingleBlockToAll(int x, int y, int z, int color) {
         for (Player player : room.playerList) {
-            Main.instance.functions.sendBlockChangeCustom(player, new Location(world, x, y, z), color);
+            printSingleBlockTo(player, x, y, z, color);
         }
     }
 
@@ -527,8 +501,8 @@ public class Table extends GameLogic {
         final int[][] stage = getStage();
 
         int[][] newStageDisplay = new int[STAGESIZEY][STAGESIZEX];
-        int[] newGQDisplay = new int[GameLogic.PLAYABLEROWS];
-        int[][] newNextDisplay = new int[GameLogic.NEXTPIECESMAX * 4][4];
+        int[] newGQDisplay = new int[PLAYABLEROWS];
+        int[][] newNextDisplay = new int[NEXTPIECESMAX * 4][4];
         int[][] newHoldDisplay = new int[4][4];
 
         // update stage
@@ -552,14 +526,14 @@ public class Table extends GameLogic {
             total += num;
         }
 
-        color = (total / GameLogic.PLAYABLEROWS) % 7;
-        total = total % GameLogic.PLAYABLEROWS;
+        color = (total / PLAYABLEROWS) % 7;
+        total = total % PLAYABLEROWS;
 
         for (int i = 0; i < total; i++) {
             newGQDisplay[i] = color;
         }
 
-        for (int i = total; i < GameLogic.PLAYABLEROWS; i++) {
+        for (int i = total; i < PLAYABLEROWS; i++) {
             newGQDisplay[i] = 7;
         }
 
@@ -593,9 +567,9 @@ public class Table extends GameLogic {
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
                 if (newStageDisplay[i][j] != oldStageDisplay[i][j]) {
-                    if (newStageDisplay[i][j] == 7 && i >= STAGESIZEY - BACKGROUNDROWS) {
+                    if (newStageDisplay[i][j] == 7 && i >= STAGESIZEY - BACKROWS) {
                         colPrintNewRender(j, i, newStageDisplay[i][j]);
-                    } else if (i >= STAGESIZEY - VISIBLEROWS) {
+                    } else if (i >= STAGESIZEY - FRONTROWS) {
                         if (newStageDisplay[i][j] != 7) {
                             colPrintNewRender(j, i, newStageDisplay[i][j]);
                         } else {
@@ -607,7 +581,7 @@ public class Table extends GameLogic {
         }
 
         // print garbage meter
-        for (int i = 0; i < GameLogic.PLAYABLEROWS; i++) {
+        for (int i = 0; i < PLAYABLEROWS; i++) {
             if (newGQDisplay[i] != oldGQDisplay[i]) {
                 colPrintNewRender(-2, STAGESIZEY - 1 - i, newGQDisplay[i]);
             }
@@ -671,17 +645,17 @@ public class Table extends GameLogic {
     private void turnToFallingBlock(int x, int y, double d, int color) {
         if (enableFallingSand) {
             int tex, tey, tez;
-            double xv = d * (2 - Math.random() * 4) * coni;
-            double yv = d * (8 - Math.random() * 10) * conj;
-            double zv = d * (2 - Math.random() * 4) * conk;
+            double xv = d * (2 - Math.random() * 4) * imi;
+            double yv = d * (8 - Math.random() * 10) * imj;
+            double zv = d * (2 - Math.random() * 4) * imk;
             ItemStack[] blocks = Blocks.defaultBlocks;
-            for (int i = 0; i < (coni != 0 ? coni : thickness); i++) {
-                tex = gx + x * mwx + y * mhx + i;
-                for (int j = 0; j < (conj != 0 ? conj : thickness); j++) {
-                    tey = gy + x * mwy + y * mhy + j;
-                    for (int k = 0; k < (conk != 0 ? conk : thickness); k++) {
-                        tez = gz + x * mwz + y * mhz + k;
-                        Main.instance.functions.sendFallingBlockCustom(player, new Location(world, tex - mwz, tey, tez + mwx), color, xv, yv, zv);
+            for (int i = 0; i < (imi != 0 ? imi : thickness); i++) {
+                tex = location.getBlockX() + x * widthMultiplier.getX() + y * heightMultiplier.getX() + i;
+                for (int j = 0; j < (imj != 0 ? imj : thickness); j++) {
+                    tey = location.getBlockY() + x * widthMultiplier.getY() + y * heightMultiplier.getY() + j;
+                    for (int k = 0; k < (imk != 0 ? imk : thickness); k++) {
+                        tez = location.getBlockZ() + x * widthMultiplier.getZ() + y * heightMultiplier.getZ() + k;
+                        Main.instance.functions.sendFallingBlockCustom(player, new Location(location.getWorld(), tex - widthMultiplier.getZ(), tey, tez + widthMultiplier.getX()), color, xv, yv, zv);
                     }
                 }
             }
@@ -699,7 +673,7 @@ public class Table extends GameLogic {
                     }
                 }
 
-                for (int i = STAGESIZEY - VISIBLEROWS; i < STAGESIZEY; i++) {
+                for (int i = STAGESIZEY - FRONTROWS; i < STAGESIZEY; i++) {
                     for (int j = 0; j < STAGESIZEX; j++) {
                         turnToFallingBlock(j, i, 1, getStage()[i][j]);
                     }

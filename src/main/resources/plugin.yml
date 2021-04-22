@@ -1,6 +1,6 @@
 name: TETR
 main: tetrminecraft.Main
-version: 1.4.0.0
+version: 1.4.0.2
 api-version: 1.13
 softdepend: [NoteBlockAPI, Netherboard]
 commands:

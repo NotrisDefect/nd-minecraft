@@ -37,9 +37,9 @@ public class SimpleSettingsMenu extends BaseMenu {
                 createItem(XMaterial.TORCH, ChatColor.YELLOW + "This is standard settings menu",
                         ChatColor.DARK_RED + "" + ChatColor.BOLD + "Click to go to advanced menu"));
 
-        getInventory().setItem(21, createItem(XMaterial.RED_WOOL, ChatColor.WHITE + "Move X", "X: " + table.getGx()));
-        getInventory().setItem(22, createItem(XMaterial.GREEN_WOOL, ChatColor.WHITE + "Move Y", "Y: " + table.getGy()));
-        getInventory().setItem(23, createItem(XMaterial.BLUE_WOOL, ChatColor.WHITE + "Move Z", "Z: " + table.getGz()));
+        getInventory().setItem(21, createItem(XMaterial.RED_WOOL, ChatColor.WHITE + "Move X", "X: " + table.getPosX()));
+        getInventory().setItem(22, createItem(XMaterial.GREEN_WOOL, ChatColor.WHITE + "Move Y", "Y: " + table.getPosY()));
+        getInventory().setItem(23, createItem(XMaterial.BLUE_WOOL, ChatColor.WHITE + "Move Z", "Z: " + table.getPosZ()));
         getInventory().setItem(30, createItem(XMaterial.RED_CARPET, ChatColor.WHITE + "Rotate X"));
         getInventory().setItem(31, createItem(XMaterial.GREEN_CARPET, ChatColor.WHITE + "Rotate Y"));
         getInventory().setItem(32, createItem(XMaterial.BLUE_CARPET, ChatColor.WHITE + "Rotate Z"));

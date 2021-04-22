@@ -44,7 +44,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler
-    public void onInventoryCloseEvent(InventoryCloseEvent event) {
+    public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
         if (Main.instance.interactedWithPlugin.contains(player)) {
             if (Main.instance.hasCustomMenuOpen.get(player)) {
@@ -58,7 +58,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler
-    public void onItemHeld(PlayerItemHeldEvent event) {
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
         if (Main.instance.inWhichRoomIs.containsKey(player)) {
             Table.onPlayerItemHeld(event);
@@ -66,7 +66,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMovement(PlayerMoveEvent event) {
+    public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (Main.instance.inWhichRoomIs.containsKey(player)) {
             Table.onPlayerMove(event);
@@ -74,7 +74,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler
-    public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event) {
+    public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         if (Main.instance.inWhichRoomIs.containsKey(player)) {
             Table.onPlayerToggleSneak(event);

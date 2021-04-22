@@ -1,59 +1,28 @@
 package tetrminecraft;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.map.MapView;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import tetrminecraft.commands.Choice;
+
+import java.util.*;
 
 public class Room {
 
-    private static MapView mapView;
-
-    private static boolean isUnique(String id) {
-        Object[] keys = Main.instance.roomByID.keySet().toArray();
-        for (Object o : keys) {
-            String key = (String) o;
-            if (id.equals(key)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static String makeID() {
-        String charSet = Constants.idCharSet;
-        StringBuilder result = new StringBuilder(Constants.idLength);
-        for (int i = 0; i < Constants.idLength; i++) {
-            int index = (int) (charSet.length() * Math.random());
-            result.append(charSet.charAt(index));
-        }
-        return result.toString();
-    }
-    
-    ItemStack mapItem;
-    private boolean dontRender = false;
-
     public final List<Player> playerList = new ArrayList<>();
-    private final List<Player> spectatorList = new ArrayList<>();
     public final Map<Player, Table> playerTableMap = new HashMap<>();
     private final String roomID;
     private final String roomName;
+    private final List<Player> spectatorList = new ArrayList<>();
+    private final boolean isSingleplayer;
+    public List<Player> alivePlayers = new ArrayList<>();
+    public int index;
+    ItemStack mapItem;
+    private boolean dontRender = false;
     private Player host;
     private boolean isRunning;
-    public List<Player> alivePlayers = new ArrayList<>();
     private boolean backfire;
-    private final boolean isSingleplayer;
 
-    public int index;
-    
     public Room(Player host, boolean isSingleplayer) {
         Main.instance.noteBlockAPI.newRSP(this);
         String mkID;
@@ -72,6 +41,27 @@ public class Room {
             roomName = "Room #" + roomID;
         }
         index = -1;
+    }
+
+    private static boolean isUnique(String id) {
+        Object[] keys = Main.instance.roomByID.keySet().toArray();
+        for (Object o : keys) {
+            String key = (String) o;
+            if (id.equals(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static String makeID() {
+        String charSet = Constants.idCharSet;
+        StringBuilder result = new StringBuilder(Constants.idLength);
+        for (int i = 0; i < Constants.idLength; i++) {
+            int index = (int) (charSet.length() * Math.random());
+            result.append(charSet.charAt(index));
+        }
+        return result.toString();
     }
     
     public void addPlayer(Player player) {
@@ -154,9 +144,7 @@ public class Room {
     }
 
     public void startRoom() {
-        if (!isSingleplayer && playerList.size() == 1) {
-            host.sendMessage("[TETR] 2 players are needed");
-        } else {
+        if (isSingleplayer || playerList.size() >= 2) {
 
             Main.instance.noteBlockAPI.startPlaying(this, index);
 
@@ -170,7 +158,10 @@ public class Room {
             }
             alivePlayers = new ArrayList<>(playerList);
             roomLoop();
+        } else {
+            host.sendMessage("[TETR] 2 players are needed");
         }
+
         tryToUpdateMenu();
     }
 
