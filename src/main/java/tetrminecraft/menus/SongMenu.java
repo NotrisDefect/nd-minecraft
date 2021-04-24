@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import tetrminecraft.Main;
 import tetrminecraft.Room;
-import tetrminecraft.functions.dependencyutil.NoteBlockAPIYes;
+import tetrminecraft.functions.softdepend.NoteBlockAPIYes;
 
 //used only if noteblockapi is present
 public class SongMenu extends BaseMenu {

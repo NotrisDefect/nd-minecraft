@@ -2,7 +2,6 @@ package tetrminecraft;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
-import tetrminecraft.functions.dependencyutil.*;
+import tetrminecraft.functions.softdepend.*;
 import tetrminecraft.functions.versions.Functions;
 
 import java.io.File;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 public class Main extends JavaPlugin implements Listener {
@@ -39,7 +37,6 @@ public class Main extends JavaPlugin implements Listener {
     public final Map<Player, Boolean> useSkinMenuBuffer = new HashMap<>();
     public final Map<Player, Boolean> playerTransparentBackground = new HashMap<>();
     public final Map<Player, Boolean> hasCustomMenuOpen = new HashMap<>();
-    public ConsoleCommandSender console;
     public Functions functions;
     public Netherboard netherboard;
     public NoteBlockAPI noteBlockAPI;
@@ -66,7 +63,7 @@ public class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        for (Entry<Player, ItemStack[]> entry : skinMenuBuffer.entrySet()) {
+        for (Map.Entry<Player, ItemStack[]> entry : skinMenuBuffer.entrySet()) {
             saveSkin(entry.getKey(), entry.getValue());
         }
     }
@@ -74,6 +71,22 @@ public class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         long timeStart = System.nanoTime();
+
+        if (versionIsSupported()) {
+            Bukkit.getPluginManager().registerEvents(this, this);
+        } else {
+            getLogger().severe("Unsupported server version " + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]);
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        PluginCommand commandTetr = getCommand("tetr");
+        if (commandTetr != null) {
+            commandTetr.setExecutor(Tetr.getInstance());
+        } else {
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         instance = this;
 
@@ -84,19 +97,11 @@ public class Main extends JavaPlugin implements Listener {
             e.printStackTrace();
         }
 
-        console = getServer().getConsoleSender();
-        PluginCommand commandTetr = getCommand("tetr");
-        if (commandTetr != null) {
-            commandTetr.setExecutor(Tetr.getInstance());
-        } else {
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
-
-        // detect events
         getServer().getPluginManager().registerEvents(Listeners.getInstance(), this);
         getServer().getPluginManager().registerEvents(Tetr.getInstance(), this);
+
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
-            getLogger().severe("NoteBlockAPI not found, if you see any errors report it immediately!");
+            getLogger().severe("NoteBlockAPI is missing.");
             noteBlockAPI = new NoteBlockAPINo();
         } else {
             getLogger().info("NoteBlockAPI OK.");
@@ -105,24 +110,15 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         if (getServer().getPluginManager().getPlugin("Netherboard") == null) {
-            getLogger().severe("Netherboard not found, if you see any errors report it immediately!");
+            getLogger().severe("Netherboard is missing.");
             netherboard = new NetherboardNo();
         } else {
             getLogger().info("Netherboard OK.");
             netherboard = new NetherboardYes();
         }
 
-        if (versionIsSupported()) {
-            Bukkit.getPluginManager().registerEvents(this, this);
-        } else {
-            getLogger().severe("Unsupported server version");
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
-
         long timeEnd = System.nanoTime();
-
         long timeElapsed = timeEnd - timeStart;
-
         getLogger().info("Done. Time elapsed: " + timeElapsed / 1000000 + "ms");
 
         // https://www.spigotmc.org/wiki/creating-an-update-checker-that-checks-for-updates/
@@ -146,7 +142,6 @@ public class Main extends JavaPlugin implements Listener {
             inWhichRoomIs.remove(player);
             interactedWithPlugin.remove(player);
 
-            // save
             saveSkin(player, customBlocks.get(player));
 
             customBlocks.remove(player);
@@ -182,8 +177,7 @@ public class Main extends JavaPlugin implements Listener {
         getLogger().info("Your server is running version " + version);
 
         try {
-            functions = (Functions) Class.forName("tetrminecraft.functions.versions.Functions_" + version.substring(1))
-                    .newInstance();
+            functions = (Functions) Class.forName("tetrminecraft.functions.versions.Functions_" + version.substring(1)).newInstance();
             return true;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             return false;

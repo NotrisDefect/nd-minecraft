@@ -1,4 +1,4 @@
-package tetrminecraft.functions.dependencyutil;
+package tetrminecraft.functions.softdepend;
 
 import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 import com.xxmicloxx.NoteBlockAPI.model.RepeatMode;
@@ -66,7 +66,6 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
             String[] pathNames;
             String song;
             songArray = new Song[numberOfSongs];
-            pathNames = new String[numberOfSongs];
             pathNames = file.list();
             for (int i = 0; i < numberOfSongs; i++) {
                 song = Main.instance.getDataFolder() + "/songs/" + pathNames[i];
@@ -77,21 +76,21 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
             // classpath
             String path;
             songArray = new Song[3];
-            path = "tetrminecraft/functions/dependencyutil/internalmusic/cancan.nbs";
+            path = "tetrminecraft/functions/softdepend/internalmusic/cancan.nbs";
             if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
                 System.out.println("Server was reloaded and an error happened");
                 songArray = new Song[0];
             } else {
                 songArray[0] = NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
 
-                path = "tetrminecraft/functions/dependencyutil/internalmusic/newgrass.nbs";
+                path = "tetrminecraft/functions/softdepend/internalmusic/newgrass.nbs";
                 if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
                     System.out.println("Server was reloaded and an error happened");
                     songArray = new Song[0];
                 } else {
                     songArray[1] = NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
 
-                    path = "tetrminecraft/functions/dependencyutil/internalmusic/c01.nbs";
+                    path = "tetrminecraft/functions/softdepend/internalmusic/c01.nbs";
                     if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
                         System.out.println("Server was reloaded and an error happened");
                         songArray = new Song[0];

@@ -1,4 +1,4 @@
-package tetrminecraft.functions.dependencyutil;
+package tetrminecraft.functions.softdepend;
 
 import org.bukkit.entity.Player;
 
