@@ -5,9 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.InventoryHolder;
 import tetrminecraft.menus.*;
 
@@ -54,30 +51,6 @@ public class Listeners implements Listener {
             if (holder instanceof SkinMenu) {
                 SkinMenu.onInventoryClose(event);
             }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        Player player = event.getPlayer();
-        if (Main.instance.inWhichRoomIs.containsKey(player)) {
-            Table.onPlayerItemHeld(event);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        if (Main.instance.inWhichRoomIs.containsKey(player)) {
-            Table.onPlayerMove(event);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-        Player player = event.getPlayer();
-        if (Main.instance.inWhichRoomIs.containsKey(player)) {
-            Table.onPlayerToggleSneak(event);
         }
     }
 

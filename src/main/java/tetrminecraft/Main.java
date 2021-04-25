@@ -15,6 +15,7 @@ import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
 import tetrminecraft.functions.softdepend.*;
 import tetrminecraft.functions.versions.Functions;
+import tetrminecraft.listeners.TableListeners;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,6 +99,7 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         getServer().getPluginManager().registerEvents(Listeners.getInstance(), this);
+        getServer().getPluginManager().registerEvents(TableListeners.getInstance(), this);
         getServer().getPluginManager().registerEvents(Tetr.getInstance(), this);
 
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {

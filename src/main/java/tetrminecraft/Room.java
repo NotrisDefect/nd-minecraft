@@ -1,7 +1,6 @@
 package tetrminecraft;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import tetrminecraft.commands.Choice;
 
@@ -17,8 +16,6 @@ public class Room {
     private final boolean isSingleplayer;
     public List<Player> alivePlayers = new ArrayList<>();
     public int index;
-    ItemStack mapItem;
-    private final boolean dontRender = false;
     private Player host;
     private boolean isRunning;
     private boolean backfire;
@@ -38,7 +35,7 @@ public class Room {
         if (isSingleplayer) {
             roomName = "Singleplayer #" + roomID;
         } else {
-            roomName = "Room #" + roomID;
+            roomName = "Multiplayer #" + roomID;
         }
         index = -1;
     }
@@ -71,6 +68,16 @@ public class Room {
         playerTableMap.put(player, table);
         Main.instance.noteBlockAPI.addPlayer(this, player);
         tryToUpdateMenu();
+        if (this.isRunning) {
+            player.sendMessage("[TETR] Game is in progress already, wait for the current round to finish.");
+            for (Player p : playerList) {
+                playerTableMap.get(p).updateWholeTableTo(player);
+            }
+        } else {
+            for (Player p : playerList) {
+                playerTableMap.get(p).updateWholeTableTo(player);
+            }
+        }
     }
 
     public void addSpectator(Player player) {

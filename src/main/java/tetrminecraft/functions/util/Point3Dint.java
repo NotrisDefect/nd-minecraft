@@ -72,7 +72,4 @@ public class Point3Dint {
         return z != 0;
     }
 
-
-
-
 }
