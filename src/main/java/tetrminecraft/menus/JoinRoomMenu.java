@@ -81,7 +81,7 @@ public class JoinRoomMenu extends BaseMenu {
         event.setCancelled(true);
         if (JoinRoomMenu.ROOM_LOCATION_MIN <= slot && slot < JoinRoomMenu.ROOM_LOCATION_MIN + JoinRoomMenu.pagesize) {
             Main.instance.roomByID.get(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()))
-                    .addPlayer(player);
+                    .addTable(player);
             new RoomMenu(player);
         } else {
             switch (slot) {

@@ -2,14 +2,15 @@ package tetrminecraft;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import tetrcore.GameLogic;
 import tetrminecraft.commands.Choice;
 
 import java.util.*;
 
-public class Room {
+public class Room<T extends GameLogic> {
 
     public final List<Player> playerList = new ArrayList<>();
-    public final Map<Player, Table> playerTableMap = new HashMap<>();
+    public final Map<Player, T> playerTableMap = new HashMap<>();
     private final String roomID;
     private final String roomName;
     private final List<Player> spectatorList = new ArrayList<>();
@@ -29,7 +30,7 @@ public class Room {
         roomID = mkID;
 
         this.host = host;
-        addPlayer(host);
+        addTable(host);
         Main.instance.roomByID.put(roomID, this);
         this.isSingleplayer = isSingleplayer;
         if (isSingleplayer) {
@@ -61,10 +62,9 @@ public class Room {
         return result.toString();
     }
 
-    public void addPlayer(Player player) {
+    public void addTable(T table) {
         Main.instance.inWhichRoomIs.put(player, this);
         playerList.add(player);
-        Table table = new Table(player, this);
         playerTableMap.put(player, table);
         Main.instance.noteBlockAPI.addPlayer(this, player);
         tryToUpdateMenu();
@@ -95,7 +95,7 @@ public class Room {
     public void forwardGarbage(int n, Player sender) {
         if (n > 0) {
             int random = (int) (Math.random() * alivePlayers.size());
-            Table table = playerTableMap.get(alivePlayers.get(random));
+            T table = playerTableMap.get(alivePlayers.get(random));
             Player receiver = table.getPlayer();
             if (receiver != sender || backfire) {
                 table.receiveGarbage(n);
@@ -160,7 +160,7 @@ public class Room {
             long seed2 = x.nextInt();
 
             for (Player player : playerList) {
-                Table table = playerTableMap.get(player);
+                T table = playerTableMap.get(player);
                 table.initTable(seed, seed2);
             }
             alivePlayers = new ArrayList<>(playerList);

@@ -39,7 +39,7 @@ public class Tetr implements CommandExecutor, Listener {
                 Choice.showControls(sender);
             } else if (args[0].equalsIgnoreCase("help")) {
                 Choice.help(sender);
-            } else if (args[0].equalsIgnoreCase("spectate") && Main.isDeveloper(sender) && player != null) {
+            } else if (args[0].equalsIgnoreCase("spectate") && Main.isDeveloperModeEnabled(sender) && player != null) {
                 if (args.length < 2) {
                     player.sendMessage("Room id is missing!");
                 } else {
@@ -51,9 +51,9 @@ public class Tetr implements CommandExecutor, Listener {
                 }
             } else if (args[0].equalsIgnoreCase("disable") && sender.hasPermission("tetr.reload")) {
                 Choice.disablePlugin();
-            } else if (args[0].equalsIgnoreCase("fastjoin") && Main.isDeveloper(sender) && player != null) {
+            } else if (args[0].equalsIgnoreCase("fastjoin") && Main.isDeveloperModeEnabled(sender) && player != null) {
                 try {
-                    Main.instance.roomByID.get(args[1]).addPlayer(player);
+                    Main.instance.roomByID.get(args[1]).addTable(player);
                     Main.instance.lastMenuOpened.put(player, "room");
                 } catch (Exception e) {
                     player.sendMessage("Error");

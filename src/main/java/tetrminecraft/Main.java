@@ -42,7 +42,7 @@ public class Main extends JavaPlugin implements Listener {
     public Netherboard netherboard;
     public NoteBlockAPI noteBlockAPI;
 
-    public static boolean isDeveloper(CommandSender sender) {
+    public static boolean isDeveloperModeEnabled(CommandSender sender) {
         return Constants.iKnowWhatIAmDoing && (sender.hasPermission("tetr.developer"));
     }
 

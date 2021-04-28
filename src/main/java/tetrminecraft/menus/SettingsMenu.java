@@ -49,7 +49,7 @@ public class SettingsMenu extends BaseMenu {
         getInventory().setItem(53,
                 createItem(XMaterial.DIRT, "BACKFIRE: " + Main.instance.inWhichRoomIs.get(player).getBackfire()));
         getInventory().setItem(1,
-                createItem(XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks: " + table.enableFallingSand));
+                createItem(XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks: " + table.enableAnimations));
 
         player.openInventory(getInventory());
     }
@@ -119,7 +119,7 @@ public class SettingsMenu extends BaseMenu {
                 Main.instance.inWhichRoomIs.get(player).toggleBackfire();
                 break;
             case 1:
-                table.enableFallingSand = !table.enableFallingSand;
+                table.enableAnimations = !table.enableAnimations;
                 break;
             default:
                 return;

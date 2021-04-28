@@ -6,9 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import tetrcore.GameLogic;
@@ -25,7 +22,7 @@ public class Table extends GameLogic {
     private final Room room;
     private final Player player;
     private final int thickness = 1;
-    public boolean enableFallingSand = true;
+    public boolean enableAnimations = true;
     private Point3Dint widthMultiplier;
     private Point3Dint heightMultiplier;
     private Location location;
@@ -560,7 +557,7 @@ public class Table extends GameLogic {
     }
 
     private void turnToFallingBlock(int x, int y, double d, int color) {
-        if (enableFallingSand) {
+        if (enableAnimations) {
             int tex, tey, tez;
             double xv = d * (2 - Math.random() * 4) * imi;
             double yv = d * (8 - Math.random() * 10) * imj;
