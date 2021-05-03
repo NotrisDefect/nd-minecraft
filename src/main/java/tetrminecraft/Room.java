@@ -7,10 +7,10 @@ import tetrminecraft.commands.Choice;
 
 import java.util.*;
 
-public class Room<T extends GameLogic> {
+public class Room {
 
     public final List<Player> playerList = new ArrayList<>();
-    public final Map<Player, T> playerTableMap = new HashMap<>();
+    public final Map<Player, ? extends Table> playerTableMap = new HashMap<>();
     private final String roomID;
     private final String roomName;
     private final List<Player> spectatorList = new ArrayList<>();
@@ -30,7 +30,7 @@ public class Room<T extends GameLogic> {
         roomID = mkID;
 
         this.host = host;
-        addTable(host);
+        addPlayer(host);
         Main.instance.roomByID.put(roomID, this);
         this.isSingleplayer = isSingleplayer;
         if (isSingleplayer) {
@@ -62,9 +62,10 @@ public class Room<T extends GameLogic> {
         return result.toString();
     }
 
-    public void addTable(T table) {
+    public void addPlayer(Player player) {
         Main.instance.inWhichRoomIs.put(player, this);
         playerList.add(player);
+        Table table = new Table(player, this);
         playerTableMap.put(player, table);
         Main.instance.noteBlockAPI.addPlayer(this, player);
         tryToUpdateMenu();
@@ -95,7 +96,7 @@ public class Room<T extends GameLogic> {
     public void forwardGarbage(int n, Player sender) {
         if (n > 0) {
             int random = (int) (Math.random() * alivePlayers.size());
-            T table = playerTableMap.get(alivePlayers.get(random));
+            Table table = playerTableMap.get(alivePlayers.get(random));
             Player receiver = table.getPlayer();
             if (receiver != sender || backfire) {
                 table.receiveGarbage(n);
@@ -160,7 +161,7 @@ public class Room<T extends GameLogic> {
             long seed2 = x.nextInt();
 
             for (Player player : playerList) {
-                T table = playerTableMap.get(player);
+                Table table = playerTableMap.get(player);
                 table.initTable(seed, seed2);
             }
             alivePlayers = new ArrayList<>(playerList);

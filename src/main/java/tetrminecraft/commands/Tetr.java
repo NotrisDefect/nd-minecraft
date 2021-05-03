@@ -53,7 +53,7 @@ public class Tetr implements CommandExecutor, Listener {
                 Choice.disablePlugin();
             } else if (args[0].equalsIgnoreCase("fastjoin") && Main.isDeveloperModeEnabled(sender) && player != null) {
                 try {
-                    Main.instance.roomByID.get(args[1]).addTable(player);
+                    Main.instance.roomByID.get(args[1]).addPlayer(player);
                     Main.instance.lastMenuOpened.put(player, "room");
                 } catch (Exception e) {
                     player.sendMessage("Error");

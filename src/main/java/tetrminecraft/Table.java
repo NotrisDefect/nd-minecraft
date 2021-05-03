@@ -15,7 +15,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Table extends GameLogic {
+public class Table extends BaseTable {
 
     private static final int FRONTROWS = 30;
     private static final int BACKROWS = 20;
