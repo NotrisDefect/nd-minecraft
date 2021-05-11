@@ -1,13 +1,11 @@
 package tetrminecraft.menus;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import com.cryptomorin.xseries.XMaterial;
-
 import tetrminecraft.Main;
 import tetrminecraft.Table;
 
@@ -34,8 +32,8 @@ public class SimpleSettingsMenu extends BaseMenu {
 
         getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
         getInventory().setItem(TORCH_LOCATION,
-                createItem(XMaterial.TORCH, ChatColor.YELLOW + "This is standard settings menu",
-                        ChatColor.DARK_RED + "" + ChatColor.BOLD + "Click to go to advanced menu"));
+            createItem(XMaterial.TORCH, ChatColor.YELLOW + "This is standard settings menu",
+                ChatColor.DARK_RED + "" + ChatColor.BOLD + "Click to go to advanced menu"));
 
         getInventory().setItem(21, createItem(XMaterial.RED_WOOL, ChatColor.WHITE + "Move X", "X: " + table.getPosX()));
         getInventory().setItem(22, createItem(XMaterial.GREEN_WOOL, ChatColor.WHITE + "Move Y", "Y: " + table.getPosY()));
@@ -61,32 +59,32 @@ public class SimpleSettingsMenu extends BaseMenu {
         Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
 
         switch (event.getSlot()) {
-        case SimpleSettingsMenu.BACK_LOCATION:
-            new RoomMenu(player);
-            return;
-        case SimpleSettingsMenu.TORCH_LOCATION:
-            new SettingsMenu(player);
-            return;
-        case 21:
-            table.moveTableRelative(by, 0, 0);
-            break;
-        case 22:
-            table.moveTableRelative(0, by, 0);
-            break;
-        case 23:
-            table.moveTableRelative(0, 0, by);
-            break;
-        case 30:
-            table.rotateTable("X");
-            break;
-        case 31:
-            table.rotateTable("Y");
-            break;
-        case 32:
-            table.rotateTable("Z");
-            break;
-        default:
-            return;
+            case SimpleSettingsMenu.BACK_LOCATION:
+                new RoomMenu(player);
+                return;
+            case SimpleSettingsMenu.TORCH_LOCATION:
+                new SettingsMenu(player);
+                return;
+            case 21:
+                table.moveTableRelative(by, 0, 0);
+                break;
+            case 22:
+                table.moveTableRelative(0, by, 0);
+                break;
+            case 23:
+                table.moveTableRelative(0, 0, by);
+                break;
+            case 30:
+                table.rotateTable("X");
+                break;
+            case 31:
+                table.rotateTable("Y");
+                break;
+            case 32:
+                table.rotateTable("Z");
+                break;
+            default:
+                return;
         }
 
         new SimpleSettingsMenu(player);

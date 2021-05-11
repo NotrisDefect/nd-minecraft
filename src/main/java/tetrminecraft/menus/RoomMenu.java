@@ -1,16 +1,14 @@
 package tetrminecraft.menus;
 
-import java.util.Collections;
-
+import com.cryptomorin.xseries.XMaterial;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import com.cryptomorin.xseries.XMaterial;
-
-import net.md_5.bungee.api.ChatColor;
 import tetrminecraft.Main;
+
+import java.util.Collections;
 
 public class RoomMenu extends BaseMenu {
 
@@ -56,17 +54,17 @@ public class RoomMenu extends BaseMenu {
                 getInventory().setItem(GAME_LOCATION, createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"));
             } else {
                 if (!Main.instance.inWhichRoomIs.get(player).getIsSingleplayer()
-                        && Main.instance.inWhichRoomIs.get(player).playerList.size() == 1) {
+                    && Main.instance.inWhichRoomIs.get(player).playerList.size() == 1) {
                     getInventory().setItem(GAME_LOCATION,
-                            createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed"));
+                        createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed"));
                 } else {
                     getInventory().setItem(GAME_LOCATION,
-                            createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"));
+                        createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"));
                 }
             }
         } else {
             getInventory().setItem(GAME_LOCATION,
-                    createItem(XMaterial.BARRIER, ChatColor.WHITE + "YOU ARE NOT THE HOST"));
+                createItem(XMaterial.BARRIER, ChatColor.WHITE + "YOU ARE NOT THE HOST"));
         }
 
         getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
@@ -81,30 +79,30 @@ public class RoomMenu extends BaseMenu {
         int slot = event.getSlot();
         event.setCancelled(true);
         switch (slot) {
-        case RoomMenu.BACK_LOCATION:
-            if (Main.instance.inWhichRoomIs.get(player).getIsSingleplayer()) {
-                new HomeMenu(player);
-            } else {
-                new MultiplayerMenu(player);
-            }
-            Main.instance.inWhichRoomIs.get(player).removePlayer(player);
-            break;
-        case 49:
-            if (Main.instance.inWhichRoomIs.get(player).getHost().equals(player)) {
-                if (Main.instance.inWhichRoomIs.get(player).getIsRunning()) {
-                    Main.instance.inWhichRoomIs.get(player).stopRoom();
+            case RoomMenu.BACK_LOCATION:
+                if (Main.instance.inWhichRoomIs.get(player).getIsSingleplayer()) {
+                    new HomeMenu(player);
                 } else {
-                    Main.instance.inWhichRoomIs.get(player).startRoom();
+                    new MultiplayerMenu(player);
                 }
-                new RoomMenu(player);
-            }
-            break;
-        case RoomMenu.SETTINGS_LOCATION:
-            new SimpleSettingsMenu(player);
-            break;
-        case RoomMenu.SONG_LOCATION:
-            new SongMenu(player);
-            break;
+                Main.instance.inWhichRoomIs.get(player).removePlayer(player);
+                break;
+            case 49:
+                if (Main.instance.inWhichRoomIs.get(player).getHost().equals(player)) {
+                    if (Main.instance.inWhichRoomIs.get(player).getIsRunning()) {
+                        Main.instance.inWhichRoomIs.get(player).stopRoom();
+                    } else {
+                        Main.instance.inWhichRoomIs.get(player).startRoom();
+                    }
+                    new RoomMenu(player);
+                }
+                break;
+            case RoomMenu.SETTINGS_LOCATION:
+                new SimpleSettingsMenu(player);
+                break;
+            case RoomMenu.SONG_LOCATION:
+                new SongMenu(player);
+                break;
         }
     }
 }

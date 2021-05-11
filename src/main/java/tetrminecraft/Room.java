@@ -2,7 +2,6 @@ package tetrminecraft;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import tetrcore.GameLogic;
 import tetrminecraft.commands.Choice;
 
 import java.util.*;
@@ -10,7 +9,7 @@ import java.util.*;
 public class Room {
 
     public final List<Player> playerList = new ArrayList<>();
-    public final Map<Player, ? extends Table> playerTableMap = new HashMap<>();
+    public final Map<Player, Table> playerTableMap = new HashMap<>();
     private final String roomID;
     private final String roomName;
     private final List<Player> spectatorList = new ArrayList<>();
@@ -87,9 +86,11 @@ public class Room {
     }
 
     public void eliminate(Player player) {
-        alivePlayers.remove(player);
-        if (alivePlayers.size() < 2) {
-            stopRoom();
+        if (isRunning) {
+            alivePlayers.remove(player);
+            if (alivePlayers.size() < 2) {
+                stopRoom();
+            }
         }
     }
 
@@ -99,7 +100,7 @@ public class Room {
             Table table = playerTableMap.get(alivePlayers.get(random));
             Player receiver = table.getPlayer();
             if (receiver != sender || backfire) {
-                table.receiveGarbage(n);
+                table.extAddGarbage(n);
             }
         }
     }
@@ -131,7 +132,7 @@ public class Room {
     public void removePlayer(Player player) {
         Main.instance.noteBlockAPI.removePlayer(this, player);
         playerTableMap.get(player).destroyTable();
-        playerTableMap.get(player).gameOver();
+        playerTableMap.get(player).extAbortGame();
         eliminate(player);
         playerList.remove(player);
         playerTableMap.remove(player);
@@ -185,7 +186,7 @@ public class Room {
         Main.instance.noteBlockAPI.setPlaying(this, false);
 
         for (Player player : alivePlayers) {
-            playerTableMap.get(player).gameOver();
+            playerTableMap.get(player).extAbortGame();
         }
         tryToUpdateMenu();
     }

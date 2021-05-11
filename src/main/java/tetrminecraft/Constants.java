@@ -8,10 +8,10 @@ public class Constants {
     public static final boolean iKnowWhatIAmDoing = true;
 
     public static final String[] NAMES = {
-            "blockZ", "blockL", "blockO", "blockS", "blockI", "blockJ", "blockT",
-            "background", "garbage",
-            "ghostZ", "ghostL", "ghostO", "ghostS", "ghostI", "ghostJ", "ghostT",
-            "zone"
+        "blockZ", "blockL", "blockO", "blockS", "blockI", "blockJ", "blockT",
+        "background", "garbage",
+        "ghostZ", "ghostL", "ghostO", "ghostS", "ghostI", "ghostJ", "ghostT",
+        "zone"
     };
 
     public static final DeathAnimation deathAnim = DeathAnimation.GRAYSCALE;

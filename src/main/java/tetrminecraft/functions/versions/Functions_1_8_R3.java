@@ -14,24 +14,9 @@ import tetrminecraft.functions.versions.sendblockchangecustom.SendBlockChangeCus
 public class Functions_1_8_R3 implements Functions {
 
     @Override
-    public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        IChatBaseComponent cTitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + title + "\"}");
-        IChatBaseComponent cSubtitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + subtitle + "\"}");
-
-        PacketPlayOutTitle iTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, cTitle);
-        PacketPlayOutTitle iSubtitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, cSubtitle);
-
-        PacketPlayOutTitle length = new PacketPlayOutTitle(fadeIn, stay, fadeOut);
-
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iTitle);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iSubtitle);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
-
-    }
-
-    @Override
-    public void sendBlockChangeCustom(Player player, Location loc, int color) {
-        SendBlockChangeCustom_V1.sendBlockChangeCustom(player, loc, color);
+    public void sendActionBarCustom(Player player, String message) {
+        PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte) 2);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
     }
 
     @Override
@@ -40,9 +25,8 @@ public class Functions_1_8_R3 implements Functions {
     }
 
     @Override
-    public void sendActionBarCustom(Player player, String message) {
-        PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte) 2);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+    public void sendBlockChangeCustom(Player player, Location loc, int color) {
+        SendBlockChangeCustom_V1.sendBlockChangeCustom(player, loc, color);
     }
 
     @Override
@@ -68,5 +52,21 @@ public class Functions_1_8_R3 implements Functions {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         PacketPlayOutEntityVelocity vpacket = new PacketPlayOutEntityVelocity(entityfallingblock.getId(), xVel, yVel, zVel);
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(vpacket);
+    }
+
+    @Override
+    public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        IChatBaseComponent cTitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + title + "\"}");
+        IChatBaseComponent cSubtitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + subtitle + "\"}");
+
+        PacketPlayOutTitle iTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, cTitle);
+        PacketPlayOutTitle iSubtitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, cSubtitle);
+
+        PacketPlayOutTitle length = new PacketPlayOutTitle(fadeIn, stay, fadeOut);
+
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iTitle);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iSubtitle);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
+
     }
 }

@@ -1,14 +1,12 @@
 package tetrminecraft.menus;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import com.cryptomorin.xseries.XMaterial;
-
 import tetrminecraft.Blocks;
 import tetrminecraft.Main;
 
@@ -16,7 +14,7 @@ public class SkinMenu extends BaseMenu {
 
     public final static int BACK_LOCATION = 0;
     public final static int TORCH_LOCATION = 8;
-    public final static int[] BLOCK_LOCATIONS = { 28, 29, 30, 31, 32, 33, 34, 11, 13, 37, 38, 39, 40, 41, 42, 43, 15 };
+    public final static int[] BLOCK_LOCATIONS = {28, 29, 30, 31, 32, 33, 34, 11, 13, 37, 38, 39, 40, 41, 42, 43, 15};
 
     public SkinMenu(Player player) {
 
@@ -44,10 +42,10 @@ public class SkinMenu extends BaseMenu {
 
         getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
         getInventory().setItem(TORCH_LOCATION, createItem(XMaterial.TORCH,
-                ChatColor.WHITE + "" + (!Main.instance.playerIsUsingCustomBlocks.get(player) ? ChatColor.BOLD : "")
-                        + "Default",
-                ChatColor.WHITE + "" + (Main.instance.playerIsUsingCustomBlocks.get(player) ? ChatColor.BOLD : "")
-                        + "Custom"));
+            ChatColor.WHITE + "" + (!Main.instance.playerIsUsingCustomBlocks.get(player) ? ChatColor.BOLD : "")
+                + "Default",
+            ChatColor.WHITE + "" + (Main.instance.playerIsUsingCustomBlocks.get(player) ? ChatColor.BOLD : "")
+                + "Custom"));
 
         player.openInventory(getInventory());
     }
@@ -62,9 +60,9 @@ public class SkinMenu extends BaseMenu {
         } else if (event.getCurrentItem().getType() == XMaterial.AIR.parseMaterial()) {
             if (slot == 11 && event.getCursor().getType() == XMaterial.AIR.parseMaterial()) {
                 Main.instance.playerTransparentBackground.put(player,
-                        !Main.instance.playerTransparentBackground.get(player));
+                    !Main.instance.playerTransparentBackground.get(player));
                 player.sendMessage("Transparency turned "
-                        + (Main.instance.playerTransparentBackground.get(player) ? "on" : "off"));
+                    + (Main.instance.playerTransparentBackground.get(player) ? "on" : "off"));
                 return;
             }
         } else if (event.getSlot() == SkinMenu.BACK_LOCATION || event.getSlot() == SkinMenu.TORCH_LOCATION) {

@@ -1,10 +1,22 @@
 package tetrminecraft.functions.softdepend;
 
-import java.util.Map;
-
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 public class NetherboardYes implements Netherboard {
+
+    @Override
+    public void createBoard(Player player, String name) {
+        fr.minuskube.netherboard.Netherboard.instance().createBoard(player, "Stats");
+    }
+
+    @Override
+    public void removeBoard(Player player) {
+        if (fr.minuskube.netherboard.Netherboard.instance().hasBoard(player)) {
+            fr.minuskube.netherboard.Netherboard.instance().getBoard(player).delete();
+        }
+    }
 
     @Override
     public void sendScoreboard(Player player, Map<Integer, String> text) {
@@ -20,18 +32,6 @@ public class NetherboardYes implements Netherboard {
             } else {
                 fr.minuskube.netherboard.Netherboard.instance().getBoard(player).set(entry.getValue(), entry.getKey());
             }
-        }
-    }
-
-    @Override
-    public void createBoard(Player player, String name) {
-        fr.minuskube.netherboard.Netherboard.instance().createBoard(player, "Stats");
-    }
-
-    @Override
-    public void removeBoard(Player player) {
-        if(fr.minuskube.netherboard.Netherboard.instance().hasBoard(player)) {
-            fr.minuskube.netherboard.Netherboard.instance().getBoard(player).delete();
         }
     }
 }

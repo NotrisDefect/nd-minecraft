@@ -154,6 +154,14 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
+    private void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
+        try {
+            ymlConfig.save(ymlFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void saveSkin(Player player, ItemStack[] blocks) {
         File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
@@ -163,14 +171,6 @@ public class Main extends JavaPlugin implements Listener {
         customConfig.set("playerIsUsingCustomBlocks", playerIsUsingCustomBlocks.get(player));
         customConfig.set("playerTransparentBackground", playerTransparentBackground.get(player));
         saveCustomYml(customConfig, customYml);
-    }
-
-    private void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
-        try {
-            ymlConfig.save(ymlFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private boolean versionIsSupported() {
@@ -197,7 +197,7 @@ public class Main extends JavaPlugin implements Listener {
         public void getVersion(final Consumer<String> consumer) {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=84269")
-                        .openStream(); Scanner scanner = new Scanner(inputStream)) {
+                    .openStream(); Scanner scanner = new Scanner(inputStream)) {
                     if (scanner.hasNext()) {
                         consumer.accept(scanner.next());
                     }

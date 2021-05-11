@@ -30,8 +30,8 @@ public class SettingsMenu extends BaseMenu {
 
         getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
         getInventory().setItem(TORCH_LOCATION,
-                createItem(XMaterial.REDSTONE_TORCH, ChatColor.DARK_RED + "This is advanced settings menu",
-                        ChatColor.YELLOW + "" + ChatColor.BOLD + "Click to go to standard menu"));
+            createItem(XMaterial.REDSTONE_TORCH, ChatColor.DARK_RED + "This is advanced settings menu",
+                ChatColor.YELLOW + "" + ChatColor.BOLD + "Click to go to standard menu"));
 
         getInventory().setItem(11, createItem(XMaterial.DIRT, "your pos"));
         getInventory().setItem(12, createItem(XMaterial.RED_WOOL, ChatColor.WHITE + "Move X", "X: " + table.getPosX()));
@@ -47,9 +47,9 @@ public class SettingsMenu extends BaseMenu {
         getInventory().setItem(40, createItem(XMaterial.DIRT, "Height Y multiplier: " + table.getHeightMultiplier().getY()));
         getInventory().setItem(41, createItem(XMaterial.DIRT, "Height Z multiplier: " + table.getHeightMultiplier().getZ()));
         getInventory().setItem(53,
-                createItem(XMaterial.DIRT, "BACKFIRE: " + Main.instance.inWhichRoomIs.get(player).getBackfire()));
+            createItem(XMaterial.DIRT, "BACKFIRE: " + Main.instance.inWhichRoomIs.get(player).getBackfire()));
         getInventory().setItem(1,
-                createItem(XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks: " + table.enableAnimations));
+            createItem(XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks: " + table.enableAnimations));
 
         player.openInventory(getInventory());
     }

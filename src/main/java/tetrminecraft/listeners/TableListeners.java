@@ -27,28 +27,28 @@ public class TableListeners implements Listener {
                 int itemId = event.getNewSlot();
                 switch (itemId) {
                     case 0:
-                        table.userInput("left");
+                        table.extMovePieceLeft();
                         break;
                     case 1:
-                        table.userInput("right");
+                        table.extMovePieceRight();
                         break;
                     case 2:
-                        table.userInput("instant");
+                        table.extDropPieceSoftMax();
                         break;
                     case 3:
-                        table.userInput("space");
+                        table.extDropPieceHard();
                         break;
                     case 4:
-                        table.userInput("y");
+                        table.extRotatePieceCCW();
                         break;
                     case 5:
-                        table.userInput("x");
+                        table.extRotatePieceCW();
                         break;
                     case 6:
-                        table.userInput("up");
+                        table.extRotatePiece180();
                         break;
                     case 7:
-                        table.userInput("c");
+                        table.extHoldPiece();
                         break;
                     case 8:
                         return;
@@ -81,17 +81,17 @@ public class TableListeners implements Listener {
 
                 if (zDiff > xDiff) {
                     if (toLocation.getZ() - fromLocation.getZ() > 0) {
-                        table.userInput("down");
-                        table.userInput("down");
+                        table.extDropPieceSoft();
+                        table.extDropPieceSoft();
                     }
                     return;
                 }
 
                 if (xDiff > zDiff) {
                     if (toLocation.getX() - fromLocation.getX() > 0) {
-                        table.userInput("right");
+                        table.extMovePieceRight();
                     } else {
-                        table.userInput("left");
+                        table.extMovePieceLeft();
                     }
                 }
             }
@@ -105,7 +105,7 @@ public class TableListeners implements Listener {
             Table table = Main.instance.inWhichRoomIs.get(player).playerTableMap.get(player);
             if (player.isSneaking()) {
                 if (table != null && !table.getGameover()) {
-                    table.userInput("shift");
+                    table.extStartZone();
                 }
             }
         }

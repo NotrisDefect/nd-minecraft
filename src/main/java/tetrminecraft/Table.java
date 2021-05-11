@@ -9,13 +9,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import tetrcore.GameLogic;
+import tetrcore.Piece;
 import tetrminecraft.functions.util.Point3Dint;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Table extends BaseTable {
+public class Table extends GameLogic {
 
     private static final int FRONTROWS = 30;
     private static final int BACKROWS = 20;
@@ -41,7 +42,6 @@ public class Table extends BaseTable {
         room = r;
         reposition();
         drawAll(16);
-        setGameover(true);
     }
 
     public void cleanAll() {
@@ -67,7 +67,7 @@ public class Table extends BaseTable {
 
     public void destroyTable() {
         cleanAll();
-        setGameover(true);
+        extAbortGame();
         Main.instance.netherboard.removeBoard(player);
     }
 
@@ -156,7 +156,7 @@ public class Table extends BaseTable {
             }
         }
 
-        initGame();
+        extStartGame();
         Main.instance.netherboard.createBoard(player, "Stats");
         gameLoop();
     }
@@ -232,89 +232,76 @@ public class Table extends BaseTable {
     }
 
     @Override
-    public void sendGarbageEvent(int n) {
-        room.forwardGarbage(n, player);
+    public void whatWhenGameover() {
+        room.eliminate(player);
+
+        switch (Constants.deathAnim) {
+            case EXPLOSION:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        colPrintNewForce(j, i);
+                    }
+                }
+
+                for (int i = STAGESIZEY - FRONTROWS; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        turnToFallingBlock(j, i, 1, getStage()[i][j]);
+                    }
+                }
+                break;
+            case GRAYSCALE:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        if (getStage()[i][j] != 7)
+                            colPrintNewRender(j, i, 8);
+                    }
+                }
+                break;
+            case CLEAR:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        if (getStage()[i][j] != 7) {
+                            colPrintNewRender(j, i, 7);
+                        }
+                    }
+                }
+            case DISAPPEAR:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        colPrintNewForce(j, i);
+                    }
+                }
+
+            case NONE:
+                break;
+        }
     }
 
     @Override
-    public void onLineClearEvent(int lineNumber, int[] line) {
+    public void whatWhenLineClear(int height, int[] line) {
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (int i = 0; i < STAGESIZEX; i++) {
-                    turnToFallingBlock(i, lineNumber, 0.3, line[i]);
+                    turnToFallingBlock(i, height, 0.3, line[i]);
                 }
             }
         }.runTask(Main.instance);
     }
 
-    public void gameOver() {
-        setGameover(true);
-        whenPlayerDies();
+    @Override
+    public void whatWhenPerfectClear() {
+        Main.instance.functions.sendTitleCustom(player, "pc", "", 20, 20, 40);
     }
 
-    @SuppressWarnings("deprecation")
-    public void userInput(String input) {
-        if (!getGameover()) {
-            switch (input) {
-                case "y":
-                    if (rotatePiece(-1)) {
-                        boolean v = checkTSpin();
-                        if (v) {
-                            playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
-                            settSpin(v);
-                        }
-                    }
-                    break;
-                case "x":
-                    if (rotatePiece(+1)) {
-                        boolean v = checkTSpin();
-                        if (v) {
-                            playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
-                            settSpin(v);
-                        }
-                    }
-                    break;
-                case "c":
-                    if (!holdPiece()) {
-                        playSound(XSound.ENTITY_SPLASH_POTION_BREAK, 1f, 1f);
-                    }
-                    break;
-                case "left":
-                    movePieceRelative(-1, 0);
-                    break;
-                case "right":
-                    movePieceRelative(+1, 0);
-                    break;
+    @Override
+    public void whatWhenSendGarbage(int i) {
+        room.forwardGarbage(i, player);
+    }
 
-                case "up":
-                    if (rotatePiece(+2)) {
-                        boolean v = checkTSpin();
-                        if (v) {
-                            playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
-                            settSpin(v);
-                        }
-                    }
-                    break;
-                case "down":
-                    movePieceRelative(0, +1);
-                    break;
-
-                case "space":
-                    hardDropPiece();
-                    break;
-                case "l":
-                    gameOver();
-                    break;
-                case "instant":
-                    sonicDrop();
-                    break;
-                case "shift":
-                    startZone();
-                default:
-                    System.out.println("wee woo wee woo");
-            }
-        }
+    @Override
+    public void whatWhenSpin() {
+        playSound(XSound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
     }
 
     private void colPrintNewForce(float x, float y) {
@@ -329,7 +316,7 @@ public class Table extends BaseTable {
                     Block b = location.getWorld().getBlockAt(blockX, blockY, blockZ);
                     for (Player player : room.playerList) {
                         Main.instance.functions.sendBlockChangeCustom(player,
-                                new Location(location.getWorld(), blockX, blockY, blockZ), b);
+                            new Location(location.getWorld(), blockX, blockY, blockZ), b);
                     }
                 }
             }
@@ -362,7 +349,6 @@ public class Table extends BaseTable {
             public void run() {
                 if (getGameover()) {
                     this.cancel();
-                    whenPlayerDies();
                 } else {
                     render();
                     looptick++;
@@ -409,9 +395,10 @@ public class Table extends BaseTable {
     }
 
     private void render() {
-        final Point cpp = getCurrentPiecePosition();
-        final int rot = getCurrentPieceRotation();
-        final int piece = getCurrentPieceInt();
+        final Piece pieceFull = getCurrentPiece();
+        final Point cpp = new Point(pieceFull.getX(), pieceFull.getY());
+        final int rot = pieceFull.getRotation();
+        final int piece = getCurrentPiece().getPieceNumber();
         final int[][] stage = getStage();
 
         int[][] newStageDisplay = new int[STAGESIZEY][STAGESIZEX];
@@ -424,11 +411,11 @@ public class Table extends BaseTable {
             if (STAGESIZEX >= 0) System.arraycopy(stage[i], 0, newStageDisplay[i], 0, STAGESIZEX);
         }
 
-        for (Point point : getPiece(piece, rot)) {
+        for (Point point : genPiece(piece, rot)) {
             newStageDisplay[point.y + getCurrentPieceLowestPossiblePosition()][point.x + cpp.x] = 9 + piece;
         }
 
-        for (Point point : getPiece(piece, rot)) {
+        for (Point point : genPiece(piece, rot)) {
             newStageDisplay[point.y + cpp.y][point.x + cpp.x] = piece;
         }
 
@@ -459,8 +446,8 @@ public class Table extends BaseTable {
         }
 
         for (int i = 0; i < NEXTPIECESMAX; i++) {
-            for (Point point : getPiece(getNextPieces().get(i), 0)) {
-                newNextDisplay[point.y + i * 4][point.x] = getNextPieces().get(i);
+            for (Point point : genPiece(getNextPieces().get(i).getPieceNumber(), 0)) {
+                newNextDisplay[point.y + i * 4][point.x] = getNextPieces().get(i).getPieceNumber();
             }
         }
 
@@ -472,7 +459,7 @@ public class Table extends BaseTable {
         }
 
         if (getHeldPiece() != -1) {
-            for (Point point : getPiece(getHeldPiece(), 0)) {
+            for (Point point : genPiece(getHeldPiece(), 0)) {
                 newHoldDisplay[point.y][point.x] = getHeldPiece();
             }
         }
@@ -576,49 +563,5 @@ public class Table extends BaseTable {
         }
     }
 
-    private void whenPlayerDies() {
-        room.eliminate(player);
-
-        switch (Constants.deathAnim) {
-            case EXPLOSION:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        colPrintNewForce(j, i);
-                    }
-                }
-
-                for (int i = STAGESIZEY - FRONTROWS; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        turnToFallingBlock(j, i, 1, getStage()[i][j]);
-                    }
-                }
-                break;
-            case GRAYSCALE:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        if (getStage()[i][j] != 7)
-                            colPrintNewRender(j, i, 8);
-                    }
-                }
-                break;
-            case CLEAR:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        if (getStage()[i][j] != 7) {
-                            colPrintNewRender(j, i, 7);
-                        }
-                    }
-                }
-            case DISAPPEAR:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        colPrintNewForce(j, i);
-                    }
-                }
-
-            case NONE:
-                break;
-        }
-    }
 }
 

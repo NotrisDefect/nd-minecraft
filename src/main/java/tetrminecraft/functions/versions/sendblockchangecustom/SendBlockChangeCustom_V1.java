@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import tetrminecraft.Blocks;
 import tetrminecraft.Main;
 
@@ -20,7 +19,7 @@ public class SendBlockChangeCustom_V1 {
             player.sendBlockChange(loc, blocks[color].getType(), blocks[color].getData().getData());
         } else if (!Main.instance.playerIsUsingCustomBlocks.get(player)) {
             player.sendBlockChange(loc, Blocks.defaultBlocks[color].getType(),
-                    Blocks.defaultBlocks[color].getData().getData());
+                Blocks.defaultBlocks[color].getData().getData());
         }
     }
 

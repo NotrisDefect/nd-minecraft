@@ -22,31 +22,8 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
     private int numberOfSongs;
 
     @Override
-    public void newRSP(Room room) {
-        RadioSongPlayer rsp = new RadioSongPlayer(playlist);
-        rsps.put(room, rsp);
-        rsp.setChannelMode(new MonoStereoMode());
-        rsp.setVolume((byte) 50);
-    }
-
-    @Override
     public void addPlayer(Room room, Player player) {
         rsps.get(room).addPlayer(player);
-    }
-
-    @Override
-    public void removePlayer(Room room, Player player) {
-        rsps.get(room).removePlayer(player);
-    }
-
-    @Override
-    public void setPlaying(Room room, boolean b) {
-        rsps.get(room).setPlaying(b);
-    }
-
-    @Override
-    public void playSong(Room room, int index) {
-        rsps.get(room).playSong(index);
     }
 
     @Override
@@ -62,7 +39,7 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
         Song[] songArray;
         if (numberOfSongs > 0) {
             Main.instance.getLogger()
-                    .info(numberOfSongs + " song" + (numberOfSongs == 1 ? "" : "s") + " in TETR/songs");
+                .info(numberOfSongs + " song" + (numberOfSongs == 1 ? "" : "s") + " in TETR/songs");
             String[] pathNames;
             String song;
             songArray = new Song[numberOfSongs];
@@ -96,13 +73,36 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
                         songArray = new Song[0];
                     } else {
                         songArray[2] = NBSDecoder
-                                .parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
+                            .parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
                     }
                 }
             }
             numberOfSongs = 3;
         }
         playlist = new Playlist(songArray);
+    }
+
+    @Override
+    public void newRSP(Room room) {
+        RadioSongPlayer rsp = new RadioSongPlayer(playlist);
+        rsps.put(room, rsp);
+        rsp.setChannelMode(new MonoStereoMode());
+        rsp.setVolume((byte) 50);
+    }
+
+    @Override
+    public void playSong(Room room, int index) {
+        rsps.get(room).playSong(index);
+    }
+
+    @Override
+    public void removePlayer(Room room, Player player) {
+        rsps.get(room).removePlayer(player);
+    }
+
+    @Override
+    public void setPlaying(Room room, boolean b) {
+        rsps.get(room).setPlaying(b);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
                 player.sendMessage("[TETR] Playing: " + classpathSongs[random] + " - input your own in plugins/TETR/songs");
             } else {
                 player.sendMessage(
-                        "[TETR] Playing: " + rsps.get(room).getSong().getPath().getName().replaceAll(".nbs$", ""));
+                    "[TETR] Playing: " + rsps.get(room).getSong().getPath().getName().replaceAll(".nbs$", ""));
             }
         }
     }

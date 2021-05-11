@@ -1,12 +1,10 @@
 package tetrminecraft.menus;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-
-import com.cryptomorin.xseries.XMaterial;
-
 import tetrminecraft.Main;
 import tetrminecraft.Room;
 
@@ -50,7 +48,7 @@ public class JoinRoomMenu extends BaseMenu {
                     if (counter < pagesize) {
                         if (display == p) {
                             getInventory().setItem(ROOM_LOCATION_MIN + counter,
-                                    createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.getRoomID()));
+                                createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.getRoomID()));
                         }
                     } else {
                         if (display == p) {
@@ -81,19 +79,19 @@ public class JoinRoomMenu extends BaseMenu {
         event.setCancelled(true);
         if (JoinRoomMenu.ROOM_LOCATION_MIN <= slot && slot < JoinRoomMenu.ROOM_LOCATION_MIN + JoinRoomMenu.pagesize) {
             Main.instance.roomByID.get(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName()))
-                    .addPlayer(player);
+                .addPlayer(player);
             new RoomMenu(player);
         } else {
             switch (slot) {
-            case JoinRoomMenu.BACK_LOCATION:
-                new MultiplayerMenu(player);
-                break;
-            case JoinRoomMenu.MINUSPAGE_LOCATION:
-                new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player) - 1);
-                break;
-            case JoinRoomMenu.PLUSPAGE_LOCATION:
-                new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player) + 1);
-                break;
+                case JoinRoomMenu.BACK_LOCATION:
+                    new MultiplayerMenu(player);
+                    break;
+                case JoinRoomMenu.MINUSPAGE_LOCATION:
+                    new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player) - 1);
+                    break;
+                case JoinRoomMenu.PLUSPAGE_LOCATION:
+                    new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player) + 1);
+                    break;
 
             }
         }

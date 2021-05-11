@@ -1,14 +1,10 @@
 package tetrminecraft.functions.softdepend;
 
-import java.util.Map;
-
 import org.bukkit.entity.Player;
 
-public class NetherboardNo implements Netherboard {
+import java.util.Map;
 
-    @Override
-    public void sendScoreboard(Player player, Map<Integer, String> text) {
-    }
+public class NetherboardNo implements Netherboard {
 
     @Override
     public void createBoard(Player player, String name) {
@@ -16,6 +12,10 @@ public class NetherboardNo implements Netherboard {
 
     @Override
     public void removeBoard(Player player) {
+    }
+
+    @Override
+    public void sendScoreboard(Player player, Map<Integer, String> text) {
     }
 
 }

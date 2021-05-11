@@ -15,11 +15,11 @@ import tetrminecraft.Main;
 public class Tetr implements CommandExecutor, Listener {
 
     private static final Tetr instance = new Tetr();
-    
+
     public static Tetr getInstance() {
         return instance;
     }
-    
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         Player player = null;
@@ -27,11 +27,11 @@ public class Tetr implements CommandExecutor, Listener {
         if (sender instanceof Player) {
             player = (Player) sender;
         }
-        
-        if(player != null && !Main.instance.interactedWithPlugin.contains(player)) {
+
+        if (player != null && !Main.instance.interactedWithPlugin.contains(player)) {
             Main.instance.firstInteraction(player);
         }
-        
+
         if (!sender.hasPermission("tetr.banned")) {
             if (args.length == 0 && player != null) {
                 Choice.maximizeMenu(player);
@@ -61,7 +61,7 @@ public class Tetr implements CommandExecutor, Listener {
 
             } else if (args[0].equalsIgnoreCase("tetrachannel")) {
                 if (args.length > 1) {
-                   Choice.tetrioStats(sender, args[1]);
+                    Choice.tetrioStats(sender, args[1]);
                 } else {
                     sender.sendMessage("You need to specify a nickname to look up!");
                 }
@@ -87,5 +87,5 @@ public class Tetr implements CommandExecutor, Listener {
             e.setCommand("tetr help");
         }
     }
-    
+
 }

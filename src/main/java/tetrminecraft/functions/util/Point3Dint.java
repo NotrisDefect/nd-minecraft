@@ -12,15 +12,15 @@ public class Point3Dint {
         this.z = z;
     }
 
-    public void addX(int x){
+    public void addX(int x) {
         this.x += x;
     }
 
-    public void addY(int y){
+    public void addY(int y) {
         this.y += y;
     }
 
-    public void addZ(int z){
+    public void addZ(int z) {
         this.z += z;
     }
 

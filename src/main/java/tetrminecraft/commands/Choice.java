@@ -1,5 +1,15 @@
 package tetrminecraft.commands;
 
+import com.google.gson.Gson;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import tetrminecraft.Main;
+import tetrminecraft.menus.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,72 +18,77 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import com.google.gson.Gson;
-
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
-import tetrminecraft.Main;
-import tetrminecraft.menus.HomeMenu;
-import tetrminecraft.menus.JoinRoomMenu;
-import tetrminecraft.menus.MultiplayerMenu;
-import tetrminecraft.menus.RoomMenu;
-import tetrminecraft.menus.SettingsMenu;
-import tetrminecraft.menus.SimpleSettingsMenu;
-import tetrminecraft.menus.SkinMenu;
-import tetrminecraft.menus.SongMenu;
-
 /*
  * can also be forced
  */
 public class Choice {
 
+    public static void disablePlugin() {
+        Bukkit.getServer().getPluginManager().disablePlugin(Main.instance);
+    }
+
+    public static void help(CommandSender sender) {
+        TextComponent message = new TextComponent();
+        message.addExtra(ChatColor.GOLD + "" + ChatColor.BOLD + "Help");
+        if (sender.hasPermission("tetr.reload")) {
+            message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD
+                + "/tetr disable - disable the plugin (you cannot re-enable it)");
+        }
+
+        if (sender instanceof Player) {
+            message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD + "/tetr - open game window");
+        }
+
+        message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD + "/tetr help - shows this help page");
+        message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD
+            + "/tetr controls - shows guide on how to set the controls");
+        message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD
+            + "/tetr tetrachannel <nickname> - get stats of a player from ch.tetr.io");
+        sender.spigot().sendMessage(message);
+    }
+
     public static void maximizeMenu(Player player) {
         switch (Main.instance.lastMenuOpened.get(player)) {
-        case "home":
-            new HomeMenu(player);
-            break;
-        case "multiplayer":
-            new MultiplayerMenu(player);
-            break;
-        case "joinroom":
-            new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player));
-            break;
-        case "room":
-            new RoomMenu(player);
-            break;
-        case "skin":
-            new SkinMenu(player);
-            break;
-        case "settings":
-            new SettingsMenu(player);
-            break;
-        case "simsettings":
-            new SimpleSettingsMenu(player);
-            break;
-        case "song":
-            new SongMenu(player);
-            break;
+            case "home":
+                new HomeMenu(player);
+                break;
+            case "multiplayer":
+                new MultiplayerMenu(player);
+                break;
+            case "joinroom":
+                new JoinRoomMenu(player, Main.instance.joinRoomPage.get(player));
+                break;
+            case "room":
+                new RoomMenu(player);
+                break;
+            case "skin":
+                new SkinMenu(player);
+                break;
+            case "settings":
+                new SettingsMenu(player);
+                break;
+            case "simsettings":
+                new SimpleSettingsMenu(player);
+                break;
+            case "song":
+                new SongMenu(player);
+                break;
         }
 
         Main.instance.hasCustomMenuOpen.put(player, true);
     }
 
     public static void showControls(CommandSender sender) {
-        TranslatableComponent[] controls = { new TranslatableComponent("key.hotbar.1"),
-                new TranslatableComponent("key.hotbar.2"), new TranslatableComponent("key.hotbar.3"),
-                new TranslatableComponent("key.hotbar.4"), new TranslatableComponent("key.hotbar.5"),
-                new TranslatableComponent("key.hotbar.6"), new TranslatableComponent("key.hotbar.7"),
-                new TranslatableComponent("key.hotbar.8"), new TranslatableComponent("key.sneak") };
+        TranslatableComponent[] controls = {new TranslatableComponent("key.hotbar.1"),
+            new TranslatableComponent("key.hotbar.2"), new TranslatableComponent("key.hotbar.3"),
+            new TranslatableComponent("key.hotbar.4"), new TranslatableComponent("key.hotbar.5"),
+            new TranslatableComponent("key.hotbar.6"), new TranslatableComponent("key.hotbar.7"),
+            new TranslatableComponent("key.hotbar.8"), new TranslatableComponent("key.sneak")};
 
         String[] descriptions = {"Move left: ", "\nMove right: ", "\nSoft drop: ",
-                "\nHard drop: ", "\nRotate counterclockwise: ",
-                "\nRotate clockwise: ", "\nRotate 180: ", "\nHold: ",
-                "\nZone: ",
+            "\nHard drop: ", "\nRotate counterclockwise: ",
+            "\nRotate clockwise: ", "\nRotate 180: ", "\nHold: ",
+            "\nZone: ",
 
         };
 
@@ -110,7 +125,7 @@ public class Choice {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -135,29 +150,5 @@ public class Choice {
             sender.sendMessage("glicko: " + league.get("glicko") + "±" + league.get("rd"));
             sender.sendMessage(league.get("apm") + "APM " + league.get("pps") + "PPS " + league.get("vs") + "VS");
         }).start();
-    }
-    
-    public static void help(CommandSender sender) {
-        TextComponent message = new TextComponent();
-        message.addExtra(ChatColor.GOLD + "" + ChatColor.BOLD + "Help");
-        if (sender.hasPermission("tetr.reload")) {
-            message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD
-                    + "/tetr disable - disable the plugin (you cannot re-enable it)");
-        }
-
-        if (sender instanceof Player) {
-            message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD + "/tetr - open game window");
-        }
-
-        message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD + "/tetr help - shows this help page");
-        message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD
-                + "/tetr controls - shows guide on how to set the controls");
-        message.addExtra("\n" + ChatColor.GOLD + "" + ChatColor.BOLD
-                + "/tetr tetrachannel <nickname> - get stats of a player from ch.tetr.io");
-        sender.spigot().sendMessage(message);
-    }
-    
-    public static void disablePlugin() {
-        Bukkit.getServer().getPluginManager().disablePlugin(Main.instance);
     }
 }

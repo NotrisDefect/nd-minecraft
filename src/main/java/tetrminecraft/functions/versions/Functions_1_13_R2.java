@@ -19,13 +19,8 @@ import tetrminecraft.functions.versions.sendblockchangecustom.SendBlockChangeCus
 public class Functions_1_13_R2 implements Functions {
 
     @Override
-    public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
-    }
-
-    @Override
-    public void sendBlockChangeCustom(Player player, Location loc, int color) {
-        SendBlockChangeCustom_V2.sendBlockChangeCustom(player, loc, color);
+    public void sendActionBarCustom(Player player, String message) {
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(message).create());
     }
 
     @Override
@@ -34,8 +29,8 @@ public class Functions_1_13_R2 implements Functions {
     }
 
     @Override
-    public void sendActionBarCustom(Player player, String message) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder(message).create());
+    public void sendBlockChangeCustom(Player player, Location loc, int color) {
+        SendBlockChangeCustom_V2.sendBlockChangeCustom(player, loc, color);
     }
 
     @Override
@@ -62,5 +57,10 @@ public class Functions_1_13_R2 implements Functions {
         PacketPlayOutEntityVelocity vpacket = new PacketPlayOutEntityVelocity(entityfallingblock.getId(), xVel, yVel, zVel);
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(vpacket);
 
+    }
+
+    @Override
+    public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
     }
 }
