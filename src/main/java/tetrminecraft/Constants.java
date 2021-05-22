@@ -1,6 +1,6 @@
 package tetrminecraft;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class Constants {
     public static final int idLength = 3;

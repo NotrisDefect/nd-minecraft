@@ -6,7 +6,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.InventoryHolder;
-import tetrminecraft.menus.*;
+import tetrminecraft.menus.HomeMenu;
+import tetrminecraft.menus.JoinRoomMenu;
+import tetrminecraft.menus.MultiplayerMenu;
+import tetrminecraft.menus.RoomMenu;
+import tetrminecraft.menus.SettingsMenu;
+import tetrminecraft.menus.SimpleSettingsMenu;
+import tetrminecraft.menus.SkinMenu;
+import tetrminecraft.menus.SongMenu;
 
 public class Listeners implements Listener {
 

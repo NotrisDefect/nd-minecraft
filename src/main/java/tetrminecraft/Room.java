@@ -4,7 +4,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import tetrminecraft.commands.Choice;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Room {
 
@@ -157,13 +160,11 @@ public class Room {
 
             Main.instance.noteBlockAPI.startPlaying(this, index);
 
-            Random x = new Random();
-            long seed = x.nextInt();
-            long seed2 = x.nextInt();
+            long seed = (long) (Math.random() * Long.MAX_VALUE);
 
             for (Player player : playerList) {
                 Table table = playerTableMap.get(player);
-                table.initTable(seed, seed2);
+                table.initTable(seed);
             }
             alivePlayers = new ArrayList<>(playerList);
             roomLoop();

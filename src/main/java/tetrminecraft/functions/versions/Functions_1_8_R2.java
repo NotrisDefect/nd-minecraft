@@ -1,8 +1,15 @@
 package tetrminecraft.functions.versions;
 
-import net.minecraft.server.v1_8_R2.*;
+import net.minecraft.server.v1_8_R2.ChatComponentText;
+import net.minecraft.server.v1_8_R2.EntityFallingBlock;
+import net.minecraft.server.v1_8_R2.IChatBaseComponent;
 import net.minecraft.server.v1_8_R2.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_8_R2.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R2.PacketPlayOutEntityVelocity;
+import net.minecraft.server.v1_8_R2.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_8_R2.PacketPlayOutTitle;
 import net.minecraft.server.v1_8_R2.PacketPlayOutTitle.EnumTitleAction;
+import net.minecraft.server.v1_8_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;

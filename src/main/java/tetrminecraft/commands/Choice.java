@@ -8,7 +8,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import tetrminecraft.Main;
-import tetrminecraft.menus.*;
+import tetrminecraft.menus.HomeMenu;
+import tetrminecraft.menus.JoinRoomMenu;
+import tetrminecraft.menus.MultiplayerMenu;
+import tetrminecraft.menus.RoomMenu;
+import tetrminecraft.menus.SettingsMenu;
+import tetrminecraft.menus.SimpleSettingsMenu;
+import tetrminecraft.menus.SkinMenu;
+import tetrminecraft.menus.SongMenu;
 
 import java.io.BufferedReader;
 import java.io.IOException;

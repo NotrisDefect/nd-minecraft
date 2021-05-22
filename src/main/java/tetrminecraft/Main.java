@@ -13,7 +13,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import tetrcore.LoadConfig;
 import tetrminecraft.commands.Tetr;
-import tetrminecraft.functions.softdepend.*;
+import tetrminecraft.functions.softdepend.Netherboard;
+import tetrminecraft.functions.softdepend.NetherboardNo;
+import tetrminecraft.functions.softdepend.NetherboardYes;
+import tetrminecraft.functions.softdepend.NoteBlockAPI;
+import tetrminecraft.functions.softdepend.NoteBlockAPINo;
+import tetrminecraft.functions.softdepend.NoteBlockAPIYes;
 import tetrminecraft.functions.versions.Functions;
 import tetrminecraft.listeners.TableListeners;
 
@@ -21,8 +26,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -124,13 +133,7 @@ public class Main extends JavaPlugin implements Listener {
         getLogger().info("Done. Time elapsed: " + timeElapsed / 1000000 + "ms");
 
         // https://www.spigotmc.org/wiki/creating-an-update-checker-that-checks-for-updates/
-        new UpdateChecker(this).getVersion(version -> {
-            if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                getLogger().info("You have older/newer version of the plugin!");
-                getLogger().info("Latest version on spigot: " + version);
-                getLogger().info("Your version: " + this.getDescription().getVersion());
-            }
-        });
+        checkForUpdates();
     }
 
     @EventHandler
@@ -152,6 +155,24 @@ public class Main extends JavaPlugin implements Listener {
 
             hasCustomMenuOpen.remove(player);
         }
+    }
+
+    private void checkForUpdates() {
+        Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
+            try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=84269")
+                .openStream(); Scanner scanner = new Scanner(inputStream)) {
+                if (scanner.hasNext()) {
+                    String version = scanner.next();
+                    if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                        getLogger().info("You have older/newer version of the plugin!");
+                        getLogger().info("Latest version on spigot: " + version);
+                        getLogger().info("Your version: " + this.getDescription().getVersion());
+                    }
+                }
+            } catch (IOException exception) {
+                instance.getLogger().info("Unable to check for updates: " + exception.getMessage());
+            }
+        });
     }
 
     private void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
@@ -183,28 +204,6 @@ public class Main extends JavaPlugin implements Listener {
             return true;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             return false;
-        }
-    }
-
-    private static class UpdateChecker {
-
-        private final JavaPlugin plugin;
-
-        public UpdateChecker(JavaPlugin plugin) {
-            this.plugin = plugin;
-        }
-
-        public void getVersion(final Consumer<String> consumer) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=84269")
-                    .openStream(); Scanner scanner = new Scanner(inputStream)) {
-                    if (scanner.hasNext()) {
-                        consumer.accept(scanner.next());
-                    }
-                } catch (IOException exception) {
-                    plugin.getLogger().info("Unable to check for updates: " + exception.getMessage());
-                }
-            });
         }
     }
 }

@@ -53,21 +53,21 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
             // classpath
             String path;
             songArray = new Song[3];
-            path = "tetrminecraft/functions/softdepend/internalmusic/cancan.nbs";
+            path = "music/cancan.nbs";
             if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
                 System.out.println("Server was reloaded and an error happened");
                 songArray = new Song[0];
             } else {
                 songArray[0] = NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
 
-                path = "tetrminecraft/functions/softdepend/internalmusic/newgrass.nbs";
+                path = "music/newgrass.nbs";
                 if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
                     System.out.println("Server was reloaded and an error happened");
                     songArray = new Song[0];
                 } else {
                     songArray[1] = NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path));
 
-                    path = "tetrminecraft/functions/softdepend/internalmusic/c01.nbs";
+                    path = "music/c01.nbs";
                     if (NBSDecoder.parse(NoteBlockAPIYes.class.getClassLoader().getResourceAsStream(path)) == null) {
                         System.out.println("Server was reloaded and an error happened");
                         songArray = new Song[0];

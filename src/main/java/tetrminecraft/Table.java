@@ -12,7 +12,7 @@ import tetrcore.GameLogic;
 import tetrcore.Piece;
 import tetrminecraft.functions.util.Point3Dint;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -120,43 +120,9 @@ public class Table extends GameLogic {
         return widthMultiplier;
     }
 
-    public void initTable(long seed, long seed2) {
-        if (isThereAProblem()) {
-            player.sendMessage("there was a problem");
-        }
-
-        imi = Math.max(widthMultiplier.getAbsoluteX(), heightMultiplier.getAbsoluteX());
-        imj = Math.max(widthMultiplier.getAbsoluteY(), heightMultiplier.getAbsoluteY());
-        imk = Math.max(widthMultiplier.getAbsoluteZ(), heightMultiplier.getAbsoluteZ());
-
-        player.getInventory().setHeldItemSlot(8);
-
-        looptick = 0;
-
-        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                oldStageDisplay[i][j] = 7;
-                colPrintNewRender(j, i, 7);
-            }
-        }
-        for (int i = 0; i < PLAYABLEROWS; i++) {
-            oldGQDisplay[i] = 7;
-            colPrintNewRender(-2, STAGESIZEY - 1 - i, 7);
-        }
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 4; j++) {
-                oldNextDisplay[i][j] = 7;
-                colPrintNewRender(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i, 7);
-            }
-        }
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                oldHoldDisplay[i][j] = 7;
-                colPrintNewRender(-7 + j, STAGESIZEY / 2 + i, 7);
-            }
-        }
-
-        extStartGame();
+    public void initTable(long seed) {
+        prepare();
+        extStartGame(seed);
         Main.instance.netherboard.createBoard(player, "Stats");
         gameLoop();
     }
@@ -323,7 +289,7 @@ public class Table extends GameLogic {
         }
     }
 
-    private void colPrintNewRender(float x, float y, int color) {
+    private void colPrintNewRender2(float x, float y, int color) {
         int blockX, blockY, blockZ;
 
         for (int i = 0; i < (imi != 0 ? imi : thickness); i++) {
@@ -335,6 +301,22 @@ public class Table extends GameLogic {
                     printSingleBlockToAll(blockX, blockY, blockZ, color);
                 }
             }
+        }
+    }
+
+    private void colPrintNewRender(float x, float y, int color) {
+        int blockX, blockY, blockZ;
+        int varI = imi != 0 ? imi : thickness;
+        int varJ = imj != 0 ? imj : thickness;
+        int varK = imk != 0 ? imk : thickness;
+        for (int i = 0; i < varI*varJ*varK; i++) {
+            blockX = location.getBlockX() + (int) Math.floor(x * widthMultiplier.getX()) + (int) Math.floor(y * heightMultiplier.getX()) + i%varI*varJ*varK;
+
+            blockY = location.getBlockY() + (int) Math.floor(x * widthMultiplier.getY()) + (int) Math.floor(y * heightMultiplier.getY()) + i%varJ*varK;
+
+            blockZ = location.getBlockZ() + (int) Math.floor(x * widthMultiplier.getZ()) + (int) Math.floor(y * heightMultiplier.getZ()) + i%varK;
+
+            printSingleBlockToAll(blockX, blockY, blockZ, color);
         }
     }
 
@@ -375,6 +357,43 @@ public class Table extends GameLogic {
         } else {
             for (int i = 0; i < volume; i++) {
                 player.playSound(player.getEyeLocation(), sound, 1f, pitch);
+            }
+        }
+    }
+
+    private void prepare() {
+        if (isThereAProblem()) {
+            player.sendMessage("there was a problem");
+        }
+
+        imi = Math.max(widthMultiplier.getAbsoluteX(), heightMultiplier.getAbsoluteX());
+        imj = Math.max(widthMultiplier.getAbsoluteY(), heightMultiplier.getAbsoluteY());
+        imk = Math.max(widthMultiplier.getAbsoluteZ(), heightMultiplier.getAbsoluteZ());
+
+        player.getInventory().setHeldItemSlot(8);
+
+        looptick = 0;
+
+        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                oldStageDisplay[i][j] = 7;
+                colPrintNewRender(j, i, 7);
+            }
+        }
+        for (int i = 0; i < PLAYABLEROWS; i++) {
+            oldGQDisplay[i] = 7;
+            colPrintNewRender(-2, STAGESIZEY - 1 - i, 7);
+        }
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 4; j++) {
+                oldNextDisplay[i][j] = 7;
+                colPrintNewRender(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i, 7);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                oldHoldDisplay[i][j] = 7;
+                colPrintNewRender(-7 + j, STAGESIZEY / 2 + i, 7);
             }
         }
     }

@@ -1,6 +1,13 @@
 package tetrminecraft.functions.versions;
 
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.ChatComponentText;
+import net.minecraft.server.v1_8_R3.EntityFallingBlock;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityVelocity;
+import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
