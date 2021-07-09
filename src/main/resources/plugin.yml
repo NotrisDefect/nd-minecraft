@@ -1,40 +1,24 @@
-name: TETR
-main: tetrminecraft.Main
-version: 1.4.0.2
+name: NotrisDefect
+main: cabbageroll.notrisdefect.Main
+version: 1.4.1
 api-version: 1.13
-softdepend: [NoteBlockAPI, Netherboard]
+softdepend: [ NoteBlockAPI, Netherboard ]
 commands:
-    tetr:
-        description: Please use "/tetr help" for help
+  notrisdefect:
+    description: Please use "/nd help" for help
+    aliases: [ notris, nd ]
 permissions:
-    tetr.*:
-        description: Gives all permissions
-        children:
-            tetr.developer: true
-            tetr.admin: true
-            tetr.reload: true
-            tetr.skineditor: true
-            tetr.singleplayer: true
-            tetr.multiplayer: true
-            tetr.banned: false
-    tetr.developer:
-        description: Allows execution of unsafe commands. Pair with iKnowWhatIAmDoing = true
-        default: false
-    tetr.admin:
-        description: Allows the player to take host, delete rooms forcibly (unused, might change in future)
-        default: false
-    tetr.reload:
-        description: Allows the player to reload, disable and enable the plugin (only disable works for now)
-        default: false
-    tetr.skineditor:
-        description: Allows the player to use skin editor
-        default: true
-    tetr.singleplayer:
-        description: Allows the player to join a singleplayer game
-        default: true
-    tetr.multiplayer:
-        description: Allows the player to join a multiplayer game
-        default: true
-    tetr.banned:
-        description: Does not let the player do anything at all
-        default: false
+  notrisdefect.use.*:
+    children:
+      notrisdefect.use.singleplayer: true
+      notrisdefect.use.multiplayer: true
+      notrisdefect.use.skineditor: true
+      notrisdefect.use.experimental: true
+  notrisdefect.use.singleplayer:
+    default: true
+  notrisdefect.use.multiplayer:
+    default: true
+  notrisdefect.use.skineditor:
+    default: false
+  notrisdefect.use.experimental:
+    default: false
