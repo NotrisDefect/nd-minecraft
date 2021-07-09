@@ -151,7 +151,7 @@ public class Table extends GameLogic {
 
     @Override
     public void evtPerfectClear() {
-        Main.functions.sendTitleCustom(player, "pc", "", 20, 20, 40);
+        Main.functions.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
     }
 
     @Override

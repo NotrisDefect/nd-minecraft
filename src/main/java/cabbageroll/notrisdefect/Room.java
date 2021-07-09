@@ -80,10 +80,12 @@ public class Room {
 
     public void forwardGarbage(int n, Player sender) {
         if (n > 0) {
-            int random = (int) (Math.random() * alivePlayers.size());
-            Table table = getTable(alivePlayers.get(random));
-            Player receiver = table.getPlayer();
-            if (receiver != sender || backfire) {
+            Table table;
+            if (!isSingleplayer || backfire) {
+                do {
+                    int random = (int) (Math.random() * alivePlayers.size());
+                    table = getTable(alivePlayers.get(random));
+                } while (table.getPlayer() == sender && !backfire);
                 table.extAddGarbage(n);
             }
         }

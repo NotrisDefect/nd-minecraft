@@ -42,7 +42,7 @@ public class Choice {
     public static void help(CommandSender sender) {
         StringBuilder sb = new StringBuilder(color + Strings.pluginName + " help");
         sb.append("\n" + color + "Aliases: notris, nd");
-        sb.append("\n" + color + "For additional help do /" + Strings.mainCommand + " " + Strings.help + " [subcommand]");
+        //sb.append("\n" + color + "For additional help do /" + Strings.mainCommand + " " + Strings.help + " [subcommand]");
 
         if (sender instanceof Player) {
             sb.append("\n" + color + "/" + Strings.mainCommand + " - open game window");

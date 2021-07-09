@@ -115,6 +115,17 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
+    public void saveSkin(Player player, ItemStack[] blocks) {
+        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
+        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
+        for (int i = 0; i < blocks.length; i++) {
+            customConfig.set(Constants.NAMES[i], blocks[i]);
+        }
+        customConfig.set("playerIsUsingCustomBlocks", gs.playerIsUsingCustomBlocks.get(player));
+        customConfig.set("playerTransparentBackground", gs.playerTransparentBackground.get(player));
+        saveCustomYml(customConfig, customYml);
+    }
+
     private void checkForUpdates() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (
@@ -141,17 +152,6 @@ public class Main extends JavaPlugin implements Listener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void saveSkin(Player player, ItemStack[] blocks) {
-        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
-        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-        for (int i = 0; i < blocks.length; i++) {
-            customConfig.set(Constants.NAMES[i], blocks[i]);
-        }
-        customConfig.set("playerIsUsingCustomBlocks", gs.playerIsUsingCustomBlocks.get(player));
-        customConfig.set("playerTransparentBackground", gs.playerTransparentBackground.get(player));
-        saveCustomYml(customConfig, customYml);
     }
 
     private boolean versionIsSupported() {

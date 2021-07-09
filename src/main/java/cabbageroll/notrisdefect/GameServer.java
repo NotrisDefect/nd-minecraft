@@ -35,8 +35,16 @@ public class GameServer {
 
     }
 
-    public void deleteRoom(String s) {
-        globalRooms.remove(s);
+    public Room createMPRoom(Player player) {
+        Room room = new Room(player, false);
+        globalRooms.put(room.getRoomID(), room);
+        return room;
+    }
+
+    public Room createSPRoom(Player player) {
+        Room room = new Room(player, true);
+        globalRooms.put(room.getRoomID(), room);
+        return room;
     }
 
     public void deinitialize(Player player) {
@@ -53,20 +61,12 @@ public class GameServer {
         playerTransparentBackground.remove(player);
     }
 
-    public void initialize(Player player) {
-        Table table = new Table(player);
-        globalTables.put(player, table);
-        table.setLastMenuOpened(Menu.HOME);
+    public void deleteRoom(String s) {
+        globalRooms.remove(s);
+    }
 
-        File customYml = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
-        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-        ItemStack[] blocks = new ItemStack[17];
-        for (int i = 0; i < blocks.length; i++) {
-            blocks[i] = customConfig.getItemStack(Constants.NAMES[i]);
-        }
-        customBlocks.put(player, blocks);
-        playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
-        playerTransparentBackground.put(player, customConfig.getBoolean("playerTransparentBackground"));
+    public String[] generateRoomList() {
+        return globalRooms.keySet().toArray(new String[globalRooms.size()]);
     }
 
     public Menu getLastMenuOpened(Player player) {
@@ -91,31 +91,31 @@ public class GameServer {
         return upper.getHolder() instanceof BaseMenu;
     }
 
-    public void setLastMenuOpened(Player player, Menu menu) {
-        globalTables.get(player).setLastMenuOpened(menu);
+    public void initialize(Player player) {
+        Table table = new Table(player);
+        globalTables.put(player, table);
+        table.setLastMenuOpened(Menu.HOME);
+
+        File customYml = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
+        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
+        ItemStack[] blocks = new ItemStack[17];
+        for (int i = 0; i < blocks.length; i++) {
+            blocks[i] = customConfig.getItemStack(Constants.NAMES[i]);
+        }
+        customBlocks.put(player, blocks);
+        playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
+        playerTransparentBackground.put(player, customConfig.getBoolean("playerTransparentBackground"));
     }
 
     public boolean playerIsHere(Player player) {
         return globalTables.containsKey(player);
     }
 
-    public Room createMPRoom(Player player) {
-        Room room = new Room(player, false);
-        globalRooms.put(room.getRoomID(), room);
-        return room;
-    }
-
-    public Room createSPRoom(Player player) {
-        Room room = new Room(player,true);
-        globalRooms.put(room.getRoomID(), room);
-        return room;
-    }
-
-    public String[] generateRoomList() {
-        return globalRooms.keySet().toArray(new String[globalRooms.size()]);
-    }
-
     public void removeRoom(String s) {
         globalRooms.remove(s);
+    }
+
+    public void setLastMenuOpened(Player player, Menu menu) {
+        globalTables.get(player).setLastMenuOpened(menu);
     }
 }
