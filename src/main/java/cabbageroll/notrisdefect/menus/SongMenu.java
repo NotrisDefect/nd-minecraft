@@ -14,8 +14,6 @@ import cabbageroll.notrisdefect.functions.softdepend.NoteBlockAPIYes;
 //used only if noteblockapi is present
 public class SongMenu extends BaseMenu {
 
-    public final static int BACK_LOCATION = 0;
-
     public SongMenu(Player player) {
         Main.gs.setLastMenuOpened(player, Menu.ROOMSONG);
         createInventory(this, 54, "Choose song");

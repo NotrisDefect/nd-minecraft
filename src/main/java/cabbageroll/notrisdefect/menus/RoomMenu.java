@@ -13,7 +13,6 @@ import java.util.Collections;
 
 public class RoomMenu extends BaseMenu {
 
-    public final static int BACK_LOCATION = 0;
     public final static int GAME_LOCATION = 49;
     public final static int SONG_LOCATION = 52;
     public final static int SETTINGS_LOCATION = 53;
@@ -99,7 +98,7 @@ public class RoomMenu extends BaseMenu {
                 }
                 break;
             case RoomMenu.SETTINGS_LOCATION:
-                new SimpleSettingsMenu(player);
+                new SettingsMenu(player);
                 break;
             case RoomMenu.SONG_LOCATION:
                 new SongMenu(player);

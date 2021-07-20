@@ -44,7 +44,7 @@ public class Tetr implements CommandExecutor, Listener {
                 }
             } else switch (command) {
                 case Strings.bench:
-                    if (Main.allowUnsafe(sender)) {
+                    if (player.hasPermission("notrisdefect.use.experimental")) {
                         int people = Integer.parseInt(args[1]);
                         int rooms = Integer.parseInt(args[2]);
                         int duration = Integer.parseInt(args[3]);
@@ -60,7 +60,7 @@ public class Tetr implements CommandExecutor, Listener {
                     Choice.help(sender);
                     break;
                 case Strings.joinroom:
-                    if (Main.allowUnsafe(sender)) {
+                    if (sender.hasPermission("notrisdefect.use.experimental")) {
                         Main.gs.getRoom(args[1]).addPlayer(player);
                         Main.gs.setLastMenuOpened(player, Menu.ROOM);
                     } else {
@@ -68,7 +68,7 @@ public class Tetr implements CommandExecutor, Listener {
                     }
                     break;
                 case Strings.restart:
-                    if (Main.allowUnsafe(sender)) {
+                    if (sender.hasPermission("notrisdefect.use.experimental")) {
                         Main.gs = new GameServer();
                     } else {
                         fail = true;

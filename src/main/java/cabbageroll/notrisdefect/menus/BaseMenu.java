@@ -12,7 +12,12 @@ import java.util.Arrays;
 
 public class BaseMenu implements InventoryHolder {
 
+    public final static int BACK_LOCATION = 0;
     private Inventory inventory = null;
+
+    public static int grid(int column, int row) {
+        return (column - 1) * 9 + row - 1;
+    }
 
     public void createInventory(InventoryHolder holder, int size, String name) {
         inventory = Bukkit.createInventory(holder, size, name);

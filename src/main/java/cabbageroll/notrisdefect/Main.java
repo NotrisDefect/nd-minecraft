@@ -1,18 +1,6 @@
 package cabbageroll.notrisdefect;
 
 import cabbageroll.notrisdefect.commands.Choice;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-import tetrcore.LoadConfig;
 import cabbageroll.notrisdefect.commands.Tetr;
 import cabbageroll.notrisdefect.functions.softdepend.Netherboard;
 import cabbageroll.notrisdefect.functions.softdepend.NetherboardNo;
@@ -23,6 +11,17 @@ import cabbageroll.notrisdefect.functions.softdepend.NoteBlockAPIYes;
 import cabbageroll.notrisdefect.functions.util.Version;
 import cabbageroll.notrisdefect.functions.versions.Functions;
 import cabbageroll.notrisdefect.listeners.TableListeners;
+import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+import tetrcore.LoadConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,10 +37,6 @@ public class Main extends JavaPlugin implements Listener {
     public static Functions functions;
     public static Netherboard netherboard;
     public static NoteBlockAPI noteBlockAPI;
-
-    public static boolean allowUnsafe(CommandSender sender) {
-        return sender.hasPermission("notrisdefect.use.experimental");
-    }
 
     @Override
     public void onDisable() {

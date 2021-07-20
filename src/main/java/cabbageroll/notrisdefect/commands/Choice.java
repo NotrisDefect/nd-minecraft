@@ -8,7 +8,6 @@ import cabbageroll.notrisdefect.menus.JoinRoomMenu;
 import cabbageroll.notrisdefect.menus.MultiplayerMenu;
 import cabbageroll.notrisdefect.menus.RoomMenu;
 import cabbageroll.notrisdefect.menus.SettingsMenu;
-import cabbageroll.notrisdefect.menus.SimpleSettingsMenu;
 import cabbageroll.notrisdefect.menus.SkinMenu;
 import cabbageroll.notrisdefect.menus.SongMenu;
 import com.google.gson.Gson;
@@ -80,9 +79,6 @@ public class Choice {
                 break;
             case ROOMSETTINGSPLUS:
                 new SettingsMenu(player);
-                break;
-            case ROOMSETTINGS:
-                new SimpleSettingsMenu(player);
                 break;
             case ROOMSONG:
                 new SongMenu(player);

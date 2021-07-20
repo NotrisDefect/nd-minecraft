@@ -41,52 +41,10 @@ public class Table extends GameLogic {
         this.player = player;
     }
 
-    public void cleanAll() {
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewForce(j, i);
-            }
-        }
-        for (int i = 0; i < PLAYABLEROWS; i++) {
-            colPrintNewForce(-2, STAGESIZEY - 1 - i);
-        }
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 4; j++) {
-                colPrintNewForce(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i);
-            }
-        }
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                colPrintNewForce(-7 + j, STAGESIZEY / 2 + i);
-            }
-        }
-    }
-
     public void destroyTable() {
         cleanAll();
         extAbortGame();
         Main.netherboard.removeBoard(player);
-    }
-
-    public void drawAll(int color) {
-        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                colPrintNewRender(j, i, color);
-            }
-        }
-        for (int i = 0; i < PLAYABLEROWS; i++) {
-            colPrintNewRender(-2, STAGESIZEY - 1 - i, color);
-        }
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 4; j++) {
-                colPrintNewRender(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i, color);
-            }
-        }
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                colPrintNewRender(-7 + j, STAGESIZEY / 2 + i, color);
-            }
-        }
     }
 
     @Override
@@ -180,24 +138,24 @@ public class Table extends GameLogic {
         return player;
     }
 
-    public int getPosX() {
-        return location.getBlockX();
-    }
-
-    public int getPosY() {
-        return location.getBlockY();
-    }
-
-    public int getPosZ() {
-        return location.getBlockZ();
-    }
-
     public Room getRoom() {
         return room;
     }
 
     public Point3Dint getWidthMultiplier() {
         return widthMultiplier;
+    }
+
+    public int getX() {
+        return location.getBlockX();
+    }
+
+    public int getY() {
+        return location.getBlockY();
+    }
+
+    public int getZ() {
+        return location.getBlockZ();
     }
 
     public void initTable(long seed) {
@@ -209,7 +167,7 @@ public class Table extends GameLogic {
 
     public void joinRoom(Room r) {
         room = r;
-        reposition();
+        position();
         drawAll(16);
     }
 
@@ -230,61 +188,91 @@ public class Table extends GameLogic {
     }
 
     public void reposition() {
-        Location playerLocation = player.getLocation();
-        this.location = new Location(playerLocation.getWorld(), 0, 0, 0);
-        float yaw = player.getLocation().getYaw();
-        yaw = (yaw % 360 + 360) % 360;
-        if (45 <= yaw && yaw < 135) {
-            widthMultiplier = new Point3Dint(0, 0, -1);
-            heightMultiplier = new Point3Dint(0, -1, 0);
-            this.location.setX(playerLocation.getBlockX() - STAGESIZEY);
-            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
-            this.location.setZ(playerLocation.getBlockZ() + STAGESIZEX / 2);
-        } else if (135 <= yaw && yaw < 225) {
-            widthMultiplier = new Point3Dint(1, 0, 0);
-            heightMultiplier = new Point3Dint(0, -1, 0);
-            this.location.setX(playerLocation.getBlockX() - STAGESIZEX / 2);
-            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
-            this.location.setZ(playerLocation.getBlockZ() - STAGESIZEY);
-        } else if (225 <= yaw && yaw < 315) {
-            widthMultiplier = new Point3Dint(0, 0, 1);
-            heightMultiplier = new Point3Dint(0, -1, 0);
-            this.location.setX(playerLocation.getBlockX() + STAGESIZEY);
-            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
-            this.location.setX(playerLocation.getBlockZ() - STAGESIZEX / 2);
-        } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
-            widthMultiplier = new Point3Dint(-1, 0, 0);
-            heightMultiplier = new Point3Dint(0, -1, 0);
-            this.location.setX(playerLocation.getBlockX() + STAGESIZEX / 2);
-            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
-            this.location.setZ(playerLocation.getBlockZ() + STAGESIZEY);
-        }
+        cleanAll();
+        position();
+        drawAll(16);
     }
 
-    public void rotateTable(String input) {
+    public void rotateX() {
         cleanAll();
+        widthMultiplier = new Point3Dint(widthMultiplier.getX(), -widthMultiplier.getZ(), widthMultiplier.getY());
+        heightMultiplier = new Point3Dint(heightMultiplier.getX(), -heightMultiplier.getZ(), heightMultiplier.getY());
+        drawAll(16);
+    }
 
-        int temp;
-        switch (input) {
-            case "X":
-                widthMultiplier = new Point3Dint(widthMultiplier.getX(), -widthMultiplier.getZ(), widthMultiplier.getY());
-                heightMultiplier = new Point3Dint(heightMultiplier.getX(), -heightMultiplier.getZ(), heightMultiplier.getY());
-                break;
-            case "Y":
-                widthMultiplier = new Point3Dint(widthMultiplier.getZ(), widthMultiplier.getY(), -widthMultiplier.getX());
-                heightMultiplier = new Point3Dint(heightMultiplier.getZ(), heightMultiplier.getY(), -heightMultiplier.getX());
-                break;
-            case "Z":
-                widthMultiplier = new Point3Dint(-widthMultiplier.getY(), widthMultiplier.getX(), widthMultiplier.getZ());
-                heightMultiplier = new Point3Dint(-heightMultiplier.getY(), heightMultiplier.getX(), heightMultiplier.getZ());
-                break;
-        }
+    public void rotateY() {
+        cleanAll();
+        widthMultiplier = new Point3Dint(widthMultiplier.getZ(), widthMultiplier.getY(), -widthMultiplier.getX());
+        heightMultiplier = new Point3Dint(heightMultiplier.getZ(), heightMultiplier.getY(), -heightMultiplier.getX());
+        drawAll(16);
+    }
 
+    public void rotateZ() {
+        cleanAll();
+        widthMultiplier = new Point3Dint(-widthMultiplier.getY(), widthMultiplier.getX(), widthMultiplier.getZ());
+        heightMultiplier = new Point3Dint(-heightMultiplier.getY(), heightMultiplier.getX(), heightMultiplier.getZ());
+        drawAll(16);
+    }
+
+    public void skewHX(int n) {
+        cleanAll();
+        heightMultiplier.addX(n);
+        drawAll(16);
+    }
+
+    public void skewHY(int n) {
+        cleanAll();
+        heightMultiplier.addY(n);
+        drawAll(16);
+    }
+
+    public void skewHZ(int n) {
+        cleanAll();
+        heightMultiplier.addZ(n);
+        drawAll(16);
+    }
+
+    public void skewWX(int n) {
+        cleanAll();
+        widthMultiplier.addX(n);
+        drawAll(16);
+    }
+
+    public void skewWY(int n) {
+        cleanAll();
+        widthMultiplier.addY(n);
+        drawAll(16);
+    }
+
+    public void skewWZ(int n) {
+        cleanAll();
+        widthMultiplier.addZ(n);
         drawAll(16);
     }
 
     public void updateWholeTableTo(Player player) {
 
+    }
+
+    private void cleanAll() {
+        for (int i = 0; i < STAGESIZEY; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                colPrintNewForce(j, i);
+            }
+        }
+        for (int i = 0; i < PLAYABLEROWS; i++) {
+            colPrintNewForce(-2, STAGESIZEY - 1 - i);
+        }
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 4; j++) {
+                colPrintNewForce(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                colPrintNewForce(-7 + j, STAGESIZEY / 2 + i);
+            }
+        }
     }
 
     private void colPrintNewForce(float x, float y) {
@@ -342,6 +330,27 @@ public class Table extends GameLogic {
         System.out.println(s);
     }
 
+    private void drawAll(int color) {
+        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                colPrintNewRender(j, i, color);
+            }
+        }
+        for (int i = 0; i < PLAYABLEROWS; i++) {
+            colPrintNewRender(-2, STAGESIZEY - 1 - i, color);
+        }
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 4; j++) {
+                colPrintNewRender(STAGESIZEX + 3 + j, STAGESIZEY / 2 + i, color);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                colPrintNewRender(-7 + j, STAGESIZEY / 2 + i, color);
+            }
+        }
+    }
+
     private void gameLoop() {
         new BukkitRunnable() {
             @Override
@@ -373,6 +382,38 @@ public class Table extends GameLogic {
             for (int i = 0; i < volume; i++) {
                 player.playSound(player.getEyeLocation(), sound, 1f, pitch);
             }
+        }
+    }
+
+    private void position() {
+        Location playerLocation = player.getLocation();
+        this.location = new Location(playerLocation.getWorld(), 0, 0, 0);
+        float yaw = player.getLocation().getYaw();
+        yaw = (yaw % 360 + 360) % 360;
+        if (45 <= yaw && yaw < 135) {
+            widthMultiplier = new Point3Dint(0, 0, -1);
+            heightMultiplier = new Point3Dint(0, -1, 0);
+            this.location.setX(playerLocation.getBlockX() - STAGESIZEY);
+            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
+            this.location.setZ(playerLocation.getBlockZ() + STAGESIZEX / 2);
+        } else if (135 <= yaw && yaw < 225) {
+            widthMultiplier = new Point3Dint(1, 0, 0);
+            heightMultiplier = new Point3Dint(0, -1, 0);
+            this.location.setX(playerLocation.getBlockX() - STAGESIZEX / 2);
+            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
+            this.location.setZ(playerLocation.getBlockZ() - STAGESIZEY);
+        } else if (225 <= yaw && yaw < 315) {
+            widthMultiplier = new Point3Dint(0, 0, 1);
+            heightMultiplier = new Point3Dint(0, -1, 0);
+            this.location.setX(playerLocation.getBlockX() + STAGESIZEY);
+            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
+            this.location.setX(playerLocation.getBlockZ() - STAGESIZEX / 2);
+        } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
+            widthMultiplier = new Point3Dint(-1, 0, 0);
+            heightMultiplier = new Point3Dint(0, -1, 0);
+            this.location.setX(playerLocation.getBlockX() + STAGESIZEX / 2);
+            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
+            this.location.setZ(playerLocation.getBlockZ() + STAGESIZEY);
         }
     }
 

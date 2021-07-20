@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class MultiplayerMenu extends BaseMenu {
 
-    public final static int BACK_LOCATION = 0;
     public final static int CREATEROOM_LOCATION = 21;
     public final static int LISTROOMS_LOCATION = 23;
 

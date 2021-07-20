@@ -12,7 +12,6 @@ import cabbageroll.notrisdefect.menus.JoinRoomMenu;
 import cabbageroll.notrisdefect.menus.MultiplayerMenu;
 import cabbageroll.notrisdefect.menus.RoomMenu;
 import cabbageroll.notrisdefect.menus.SettingsMenu;
-import cabbageroll.notrisdefect.menus.SimpleSettingsMenu;
 import cabbageroll.notrisdefect.menus.SongMenu;
 
 public class Listeners implements Listener {
@@ -39,8 +38,6 @@ public class Listeners implements Listener {
                 SkinMenu.onInventoryClick(event);
             } else if (holder instanceof SettingsMenu) {
                 SettingsMenu.onInventoryClick(event);
-            } else if (holder instanceof SimpleSettingsMenu) {
-                SimpleSettingsMenu.onInventoryClick(event);
             } else if (holder instanceof SongMenu) {
                 SongMenu.onInventoryClick(event);
             }

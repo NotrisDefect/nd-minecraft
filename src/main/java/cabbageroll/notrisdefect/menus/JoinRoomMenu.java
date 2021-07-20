@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class JoinRoomMenu extends BaseMenu {
 
-    public final static int BACK_LOCATION = 0;
     public final static int ROOM_LOCATION_MIN = 9;
     public final static int pagesize = 36;
 
