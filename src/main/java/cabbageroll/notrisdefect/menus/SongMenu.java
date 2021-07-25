@@ -1,21 +1,19 @@
 package cabbageroll.notrisdefect.menus;
 
 import cabbageroll.notrisdefect.Main;
-import cabbageroll.notrisdefect.Menu;
 import cabbageroll.notrisdefect.Room;
+import cabbageroll.notrisdefect.functions.softdepend.NoteBlockAPIYes;
 import com.cryptomorin.xseries.XMaterial;
 import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import cabbageroll.notrisdefect.functions.softdepend.NoteBlockAPIYes;
 
 //used only if noteblockapi is present
-public class SongMenu extends BaseMenu {
+public class SongMenu extends Menu {
 
     public SongMenu(Player player) {
-        Main.gs.setLastMenuOpened(player, Menu.ROOMSONG);
         createInventory(this, 54, "Choose song");
         ItemStack border = XMaterial.GLASS_PANE.parseItem();
         // fill the border with glass
@@ -42,7 +40,7 @@ public class SongMenu extends BaseMenu {
             getInventory().setItem(10 + i, createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + name));
         }
 
-        player.openInventory(getInventory());
+        Main.gs.openMenu(player, this);
     }
 
     public static void onInventoryClick(InventoryClickEvent event) {

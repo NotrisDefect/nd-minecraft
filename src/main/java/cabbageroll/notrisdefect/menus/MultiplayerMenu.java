@@ -1,20 +1,18 @@
 package cabbageroll.notrisdefect.menus;
 
 import cabbageroll.notrisdefect.Main;
-import cabbageroll.notrisdefect.Menu;
 import com.cryptomorin.xseries.XMaterial;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class MultiplayerMenu extends BaseMenu {
+public class MultiplayerMenu extends Menu {
 
     public final static int CREATEROOM_LOCATION = 21;
     public final static int LISTROOMS_LOCATION = 23;
 
     public MultiplayerMenu(Player player) {
-        Main.gs.setLastMenuOpened(player, Menu.MULTIPLAYER);
         createInventory(this, 54, "Multiplayer");
         ItemStack border = XMaterial.GLASS_PANE.parseItem();
         //fill the border with glass
@@ -32,7 +30,7 @@ public class MultiplayerMenu extends BaseMenu {
         getInventory().setItem(LISTROOMS_LOCATION, createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + "Join a room"));
 
 
-        player.openInventory(getInventory());
+        Main.gs.openMenu(player, this);
     }
 
     public static void onInventoryClick(InventoryClickEvent event) {

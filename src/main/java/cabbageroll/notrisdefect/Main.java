@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import tetrcore.LoadConfig;
 
@@ -27,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Main extends JavaPlugin implements Listener {
@@ -37,13 +35,6 @@ public class Main extends JavaPlugin implements Listener {
     public static Functions functions;
     public static Netherboard netherboard;
     public static NoteBlockAPI noteBlockAPI;
-
-    @Override
-    public void onDisable() {
-        for (Map.Entry<Player, ItemStack[]> entry : gs.skinMenuBuffer.entrySet()) {
-            saveSkin(entry.getKey(), entry.getValue());
-        }
-    }
 
     @Override
     public void onEnable() {
@@ -110,12 +101,10 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public void saveSkin(Player player, ItemStack[] blocks) {
+    public void saveSkin(Player player, Skin skin) {
         File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-        for (int i = 0; i < blocks.length; i++) {
-            customConfig.set(Constants.NAMES[i], blocks[i]);
-        }
+        customConfig.set("customSkin", skin);
         customConfig.set("playerIsUsingCustomBlocks", gs.playerIsUsingCustomBlocks.get(player));
         customConfig.set("playerTransparentBackground", gs.playerTransparentBackground.get(player));
         saveCustomYml(customConfig, customYml);

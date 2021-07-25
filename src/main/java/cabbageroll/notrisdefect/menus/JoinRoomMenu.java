@@ -1,7 +1,6 @@
 package cabbageroll.notrisdefect.menus;
 
 import cabbageroll.notrisdefect.Main;
-import cabbageroll.notrisdefect.Menu;
 import cabbageroll.notrisdefect.Room;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
@@ -9,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class JoinRoomMenu extends BaseMenu {
+public class JoinRoomMenu extends Menu {
 
     public final static int ROOM_LOCATION_MIN = 9;
     public final static int pagesize = 36;
@@ -18,7 +17,6 @@ public class JoinRoomMenu extends BaseMenu {
     public final static int PLUSPAGE_LOCATION = 53;
 
     public JoinRoomMenu(Player player, int p) {
-        Main.gs.setLastMenuOpened(player, Menu.JOINROOM);
         createInventory(this, 54, "Join room");
         ItemStack border = XMaterial.GLASS_PANE.parseItem();
         // fill the border with glass
@@ -68,7 +66,7 @@ public class JoinRoomMenu extends BaseMenu {
             getInventory().setItem(PLUSPAGE_LOCATION, createItem(XMaterial.ARROW, ChatColor.WHITE + "Next page"));
         }
 
-        player.openInventory(getInventory());
+        Main.gs.openMenu(player, this);
     }
 
     public static void onInventoryClick(InventoryClickEvent event) {

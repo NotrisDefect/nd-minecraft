@@ -2,8 +2,8 @@ package cabbageroll.notrisdefect.commands;
 
 import cabbageroll.notrisdefect.GameServer;
 import cabbageroll.notrisdefect.Main;
-import cabbageroll.notrisdefect.Menu;
 import cabbageroll.notrisdefect.Strings;
+import cabbageroll.notrisdefect.menus.RoomMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,6 +33,7 @@ public class Tetr implements CommandExecutor, Listener {
 
         if (player != null && !Main.gs.playerIsHere(player)) {
             Main.gs.initialize(player);
+            return true;
         }
 
         if (true) {
@@ -62,7 +63,7 @@ public class Tetr implements CommandExecutor, Listener {
                 case Strings.joinroom:
                     if (sender.hasPermission("notrisdefect.use.experimental")) {
                         Main.gs.getRoom(args[1]).addPlayer(player);
-                        Main.gs.setLastMenuOpened(player, Menu.ROOM);
+                        new RoomMenu(player);
                     } else {
                         fail = true;
                     }

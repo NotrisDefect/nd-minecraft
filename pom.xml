@@ -6,14 +6,7 @@
 
     <groupId>NotrisDefect</groupId>
     <artifactId>nd-minecraft</artifactId>
-    <version>1.4.2</version>
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+    <version>1.4.3</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -26,11 +19,6 @@
             <artifactId>annotations</artifactId>
             <version>RELEASE</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.koca2000</groupId>
-            <artifactId>NoteBlockAPI</artifactId>
-            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>fr.minuskube</groupId>

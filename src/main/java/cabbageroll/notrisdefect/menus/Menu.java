@@ -2,6 +2,7 @@ package cabbageroll.notrisdefect.menus;
 
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -10,9 +11,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
-public class BaseMenu implements InventoryHolder {
+public class Menu implements InventoryHolder {
 
     public final static int BACK_LOCATION = 0;
+    protected Button border = new Button(createItem(XMaterial.GLASS_PANE, "")) {
+        @Override
+        public void onClick(InventoryClickEvent event) {
+        }
+    };
     private Inventory inventory = null;
 
     public static int grid(int column, int row) {

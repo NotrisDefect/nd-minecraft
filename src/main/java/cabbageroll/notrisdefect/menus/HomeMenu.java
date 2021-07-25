@@ -1,22 +1,22 @@
 package cabbageroll.notrisdefect.menus;
 
 import cabbageroll.notrisdefect.Main;
-import cabbageroll.notrisdefect.Menu;
 import com.cryptomorin.xseries.XMaterial;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class HomeMenu extends BaseMenu {
+public class HomeMenu extends Menu {
 
     public final static int MULTIPLAYER_LOCATION = 21;
     public final static int SINGLEPLAYER_LOCATION = 22;
     public final static int SKINEDITOR_LOCATION = 23;
 
     public HomeMenu(Player player) {
-        Main.gs.setLastMenuOpened(player, Menu.HOME);
         createInventory(this, 54, "Home");
+        Inventory inventory = getInventory();
         ItemStack border = XMaterial.GLASS_PANE.parseItem();
         // fill the border with glass
         for (int i = 0; i < 9; i++) {
@@ -26,13 +26,11 @@ public class HomeMenu extends BaseMenu {
             getInventory().setItem(i, border);
         }
 
-        getInventory().setItem(MULTIPLAYER_LOCATION,
-            createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer"));
-        getInventory().setItem(SINGLEPLAYER_LOCATION,
-            createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer"));
-        getInventory().setItem(SKINEDITOR_LOCATION, createItem(XMaterial.SHEARS, ChatColor.WHITE + "Skin editor"));
+        inventory.setItem(MULTIPLAYER_LOCATION, createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer"));
+        inventory.setItem(SINGLEPLAYER_LOCATION, createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer"));
+        inventory.setItem(SKINEDITOR_LOCATION, createItem(XMaterial.SHEARS, ChatColor.WHITE + "cabbageroll.notrisdefect.Skin editor"));
 
-        player.openInventory(getInventory());
+        Main.gs.openMenu(player, this);
     }
 
     public static void event(InventoryClickEvent event) {

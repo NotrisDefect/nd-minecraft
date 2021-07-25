@@ -13,14 +13,14 @@ public class SendBlockChangeCustom_V1 {
 
     @SuppressWarnings("deprecation")
     public static void sendBlockChangeCustom(Player player, Location loc, int color) {
-        ItemStack[] blocks = Main.gs.customBlocks.get(player);
-
+        ItemStack block;
         if (Main.gs.playerIsUsingCustomBlocks.get(player)) {
-            player.sendBlockChange(loc, blocks[color].getType(), blocks[color].getData().getData());
-        } else if (!Main.gs.playerIsUsingCustomBlocks.get(player)) {
-            player.sendBlockChange(loc, Blocks.defaultBlocks[color].getType(),
-                Blocks.defaultBlocks[color].getData().getData());
+            block = Main.gs.skins.get(player).get(color);
+        } else {
+            block = Blocks.defaultBlocks.get(color);
         }
+
+        player.sendBlockChange(loc, block.getType(), block.getData().getData());
     }
 
     @SuppressWarnings("deprecation")

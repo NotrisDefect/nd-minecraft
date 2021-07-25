@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import cabbageroll.notrisdefect.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V1;
 
+@SuppressWarnings("ALL")
 public class Functions_1_12_R1 implements Functions {
 
     @Override
@@ -35,7 +36,12 @@ public class Functions_1_12_R1 implements Functions {
 
     @Override
     public void sendFallingBlockCustom(Player player, Location loc, int color, double xVel, double yVel, double zVel) {
-        ItemStack[] blocks = Main.gs.customBlocks.get(player);
+        ItemStack block;
+        if (Main.gs.playerIsUsingCustomBlocks.get(player)) {
+            block = Main.gs.skins.get(player).get(color);
+        } else {
+            block = Blocks.defaultBlocks.get(color);
+        }
 
         World worldL = ((CraftWorld) loc.getWorld()).getHandle();
         EntityFallingBlock entityfallingblock = new EntityFallingBlock(worldL);
@@ -45,18 +51,11 @@ public class Functions_1_12_R1 implements Functions {
         entityfallingblock.motZ = zVel;
         entityfallingblock.velocityChanged = true;
 
-        PacketPlayOutSpawnEntity packet;
-        if (Main.gs.playerIsUsingCustomBlocks.get(player)) {
-            packet = new PacketPlayOutSpawnEntity(entityfallingblock, 70, blocks[color].getType().getId() + (blocks[color].getData().getData() << 12));
-
-        } else {
-            packet = new PacketPlayOutSpawnEntity(entityfallingblock, 70, Blocks.defaultBlocks[color].getType().getId() + (Blocks.defaultBlocks[color].getData().getData() << 12));
-        }
+        PacketPlayOutSpawnEntity packet = new PacketPlayOutSpawnEntity(entityfallingblock, 70, block.getType().getId() + (block.getData().getData() << 12));
 
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         PacketPlayOutEntityVelocity vpacket = new PacketPlayOutEntityVelocity(entityfallingblock.getId(), xVel, yVel, zVel);
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(vpacket);
-
     }
 
     @Override

@@ -1,12 +1,12 @@
 package cabbageroll.notrisdefect;
 
-import cabbageroll.notrisdefect.menus.BaseMenu;
+import cabbageroll.notrisdefect.menus.HomeMenu;
+import cabbageroll.notrisdefect.menus.Menu;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.HashMap;
@@ -23,13 +23,10 @@ public class GameServer {
     */
 
     public final Map<Player, Boolean> playerIsUsingCustomBlocks = new HashMap<>();
-    public final Map<Player, ItemStack[]> customBlocks = new HashMap<>();
+    public final Map<Player, Skin> skins = new HashMap<>();
     public final Map<Player, Boolean> playerTransparentBackground = new HashMap<>();
-    public final Map<Player, ItemStack[]> skinMenuBuffer = new HashMap<>();
-    public final Map<Player, Boolean> useSkinMenuBuffer = new HashMap<>();
-
-    private final Map<String, Room> globalRooms = new LinkedHashMap<>();
-    private final Map<Player, Table> globalTables = new LinkedHashMap<>();
+    private final Map<String, Room> rooms = new LinkedHashMap<>();
+    private final Map<Player, Table> tables = new LinkedHashMap<>();
 
     public GameServer() {
 
@@ -37,13 +34,13 @@ public class GameServer {
 
     public Room createMPRoom(Player player) {
         Room room = new Room(player, false);
-        globalRooms.put(room.getRoomID(), room);
+        rooms.put(room.getRoomID(), room);
         return room;
     }
 
     public Room createSPRoom(Player player) {
         Room room = new Room(player, true);
-        globalRooms.put(room.getRoomID(), room);
+        rooms.put(room.getRoomID(), room);
         return room;
     }
 
@@ -52,70 +49,67 @@ public class GameServer {
         if (getRoom(player) != null) {
             getRoom(player).removePlayer(player);
         }
-        globalTables.remove(player);
+        tables.remove(player);
 
-        Main.plugin.saveSkin(player, customBlocks.get(player));
+        Main.plugin.saveSkin(player, skins.get(player));
 
-        customBlocks.remove(player);
+        skins.remove(player);
         playerIsUsingCustomBlocks.remove(player);
         playerTransparentBackground.remove(player);
     }
 
     public void deleteRoom(String s) {
-        globalRooms.remove(s);
+        rooms.remove(s);
     }
 
     public String[] generateRoomList() {
-        return globalRooms.keySet().toArray(new String[globalRooms.size()]);
-    }
-
-    public Menu getLastMenuOpened(Player player) {
-        return globalTables.get(player).getLastMenuOpened();
+        return rooms.keySet().toArray(new String[rooms.size()]);
     }
 
     public Room getRoom(String s) {
-        return globalRooms.get(s);
+        return rooms.get(s);
     }
 
     public Room getRoom(Player player) {
-        return globalTables.get(player).getRoom();
+        return tables.get(player).getRoom();
     }
 
     public Table getTable(Player player) {
-        return globalTables.get(player);
+        return tables.get(player);
     }
 
     public boolean hasMenuOpen(Player player) {
         InventoryView iv = player.getOpenInventory();
         Inventory upper = iv.getTopInventory();
-        return upper.getHolder() instanceof BaseMenu;
+        return upper.getHolder() instanceof Menu;
     }
 
     public void initialize(Player player) {
         Table table = new Table(player);
-        globalTables.put(player, table);
-        table.setLastMenuOpened(Menu.HOME);
+        tables.put(player, table);
+        new HomeMenu(player);
 
         File customYml = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-        ItemStack[] blocks = new ItemStack[17];
-        for (int i = 0; i < blocks.length; i++) {
-            blocks[i] = customConfig.getItemStack(Constants.NAMES[i]);
-        }
-        customBlocks.put(player, blocks);
+        skins.put(player, (Skin) customConfig.get("skin"));
         playerIsUsingCustomBlocks.put(player, customConfig.getBoolean("playerIsUsingCustomBlocks"));
         playerTransparentBackground.put(player, customConfig.getBoolean("playerTransparentBackground"));
     }
 
+    public void openLastMenu(Player player) {
+        player.openInventory(tables.get(player).getLastMenuOpened().getInventory());
+    }
+
+    public void openMenu(Player player, Menu menu) {
+        tables.get(player).setLastMenuOpened(menu);
+        player.openInventory(menu.getInventory());
+    }
+
     public boolean playerIsHere(Player player) {
-        return globalTables.containsKey(player);
+        return tables.containsKey(player);
     }
 
     public void removeRoom(String s) {
-        globalRooms.remove(s);
-    }
-
-    public void setLastMenuOpened(Player player, Menu menu) {
-        globalTables.get(player).setLastMenuOpened(menu);
+        rooms.remove(s);
     }
 }

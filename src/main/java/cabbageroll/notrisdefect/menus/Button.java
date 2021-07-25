@@ -3,11 +3,11 @@ package cabbageroll.notrisdefect.menus;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class MenuItem {
+public abstract class Button {
 
     private final ItemStack item;
 
-    public MenuItem(ItemStack is) {
+    public Button(ItemStack is) {
         item = is;
     }
 

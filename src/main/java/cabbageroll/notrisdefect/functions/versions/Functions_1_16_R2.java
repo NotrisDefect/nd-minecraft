@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("ALL")
 public class Functions_1_16_R2 implements Functions {
 
     @Override

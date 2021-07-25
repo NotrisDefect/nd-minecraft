@@ -1,10 +1,9 @@
 package cabbageroll.notrisdefect;
 
 import com.cryptomorin.xseries.XMaterial;
-import org.bukkit.inventory.ItemStack;
 
 public class Blocks {
-    public static final ItemStack[] defaultBlocks = new ItemStack[]{
+    public static final Skin defaultBlocks = new Skin(
         XMaterial.RED_WOOL.parseItem(),
         XMaterial.ORANGE_WOOL.parseItem(),
         XMaterial.YELLOW_WOOL.parseItem(),
@@ -22,5 +21,5 @@ public class Blocks {
         XMaterial.BLUE_STAINED_GLASS.parseItem(),
         XMaterial.PURPLE_STAINED_GLASS.parseItem(),
         XMaterial.WHITE_WOOL.parseItem()
-    };
+    );
 }

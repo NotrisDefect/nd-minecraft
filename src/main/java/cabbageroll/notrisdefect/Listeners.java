@@ -1,18 +1,16 @@
 package cabbageroll.notrisdefect;
 
-import cabbageroll.notrisdefect.menus.SkinMenu;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.InventoryHolder;
 import cabbageroll.notrisdefect.menus.HomeMenu;
 import cabbageroll.notrisdefect.menus.JoinRoomMenu;
 import cabbageroll.notrisdefect.menus.MultiplayerMenu;
 import cabbageroll.notrisdefect.menus.RoomMenu;
 import cabbageroll.notrisdefect.menus.SettingsMenu;
+import cabbageroll.notrisdefect.menus.SkinMenu;
 import cabbageroll.notrisdefect.menus.SongMenu;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 public class Listeners implements Listener {
 
@@ -43,14 +41,4 @@ public class Listeners implements Listener {
             }
         }
     }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        Player player = (Player) event.getPlayer();
-        InventoryHolder holder = event.getInventory().getHolder();
-        if (holder instanceof SkinMenu) {
-            SkinMenu.onInventoryClose(event);
-        }
-    }
-
 }

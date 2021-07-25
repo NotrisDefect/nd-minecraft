@@ -3,13 +3,6 @@ package cabbageroll.notrisdefect.commands;
 import cabbageroll.notrisdefect.Main;
 import cabbageroll.notrisdefect.Strings;
 import cabbageroll.notrisdefect.initialization.Sounds;
-import cabbageroll.notrisdefect.menus.HomeMenu;
-import cabbageroll.notrisdefect.menus.JoinRoomMenu;
-import cabbageroll.notrisdefect.menus.MultiplayerMenu;
-import cabbageroll.notrisdefect.menus.RoomMenu;
-import cabbageroll.notrisdefect.menus.SettingsMenu;
-import cabbageroll.notrisdefect.menus.SkinMenu;
-import cabbageroll.notrisdefect.menus.SongMenu;
 import com.google.gson.Gson;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
@@ -61,29 +54,7 @@ public class Choice {
     }
 
     public static void maximizeMenu(Player player) {
-        switch (Main.gs.getTable(player).getLastMenuOpened()) {
-            case HOME:
-                new HomeMenu(player);
-                break;
-            case MULTIPLAYER:
-                new MultiplayerMenu(player);
-                break;
-            case JOINROOM:
-                new JoinRoomMenu(player, 0);
-                break;
-            case ROOM:
-                new RoomMenu(player);
-                break;
-            case SKINEDITOR:
-                new SkinMenu(player);
-                break;
-            case ROOMSETTINGSPLUS:
-                new SettingsMenu(player);
-                break;
-            case ROOMSONG:
-                new SongMenu(player);
-                break;
-        }
+        Main.gs.openLastMenu(player);
     }
 
     public static void showControls(CommandSender sender) {

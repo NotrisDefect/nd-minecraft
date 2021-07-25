@@ -1,6 +1,5 @@
 package cabbageroll.notrisdefect;
 
-import cabbageroll.notrisdefect.commands.Choice;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -55,7 +54,6 @@ public class Room {
         players.add(player);
         Main.gs.getTable(player).joinRoom(this);
         Main.noteBlockAPI.addPlayer(this, player);
-        tryToUpdateMenu();
         if (this.isRunning) {
             player.sendMessage(Strings.gameInProgress);
         }
@@ -130,7 +128,6 @@ public class Room {
                 host.sendMessage(Strings.hostChange);
             }
         }
-        tryToUpdateMenu();
     }
 
     public void removeSpectator(Player player) {
@@ -157,7 +154,6 @@ public class Room {
             host.sendMessage(Strings.notEnoughPlayers);
         }
 
-        tryToUpdateMenu();
     }
 
     public void stopRoom() {
@@ -174,7 +170,6 @@ public class Room {
         for (Player player : alivePlayers) {
             getTable(player).extAbortGame();
         }
-        tryToUpdateMenu();
     }
 
     private Table getTable(Player player) {
@@ -218,14 +213,6 @@ public class Room {
         for (Player p : alivePlayers) {
             Table table = getTable(p);
             table.floTick(n);
-        }
-    }
-
-    private void tryToUpdateMenu() {
-        for (Player player : players) {
-            if (Main.gs.getLastMenuOpened(player).equals(Menu.ROOM)) {
-                Choice.maximizeMenu(player);
-            }
         }
     }
 
