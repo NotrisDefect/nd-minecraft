@@ -2,17 +2,19 @@ package cabbageroll.notrisdefect;
 
 import org.bukkit.inventory.ItemStack;
 
-public class Skin {
+import java.io.Serializable;
+
+public class Skin implements Serializable {
     private final ItemStack[] minos = new ItemStack[7];
     private final ItemStack[] ghosts = new ItemStack[7];
     private final ItemStack garbage;
     private final ItemStack background;
     private final ItemStack zone;
-    private boolean bgTransparent;
+    private transient boolean bgTransparent;
 
     public Skin(ItemStack... blocks) {
         if (blocks.length != 17) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("17 arguments needed! " + blocks.length + " were given.");
         }
         for (int i = 0; i < 7; i++) {
             minos[i] = blocks[i];
@@ -43,23 +45,25 @@ public class Skin {
                 return minos[6];
             case 7:
                 return background;
-            case 9:
+            case 8:
                 return garbage;
-            case 10:
+            case 9:
                 return ghosts[0];
-            case 11:
+            case 10:
                 return ghosts[1];
-            case 12:
+            case 11:
                 return ghosts[2];
-            case 13:
+            case 12:
                 return ghosts[3];
-            case 14:
+            case 13:
                 return ghosts[4];
-            case 15:
+            case 14:
                 return ghosts[5];
-            case 16:
+            case 15:
                 return ghosts[6];
+            case 16:
+                return zone;
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("" + i);
     }
 }

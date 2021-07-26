@@ -28,7 +28,7 @@ public class HomeMenu extends Menu {
 
         inventory.setItem(MULTIPLAYER_LOCATION, createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer"));
         inventory.setItem(SINGLEPLAYER_LOCATION, createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer"));
-        inventory.setItem(SKINEDITOR_LOCATION, createItem(XMaterial.SHEARS, ChatColor.WHITE + "cabbageroll.notrisdefect.Skin editor"));
+        inventory.setItem(SKINEDITOR_LOCATION, createItem(XMaterial.SHEARS, ChatColor.WHITE + "Skin editor"));
 
         Main.gs.openMenu(player, this);
     }

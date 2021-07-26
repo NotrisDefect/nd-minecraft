@@ -147,7 +147,7 @@ public class Choice {
                     sb.append((char) idk);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                Main.plugin.getLogger().warning(e.getMessage());
             }
             String jsonString = sb.toString();
             Gson gson = new Gson();

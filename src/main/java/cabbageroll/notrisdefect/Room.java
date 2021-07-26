@@ -191,7 +191,7 @@ public class Room {
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Main.plugin.getLogger().warning(e.getMessage());
                 }
                 delta += (timeNow - timeLast) / expectedTickTime;
                 timeLast = timeNow;

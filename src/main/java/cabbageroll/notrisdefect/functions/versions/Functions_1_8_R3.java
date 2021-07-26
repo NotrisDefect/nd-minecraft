@@ -40,8 +40,8 @@ public class Functions_1_8_R3 implements Functions {
     @Override
     public void sendFallingBlockCustom(Player player, Location loc, int color, double xVel, double yVel, double zVel) {
         ItemStack block;
-        if (Main.gs.playerIsUsingCustomBlocks.get(player)) {
-            block = Main.gs.skins.get(player).get(color);
+        if (Main.gs.getData(player).isCustom()) {
+            block = Main.gs.getSkin(player).get(color);
         } else {
             block = Blocks.defaultBlocks.get(color);
         }

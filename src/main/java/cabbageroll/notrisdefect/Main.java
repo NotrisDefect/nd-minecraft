@@ -13,8 +13,6 @@ import cabbageroll.notrisdefect.functions.versions.Functions;
 import cabbageroll.notrisdefect.listeners.TableListeners;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +20,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import tetrcore.LoadConfig;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -61,7 +58,7 @@ public class Main extends JavaPlugin implements Listener {
         try {
             LoadConfig.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            Main.plugin.getLogger().warning(e.getMessage());
         }
 
         getServer().getPluginManager().registerEvents(Listeners.getInstance(), this);
@@ -101,15 +98,6 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public void saveSkin(Player player, Skin skin) {
-        File customYml = new File(getDataFolder() + "/userdata/" + player.getUniqueId() + ".yml");
-        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customYml);
-        customConfig.set("customSkin", skin);
-        customConfig.set("playerIsUsingCustomBlocks", gs.playerIsUsingCustomBlocks.get(player));
-        customConfig.set("playerTransparentBackground", gs.playerTransparentBackground.get(player));
-        saveCustomYml(customConfig, customYml);
-    }
-
     private void checkForUpdates() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (
@@ -128,14 +116,6 @@ public class Main extends JavaPlugin implements Listener {
                 plugin.getLogger().info("Unable to check for updates: " + exception.getMessage());
             }
         });
-    }
-
-    private void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
-        try {
-            ymlConfig.save(ymlFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private boolean versionIsSupported() {

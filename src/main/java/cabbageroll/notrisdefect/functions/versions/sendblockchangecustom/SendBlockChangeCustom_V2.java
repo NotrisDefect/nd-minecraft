@@ -13,8 +13,8 @@ public class SendBlockChangeCustom_V2 {
 
     public static void sendBlockChangeCustom(Player player, Location loc, int color) {
         ItemStack block;
-        if (Main.gs.playerIsUsingCustomBlocks.get(player)) {
-            block = Main.gs.skins.get(player).get(color);
+        if (Main.gs.getData(player).isCustom()) {
+            block = Main.gs.getSkin(player).get(color);
         } else {
             block = Blocks.defaultBlocks.get(color);
         }

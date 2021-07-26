@@ -59,47 +59,47 @@ public class TableListeners implements Listener {
     }
 
     /*
-        @EventHandler
-        public void onPlayerMove(PlayerMoveEvent event) {
-            Player player = event.getPlayer();
-            if (Main.gs.playerIsHere(player)) {
-                if (Main.gs.getRoom(player) != null) {
-                    Table table = Main.gs.getTable(player);
-                    if (!table.getGameover()) {
-                        Location fromLocation = event.getFrom();
-                        Location toLocation = event.getTo();
+            @EventHandler
+            public void onPlayerMove(PlayerMoveEvent event) {
+                Player player = event.getPlayer();
+                if (Main.gs.playerIsHere(player)) {
+                    if (Main.gs.getRoom(player) != null) {
+                        Table table = Main.gs.getTable(player);
+                        if (!table.getGameover()) {
+                            Location fromLocation = event.getFrom();
+                            Location toLocation = event.getTo();
 
-                        double xDiff = Math.abs(toLocation.getX() - fromLocation.getX());
-                        double yDiff = toLocation.getY() - fromLocation.getY();
-                        double zDiff = Math.abs(toLocation.getZ() - fromLocation.getZ());
+                            double xDiff = Math.abs(toLocation.getX() - fromLocation.getX());
+                            double yDiff = toLocation.getY() - fromLocation.getY();
+                            double zDiff = Math.abs(toLocation.getZ() - fromLocation.getZ());
 
-                        player.sendMessage("xDiff: " + xDiff);
-                        player.sendMessage("zDiff: " + zDiff);
+                            player.sendMessage("xDiff: " + xDiff);
+                            player.sendMessage("zDiff: " + zDiff);
 
-                        if (xDiff > 0 || yDiff > 0 || zDiff > 0) {
-                            event.getPlayer().teleport(fromLocation.setDirection(toLocation.getDirection()));
-                        }
-
-                        if (zDiff > xDiff) {
-                            if (toLocation.getZ() - fromLocation.getZ() > 0) {
-                                table.extDropPieceSoft();
-                                table.extDropPieceSoft();
+                            if (xDiff > 0 || yDiff > 0 || zDiff > 0) {
+                                event.getPlayer().teleport(fromLocation.setDirection(toLocation.getDirection()));
                             }
-                            return;
-                        }
 
-                        if (xDiff > zDiff) {
-                            if (toLocation.getX() - fromLocation.getX() > 0) {
-                                table.extMovePieceRight();
-                            } else {
-                                table.extMovePieceLeft();
+                            if (zDiff > xDiff) {
+                                if (toLocation.getZ() - fromLocation.getZ() > 0) {
+                                    table.extDropPieceSoft();
+                                    table.extDropPieceSoft();
+                                }
+                                return;
+                            }
+
+                            if (xDiff > zDiff) {
+                                if (toLocation.getX() - fromLocation.getX() > 0) {
+                                    table.extMovePieceRight();
+                                } else {
+                                    table.extMovePieceLeft();
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-    */
+        */
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();

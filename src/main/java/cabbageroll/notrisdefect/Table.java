@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Table extends GameLogic {
+
     private static final int FRONTROWS = 30;
     private static final int BACKROWS = 20;
     private final Player player;
@@ -496,7 +497,7 @@ public class Table extends GameLogic {
     }
 
     private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
-        if (color == 7 && Main.gs.playerTransparentBackground.get(player)) {
+        if (color == 7 && Main.gs.getData(player).isTransparent()) {
             Block b = location.getWorld().getBlockAt(x, y, z);
             Main.functions.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
         } else {
