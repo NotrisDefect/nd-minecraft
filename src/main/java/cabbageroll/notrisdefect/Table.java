@@ -451,7 +451,7 @@ public class Table extends GameLogic {
             heightMultiplier = new Point3Dint(0, -1, 0);
             this.location.setX(playerLocation.getBlockX() + STAGESIZEY);
             this.location.setY(playerLocation.getBlockY() + STAGESIZEY - BACKROWS / 2);
-            this.location.setX(playerLocation.getBlockZ() - STAGESIZEX / 2);
+            this.location.setZ(playerLocation.getBlockZ() - STAGESIZEX / 2);
         } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
             widthMultiplier = new Point3Dint(-1, 0, 0);
             heightMultiplier = new Point3Dint(0, -1, 0);

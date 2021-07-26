@@ -2,10 +2,13 @@ package cabbageroll.notrisdefect.listeners;
 
 import cabbageroll.notrisdefect.Main;
 import cabbageroll.notrisdefect.Table;
+import cabbageroll.notrisdefect.functions.util.Point3Dint;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 public class TableListeners implements Listener {
@@ -58,48 +61,84 @@ public class TableListeners implements Listener {
         }
     }
 
-    /*
-            @EventHandler
-            public void onPlayerMove(PlayerMoveEvent event) {
-                Player player = event.getPlayer();
-                if (Main.gs.playerIsHere(player)) {
-                    if (Main.gs.getRoom(player) != null) {
-                        Table table = Main.gs.getTable(player);
-                        if (!table.getGameover()) {
-                            Location fromLocation = event.getFrom();
-                            Location toLocation = event.getTo();
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (Main.gs.isPlayerHere(player)) {
+            if (Main.gs.getRoom(player) != null) {
+                Table table = Main.gs.getTable(player);
+                if (!table.getGameover()) {
+                    Location from = event.getFrom();
+                    Location to = event.getTo();
 
-                            double xDiff = Math.abs(toLocation.getX() - fromLocation.getX());
-                            double yDiff = toLocation.getY() - fromLocation.getY();
-                            double zDiff = Math.abs(toLocation.getZ() - fromLocation.getZ());
+                    double dx = to.getX() - from.getX();
+                    double dz = to.getZ() - from.getZ();
 
-                            player.sendMessage("xDiff: " + xDiff);
-                            player.sendMessage("zDiff: " + zDiff);
+                    player.sendMessage("dx: " + dx);
+                    player.sendMessage("dz: " + dz);
 
-                            if (xDiff > 0 || yDiff > 0 || zDiff > 0) {
-                                event.getPlayer().teleport(fromLocation.setDirection(toLocation.getDirection()));
+                    if (dx != 0 || dz != 0) {
+                        event.getPlayer().teleport(from.setDirection(to.getDirection()));
+                    }
+
+                    if (Math.abs(dx) > Math.abs(dz)) {
+                        Point3Dint mx = table.getWidthMultiplier();
+                        /*
+                        100
+                        001
+                        -100
+                        00-1
+                         */
+                        if (mx.getX() > mx.getZ() && mx.getX() > 0) {
+                            if (to.getX() < from.getX()) {
+                                table.extMovePieceLeft();
+                            } else if (to.getX() > from.getX()) {
+                                table.extMovePieceRight();
                             }
-
-                            if (zDiff > xDiff) {
-                                if (toLocation.getZ() - fromLocation.getZ() > 0) {
-                                    table.extDropPieceSoft();
-                                    table.extDropPieceSoft();
-                                }
-                                return;
+                        } else if (mx.getX() < mx.getZ() && mx.getZ() > 0) {
+                            if (to.getX() < from.getX()) {
+                                table.extDropPieceSoft();
                             }
-
-                            if (xDiff > zDiff) {
-                                if (toLocation.getX() - fromLocation.getX() > 0) {
-                                    table.extMovePieceRight();
-                                } else {
-                                    table.extMovePieceLeft();
-                                }
+                        } else if (mx.getX() < mx.getZ() && mx.getX() < 0) {
+                            if (to.getX() > from.getX()) {
+                                table.extMovePieceLeft();
+                            } else if (to.getX() < from.getX()) {
+                                table.extMovePieceRight();
+                            }
+                        } else if (mx.getX() > mx.getZ() && mx.getZ() < 0) {
+                            if (to.getX() > from.getX()) {
+                                table.extDropPieceSoft();
+                            }
+                        }
+                    } else if (Math.abs(dx) < Math.abs(dz)) {
+                        Point3Dint mx = table.getWidthMultiplier();
+                        if (mx.getX() > mx.getZ() && mx.getX() > 0) {
+                            if (to.getZ() > from.getZ()) {
+                                table.extDropPieceSoft();
+                            }
+                        } else if (mx.getX() < mx.getZ() && mx.getZ() > 0) {
+                            if (to.getZ() < from.getZ()) {
+                                table.extMovePieceLeft();
+                            } else if (to.getZ() > from.getZ()) {
+                                table.extMovePieceRight();
+                            }
+                        } else if (mx.getX() < mx.getZ() && mx.getX() < 0) {
+                            if (to.getZ() < from.getZ()) {
+                                table.extDropPieceSoft();
+                            }
+                        } else if (mx.getX() > mx.getZ() && mx.getZ() < 0) {
+                            if (to.getZ() > from.getZ()) {
+                                table.extMovePieceLeft();
+                            } else if (to.getZ() < from.getZ()) {
+                                table.extMovePieceRight();
                             }
                         }
                     }
                 }
             }
-        */
+        }
+    }
+
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
