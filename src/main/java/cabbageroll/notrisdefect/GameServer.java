@@ -2,7 +2,7 @@ package cabbageroll.notrisdefect;
 
 import cabbageroll.notrisdefect.menus.HomeMenu;
 import cabbageroll.notrisdefect.menus.Menu;
-import com.cryptomorin.xseries.XMaterial;
+import cabbageroll.notrisdefect.menus.SkinMenu;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -47,14 +47,21 @@ public class GameServer {
     }
 
     public void deinitialize(Player player) {
-        getTable(player).setLastMenuOpened(null);
         if (getRoom(player) != null) {
             getRoom(player).removePlayer(player);
         }
+
+        if (getMenu(player).getInventory().getHolder() instanceof SkinMenu) {
+            if (getData(player).isCustom()) {
+                Inventory inv = getMenu(player).getInventory();
+                setSkin(player, SkinMenu.toSkin(inv));
+            }
+        }
+
         tables.remove(player);
 
         try {
-            File file = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".dat");
+            File file = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getName() + "_" + player.getUniqueId() + ".dat");
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
@@ -115,7 +122,7 @@ public class GameServer {
         PlayerData pd;
 
         try {
-            FileInputStream fis = new FileInputStream(Main.plugin.getDataFolder() + "/userdata/" + player.getUniqueId() + ".dat");
+            FileInputStream fis = new FileInputStream(Main.plugin.getDataFolder() + "/userdata/" + player.getName() + "_" + player.getUniqueId() + ".dat");
             BukkitObjectInputStream ois = new BukkitObjectInputStream(fis);
             pd = (PlayerData) ois.readObject();
             ois.close();
@@ -123,28 +130,14 @@ public class GameServer {
         } catch (IOException | ClassNotFoundException e) {
             Main.plugin.getLogger().warning(e.getMessage());
             pd = new PlayerData();
-            pd.setSkin(new Skin(
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem(),
-                XMaterial.AIR.parseItem()
-            ));
+            pd.setSkin(new Skin(Blocks.empty));
         }
 
         data.put(player, pd);
+    }
+
+    public boolean isPlayerHere(Player player) {
+        return tables.containsKey(player);
     }
 
     public void openLastMenu(Player player) {
@@ -156,15 +149,15 @@ public class GameServer {
         player.openInventory(menu.getInventory());
     }
 
-    public boolean playerIsHere(Player player) {
-        return tables.containsKey(player);
-    }
-
     public void removeRoom(String s) {
         rooms.remove(s);
     }
 
     public void setSkin(Player player, Skin skin) {
         data.get(player).setSkin(skin);
+    }
+
+    private Menu getMenu(Player player) {
+        return tables.get(player).getLastMenuOpened();
     }
 }

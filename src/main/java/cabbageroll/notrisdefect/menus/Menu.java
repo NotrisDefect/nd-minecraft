@@ -2,6 +2,7 @@ package cabbageroll.notrisdefect.menus;
 
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -14,7 +15,7 @@ import java.util.Arrays;
 public class Menu implements InventoryHolder {
 
     public final static int BACK_LOCATION = 0;
-    protected Button border = new Button(createItem(XMaterial.GLASS_PANE, "")) {
+    protected Button border = new Button(createItem(XMaterial.GLASS_PANE, "" + ChatColor.RESET)) {
         @Override
         public void onClick(InventoryClickEvent event) {
         }

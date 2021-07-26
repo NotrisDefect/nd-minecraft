@@ -19,7 +19,7 @@ public class TableListeners implements Listener {
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
-        if (Main.gs.playerIsHere(player)) {
+        if (Main.gs.isPlayerHere(player)) {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
                 if (table != null && !table.getGameover()) {
@@ -103,7 +103,7 @@ public class TableListeners implements Listener {
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
-        if (Main.gs.playerIsHere(player)) {
+        if (Main.gs.isPlayerHere(player)) {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
                 if (player.isSneaking()) {

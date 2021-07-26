@@ -93,7 +93,7 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (gs.playerIsHere(player)) {
+        if (gs.isPlayerHere(player)) {
             Main.gs.deinitialize(player);
         }
     }

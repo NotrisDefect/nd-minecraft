@@ -46,6 +46,8 @@ public class SkinMenu extends Menu {
         int slot = event.getSlot();
         if (event.getCurrentItem() == null) {
             event.setCancelled(true);
+        } else if (!Main.gs.getData(player).isCustom()) {
+            event.setCancelled(true);
         } else if (event.getCurrentItem().getType() == XMaterial.GLASS_PANE.parseMaterial()) {
             event.setCancelled(true);
         } else if (event.getCurrentItem().getType() == XMaterial.AIR.parseMaterial()) {
@@ -59,52 +61,60 @@ public class SkinMenu extends Menu {
         }
 
         if (event.getSlot() == SkinMenu.TORCH_LOCATION) {
+            if (Main.gs.getData(player).isCustom()) {
+                Inventory inv = event.getClickedInventory();
+                Main.gs.setSkin(player, toSkin(inv));
+            }
             Main.gs.getData(player).swapCustom();
             new SkinMenu(player);
         }
 
         if (event.getSlot() == SkinMenu.BACK_LOCATION) {
-            ItemStack[] blocks = new ItemStack[17];
-            Inventory inv = event.getClickedInventory();
-            // save blocks
-            for (int i = 0; i < 7; i++) {
-                if (inv.getItem(28 + i) != null) {
-                    blocks[i] = inv.getItem(28 + i);
-                } else {
-                    blocks[i] = new ItemStack(XMaterial.AIR.parseMaterial());
-                }
+            if (Main.gs.getData(player).isCustom()) {
+                Inventory inv = event.getClickedInventory();
+                Main.gs.setSkin(player, toSkin(inv));
             }
-
-            // save ghost
-            for (int i = 0; i < 7; i++) {
-                if (inv.getItem(37 + i) != null) {
-                    blocks[i + 9] = inv.getItem(37 + i);
-                } else {
-                    blocks[i + 9] = new ItemStack(XMaterial.AIR.parseMaterial());
-                }
-            }
-
-            // other
-            if (inv.getItem(11) != null) {
-                blocks[7] = inv.getItem(11);
-            } else {
-                blocks[7] = new ItemStack(XMaterial.AIR.parseMaterial());
-            }
-
-            if (inv.getItem(13) != null) {
-                blocks[8] = inv.getItem(13);
-            } else {
-                blocks[8] = new ItemStack(XMaterial.AIR.parseMaterial());
-            }
-
-            if (inv.getItem(15) != null) {
-                blocks[16] = inv.getItem(15);
-            } else {
-                blocks[16] = new ItemStack(XMaterial.AIR.parseMaterial());
-            }
-            Main.gs.setSkin(player, new Skin(blocks));
-
             new HomeMenu(player);
         }
+    }
+
+    public static Skin toSkin(Inventory inv) {
+        ItemStack[] blocks = new ItemStack[17];
+        for (int i = 0; i < 7; i++) {
+            if (inv.getItem(28 + i) != null) {
+                blocks[i] = inv.getItem(28 + i);
+            } else {
+                blocks[i] = new ItemStack(XMaterial.AIR.parseMaterial());
+            }
+        }
+
+        // save ghost
+        for (int i = 0; i < 7; i++) {
+            if (inv.getItem(37 + i) != null) {
+                blocks[i + 9] = inv.getItem(37 + i);
+            } else {
+                blocks[i + 9] = new ItemStack(XMaterial.AIR.parseMaterial());
+            }
+        }
+
+        // other
+        if (inv.getItem(11) != null) {
+            blocks[7] = inv.getItem(11);
+        } else {
+            blocks[7] = new ItemStack(XMaterial.AIR.parseMaterial());
+        }
+
+        if (inv.getItem(13) != null) {
+            blocks[8] = inv.getItem(13);
+        } else {
+            blocks[8] = new ItemStack(XMaterial.AIR.parseMaterial());
+        }
+
+        if (inv.getItem(15) != null) {
+            blocks[16] = inv.getItem(15);
+        } else {
+            blocks[16] = new ItemStack(XMaterial.AIR.parseMaterial());
+        }
+        return new Skin(blocks);
     }
 }

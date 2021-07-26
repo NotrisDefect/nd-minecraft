@@ -31,7 +31,7 @@ public class Tetr implements CommandExecutor, Listener {
             player = (Player) sender;
         }
 
-        if (player != null && !Main.gs.playerIsHere(player)) {
+        if (player != null && !Main.gs.isPlayerHere(player)) {
             Main.gs.initialize(player);
             return true;
         }
