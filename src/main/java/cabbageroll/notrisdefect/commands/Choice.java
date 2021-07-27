@@ -58,21 +58,12 @@ public class Choice {
     }
 
     public static void showControls(CommandSender sender) {
-        TranslatableComponent[] controls = {
-            new TranslatableComponent("key.hotbar.1"),
-            new TranslatableComponent("key.hotbar.2"),
-            new TranslatableComponent("key.hotbar.3"),
-            new TranslatableComponent("key.hotbar.4"),
-            new TranslatableComponent("key.hotbar.5"),
-            new TranslatableComponent("key.hotbar.6"),
-            new TranslatableComponent("key.hotbar.7"),
-            new TranslatableComponent("key.hotbar.8"),
-            new TranslatableComponent("key.sneak")
-        };
-
         String[] descriptions = {
-            "Move left: ",
-            "\nMove right: ",
+            "Move left (once): ",
+            "\nMove left (repeat): ",
+            "\nMove right (once): ",
+            "\nMove right (repeat): ",
+            "\nInstant soft drop: ",
             "\nSoft drop: ",
             "\nHard drop: ",
             "\nRotate counterclockwise: ",
@@ -82,15 +73,52 @@ public class Choice {
             "\nZone: ",
         };
 
-        TextComponent message = new TextComponent();
+        TranslatableComponent[] controls = {
+            new TranslatableComponent("key.hotbar.1"),
+            new TranslatableComponent("key.left"),
+            new TranslatableComponent("key.hotbar.2"),
+            new TranslatableComponent("key.right"),
+            new TranslatableComponent("key.hotbar.3"),
+            new TranslatableComponent("key.back"),
+            new TranslatableComponent("key.hotbar.4"),
+            new TranslatableComponent("key.hotbar.5"),
+            new TranslatableComponent("key.hotbar.6"),
+            new TranslatableComponent("key.hotbar.7"),
+            new TranslatableComponent("key.hotbar.8"),
+            new TranslatableComponent("key.sneak")
+        };
 
-        for (int i = 0; i < controls.length; i++) {
-            message.addExtra(descriptions[i]);
-            message.addExtra(controls[i]);
+        //dumb as fuck
+        try {
+            TextComponent message = new TextComponent();
+            for (int i = 0; i < controls.length; i++) {
+                message.addExtra(descriptions[i]);
+                message.addExtra(controls[i]);
+            }
+            sender.spigot().sendMessage(message);
+        } catch (NoSuchMethodError e) {
+            String[] controlsFail = {
+                "Hotbar Slot 1",
+                "Strafe Left",
+                "Hotbar Slot 2",
+                "Strafe Right",
+                "Hotbar Slot 3",
+                "Walk Backwards",
+                "Hotbar Slot 4",
+                "Hotbar Slot 5",
+                "Hotbar Slot 6",
+                "Hotbar Slot 7",
+                "Hotbar Slot 8",
+                "Sneak"
+            };
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < controls.length; i++) {
+                sb.append(descriptions[i]);
+                sb.append(controlsFail[i]);
+            }
+            sender.sendMessage(sb.toString());
         }
-
-        sender.spigot().sendMessage(message);
-
     }
 
     public static void showSfx(CommandSender sender) {
@@ -106,14 +134,14 @@ public class Choice {
             (Sounds.lineClear != null ? Sounds.lineClear.name() : "null")
         };
 
-        TextComponent message = new TextComponent();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < descriptions.length; i++) {
-            message.addExtra(descriptions[i]);
-            message.addExtra(sounds[i]);
+            sb.append(descriptions[i]);
+            sb.append(sounds[i]);
         }
 
-        sender.spigot().sendMessage(message);
+        sender.sendMessage(sb.toString());
     }
 
     //bad code

@@ -74,9 +74,6 @@ public class TableListeners implements Listener {
                     double dx = to.getX() - from.getX();
                     double dz = to.getZ() - from.getZ();
 
-                    player.sendMessage("dx: " + dx);
-                    player.sendMessage("dz: " + dz);
-
                     if (dx != 0 || dz != 0) {
                         event.getPlayer().teleport(from.setDirection(to.getDirection()));
                     }
