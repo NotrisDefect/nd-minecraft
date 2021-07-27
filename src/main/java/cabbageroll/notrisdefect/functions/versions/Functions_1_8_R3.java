@@ -1,13 +1,17 @@
 package cabbageroll.notrisdefect.functions.versions;
 
 import cabbageroll.notrisdefect.Blocks;
+import cabbageroll.notrisdefect.Main;
+import cabbageroll.notrisdefect.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V1;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.EntityFallingBlock;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityVelocity;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntity;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -15,8 +19,6 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import cabbageroll.notrisdefect.Main;
-import cabbageroll.notrisdefect.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V1;
 
 @SuppressWarnings("ALL")
 public class Functions_1_8_R3 implements Functions {
@@ -63,17 +65,19 @@ public class Functions_1_8_R3 implements Functions {
 
     @Override
     public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        IChatBaseComponent cTitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + title + "\"}");
-        IChatBaseComponent cSubtitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + subtitle + "\"}");
+        IChatBaseComponent cTitle = ChatSerializer.a("{\"text\": \"" + title + "\"}");
+        IChatBaseComponent cSubtitle = ChatSerializer.a("{\"text\": \"" + subtitle + "\"}");
 
-        PacketPlayOutTitle iTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, cTitle);
-        PacketPlayOutTitle iSubtitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, cSubtitle);
+        PacketPlayOutTitle iTitle = new PacketPlayOutTitle(EnumTitleAction.TITLE, cTitle);
+        PacketPlayOutTitle iSubtitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, cSubtitle);
 
-        PacketPlayOutTitle length = new PacketPlayOutTitle(fadeIn, stay, fadeOut);
+        PacketPlayOutTitle titleLength = new PacketPlayOutTitle(fadeIn, stay, fadeOut);
+        PacketPlayOutTitle subtitleLength = new PacketPlayOutTitle(fadeIn, stay, fadeOut);
 
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iTitle);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iSubtitle);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titleLength);
 
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iSubtitle);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitleLength);
     }
 }

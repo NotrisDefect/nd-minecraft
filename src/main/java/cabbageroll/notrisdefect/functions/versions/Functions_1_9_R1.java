@@ -1,6 +1,8 @@
 package cabbageroll.notrisdefect.functions.versions;
 
 import cabbageroll.notrisdefect.Blocks;
+import cabbageroll.notrisdefect.Main;
+import cabbageroll.notrisdefect.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V1;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.minecraft.server.v1_9_R1.EntityFallingBlock;
@@ -11,15 +13,12 @@ import net.minecraft.server.v1_9_R1.PacketPlayOutSpawnEntity;
 import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_9_R1.PacketPlayOutTitle.EnumTitleAction;
 import net.minecraft.server.v1_9_R1.World;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import cabbageroll.notrisdefect.Main;
-import cabbageroll.notrisdefect.functions.versions.sendblockchangecustom.SendBlockChangeCustom_V1;
 
 @SuppressWarnings("ALL")
 public class Functions_1_9_R1 implements Functions {
@@ -65,14 +64,20 @@ public class Functions_1_9_R1 implements Functions {
 
     @Override
     public void sendTitleCustom(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        IChatBaseComponent chatTitle = ChatSerializer.a("{\"text\": \"" + "ASDF" + "\",color:" + ChatColor.GOLD.name().toLowerCase() + "}");
+        IChatBaseComponent cTitle = ChatSerializer.a("{\"text\": \"" + title + "\"}");
+        IChatBaseComponent cSubtitle = ChatSerializer.a("{\"text\": \"" + subtitle + "\"}");
 
-        PacketPlayOutTitle iTitle = new PacketPlayOutTitle(EnumTitleAction.TITLE, chatTitle);
-        PacketPlayOutTitle length = new PacketPlayOutTitle(5, 20, 5);
+        PacketPlayOutTitle iTitle = new PacketPlayOutTitle(EnumTitleAction.TITLE, cTitle);
+        PacketPlayOutTitle iSubtitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, cSubtitle);
 
+        PacketPlayOutTitle titleLength = new PacketPlayOutTitle(fadeIn, stay, fadeOut);
+        PacketPlayOutTitle subtitleLength = new PacketPlayOutTitle(fadeIn, stay, fadeOut);
 
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iTitle);
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titleLength);
+
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(iSubtitle);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitleLength);
     }
 
 }
