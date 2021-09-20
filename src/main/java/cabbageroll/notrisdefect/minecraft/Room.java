@@ -159,8 +159,7 @@ public class Room {
                 timeNow = System.nanoTime();
                 try {
                     Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    Main.plugin.getLogger().warning(e.getMessage());
+                } catch (InterruptedException ignored) {
                 }
                 delta += (timeNow - timeLast) / expectedTickTime;
                 timeLast = timeNow;
@@ -180,17 +179,18 @@ public class Room {
 
     private void tick() {
         ArrayList<Player> stillAlivePlayers = new ArrayList<>(alivePlayers);
-        for (Player p : alivePlayers) {
-            Table table = getTable(p);
-            table.extTick();
-            if (table.isDead()) {
-                stillAlivePlayers.remove(table.getPlayer());
-                if (stillAlivePlayers.size() < 2) {
-                    stopRoom();
-                }
+        for (Player player : alivePlayers) {
+            Table table = getTable(player);
+            if (table == null || table.isDead()) {
+                stillAlivePlayers.remove(player);
+            } else {
+                table.extTick();
             }
         }
         alivePlayers = stillAlivePlayers;
+        if (stillAlivePlayers.size() < (isSingleplayer ? 1 : 2)) {
+            stopRoom();
+        }
     }
 
 }

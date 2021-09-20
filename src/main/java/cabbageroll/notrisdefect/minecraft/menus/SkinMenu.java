@@ -17,10 +17,9 @@ public class SkinMenu extends Menu {
 
     public SkinMenu(Player player) {
         createInventory(this, 54, "Skin editor");
-        ItemStack border = XMaterial.GLASS_PANE.parseItem();
-        // fill the border with glass
+
         for (int i = 0; i < 54; i++) {
-            getInventory().setItem(i, border);
+            buttons.put(i, border);
         }
 
         Skin skin;
@@ -30,52 +29,38 @@ public class SkinMenu extends Menu {
             skin = Main.gs.getSkin(player);
         }
 
-        // changeable blocks
         for (int i = 0; i < 17; i++) {
-            getInventory().setItem(BLOCK_LOCATIONS[i], skin.get(i));
-        }
-
-        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        getInventory().setItem(TORCH_LOCATION, createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.gs.getData(player).isCustom() ? ChatColor.BOLD : "") + "Default", ChatColor.WHITE + "" + (Main.gs.getData(player).isCustom() ? ChatColor.BOLD : "") + "Custom"));
-
-        Main.gs.openMenu(player, this);
-    }
-
-    public static void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        int slot = event.getSlot();
-        if (event.getCurrentItem() == null) {
-            event.setCancelled(true);
-        } else if (!Main.gs.getData(player).isCustom()) {
-            event.setCancelled(true);
-        } else if (event.getCurrentItem().getType() == XMaterial.GLASS_PANE.parseMaterial()) {
-            event.setCancelled(true);
-        } else if (event.getCurrentItem().getType() == XMaterial.AIR.parseMaterial()) {
-            if (slot == 11 && event.getCursor().getType() == XMaterial.AIR.parseMaterial()) {
-                Main.gs.getData(player).swapTransparent();
-                player.sendMessage("Transparency turned " + (Main.gs.getData(player).isTransparent() ? "on" : "off"));
-                return;
+            buttons.put(BLOCK_LOCATIONS[i], new Button(skin.get(i), event -> event.setCancelled(false)));
+            if (skin.get(i).getType() == XMaterial.AIR.parseMaterial()) {
+                buttons.put(BLOCK_LOCATIONS[i], new Button(skin.get(i), event -> {
+                    if (event.getCurrentItem().getType() == XMaterial.AIR.parseMaterial()) {
+                        if (event.getSlot() == 11 && event.getCursor().getType() == XMaterial.AIR.parseMaterial()) {
+                            Main.gs.getData(player).swapTransparent();
+                            player.sendMessage("Transparency turned " + (Main.gs.getData(player).isTransparent() ? "on" : "off"));
+                        }
+                    }
+                }));
             }
-        } else if (event.getSlot() == BACK_LOCATION || event.getSlot() == SkinMenu.TORCH_LOCATION) {
-            event.setCancelled(true);
         }
 
-        if (event.getSlot() == SkinMenu.TORCH_LOCATION) {
+        buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> {
+            if (Main.gs.getData(player).isCustom()) {
+                Inventory inv = event.getClickedInventory();
+                Main.gs.setSkin(player, toSkin(inv));
+            }
+            new HomeMenu(player);
+        }));
+
+        buttons.put(TORCH_LOCATION, new Button(createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.gs.getData(player).isCustom() ? ChatColor.BOLD : "") + "Default", ChatColor.WHITE + "" + (Main.gs.getData(player).isCustom() ? ChatColor.BOLD : "") + "Custom"), event -> {
             if (Main.gs.getData(player).isCustom()) {
                 Inventory inv = event.getClickedInventory();
                 Main.gs.setSkin(player, toSkin(inv));
             }
             Main.gs.getData(player).swapCustom();
             new SkinMenu(player);
-        }
+        }));
 
-        if (event.getSlot() == BACK_LOCATION) {
-            if (Main.gs.getData(player).isCustom()) {
-                Inventory inv = event.getClickedInventory();
-                Main.gs.setSkin(player, toSkin(inv));
-            }
-            new HomeMenu(player);
-        }
+        open(player);
     }
 
     public static Skin toSkin(Inventory inv) {
@@ -117,4 +102,11 @@ public class SkinMenu extends Menu {
         }
         return new Skin(blocks);
     }
+
+    @Override
+    protected void afterInventoryClick(InventoryClickEvent event) {
+
+    }
+
+
 }

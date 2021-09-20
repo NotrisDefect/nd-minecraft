@@ -6,7 +6,6 @@ import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class JoinRoomMenu extends Menu {
 
@@ -18,19 +17,14 @@ public class JoinRoomMenu extends Menu {
 
     public JoinRoomMenu(Player player, int p) {
         createInventory(this, 54, "Join room");
-        ItemStack border = XMaterial.GLASS_PANE.parseItem();
-        // fill the border with glass
         for (int i = 0; i < 9; i++) {
-            getInventory().setItem(i, border);
-        }
-        for (int i = 45; i < 54; i++) {
-            getInventory().setItem(i, border);
+            buttons.put(grid(1, i + 1), border);
+            buttons.put(grid(6, i + 1), border);
         }
 
-        // clickable items
-        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
+        buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> new MultiplayerMenu(player)));
         if (p > 0) {
-            getInventory().setItem(MINUSPAGE_LOCATION, createItem(XMaterial.ARROW, ChatColor.WHITE + "Previous page"));
+            buttons.put(MINUSPAGE_LOCATION, new Button(createItem(XMaterial.ARROW, ChatColor.WHITE + "Previous page"), event -> new JoinRoomMenu(player, 0)));
         }
 
         int display = 0;
@@ -44,7 +38,10 @@ public class JoinRoomMenu extends Menu {
                 if (!room.getIsSingleplayer()) {
                     if (counter < pagesize) {
                         if (display == p) {
-                            getInventory().setItem(ROOM_LOCATION_MIN + counter, createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + roomlist[i]));
+                            buttons.put(ROOM_LOCATION_MIN + counter, new Button(createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + roomlist[i]), event -> {
+                                Main.gs.getRoom(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())).addPlayer(player);
+                                new RoomMenu(player);
+                            }));
                         }
                     } else {
                         if (display == p) {
@@ -63,32 +60,14 @@ public class JoinRoomMenu extends Menu {
         }
 
         if (counter == pagesize) {
-            getInventory().setItem(PLUSPAGE_LOCATION, createItem(XMaterial.ARROW, ChatColor.WHITE + "Next page"));
+            buttons.put(PLUSPAGE_LOCATION, new Button(createItem(XMaterial.ARROW, ChatColor.WHITE + "Next page"), event -> new JoinRoomMenu(player, 0)));
         }
 
-        Main.gs.openMenu(player, this);
+        open(player);
     }
 
-    public static void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        int slot = event.getSlot();
-        event.setCancelled(true);
-        if (JoinRoomMenu.ROOM_LOCATION_MIN <= slot && slot < JoinRoomMenu.ROOM_LOCATION_MIN + JoinRoomMenu.pagesize) {
-            Main.gs.getRoom(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())).addPlayer(player);
-            new RoomMenu(player);
-        } else {
-            switch (slot) {
-                case BACK_LOCATION:
-                    new MultiplayerMenu(player);
-                    break;
-                case JoinRoomMenu.MINUSPAGE_LOCATION:
-                    new JoinRoomMenu(player, 0);
-                    break;
-                case JoinRoomMenu.PLUSPAGE_LOCATION:
-                    new JoinRoomMenu(player, 0);
-                    break;
+    @Override
+    protected void afterInventoryClick(InventoryClickEvent event) {
 
-            }
-        }
     }
 }

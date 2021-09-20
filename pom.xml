@@ -6,7 +6,7 @@
 
     <groupId>NotrisDefect</groupId>
     <artifactId>nd-minecraft</artifactId>
-    <version>1.4.4</version>
+    <version>1.4.5</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

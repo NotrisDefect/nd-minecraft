@@ -20,16 +20,12 @@ public class RoomMenu extends Menu {
     public RoomMenu(Player player) {
         Room room = Main.gs.getRoom(player);
         createInventory(this, 54, room.getRoomName());
-        ItemStack border = XMaterial.GLASS_PANE.parseItem();
-        // fill the border with glass
+
         for (int i = 0; i < 9; i++) {
-            getInventory().setItem(i, border);
-        }
-        for (int i = 45; i < 54; i++) {
-            getInventory().setItem(i, border);
+            buttons.put(grid(1, i + 1), border);
+            buttons.put(grid(6, i + 1), border);
         }
 
-        // clickable items
         ItemStack item;
         ItemMeta itemmeta;
 
@@ -45,69 +41,44 @@ public class RoomMenu extends Menu {
             }
 
             item.setItemMeta(itemmeta);
-            getInventory().setItem(9 + i, item);
+            buttons.put(9 + i, new Button(item));
             i++;
         }
 
         if (room.getHost().equals(player)) {
             if (room.getIsRunning()) {
-                getInventory().setItem(GAME_LOCATION, createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"));
+                buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"), event -> room.stopRoom()));
             } else {
-                if (!room.getIsSingleplayer()
-                    && room.players.size() == 1) {
-                    getInventory().setItem(GAME_LOCATION,
-                        createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed"));
+                if (!room.getIsSingleplayer() && room.players.size() == 1) {
+                    buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed")));
                 } else {
-                    getInventory().setItem(GAME_LOCATION,
-                        createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"));
+                    buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"), event -> room.startRoom()));
                 }
             }
         } else {
-            getInventory().setItem(GAME_LOCATION,
-                createItem(XMaterial.BARRIER, ChatColor.WHITE + "YOU ARE NOT THE HOST"));
+            buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.WHITE + "YOU ARE NOT THE HOST")));
         }
 
-        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        getInventory().setItem(SONG_LOCATION, createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song"));
+        buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> {
+            if (room.getIsSingleplayer()) {
+                new HomeMenu(player);
+            } else {
+                new MultiplayerMenu(player);
+            }
+            room.removePlayer(player);
+        }));
+        buttons.put(SONG_LOCATION, new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song"), event -> new SongMenu(player)));
         if (!room.getIsRunning() && room.getHost() == player) {
-            getInventory().setItem(SETTINGS_LOCATION, createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings"));
+            buttons.put(SETTINGS_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings"), event -> new SettingsMenu(player)));
         }
 
-        Main.gs.openMenu(player, this);
+        open(player);
     }
 
-    public static void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        Room room = Main.gs.getRoom(player);
-        int slot = event.getSlot();
-        event.setCancelled(true);
-        switch (slot) {
-            case BACK_LOCATION:
-                if (room.getIsSingleplayer()) {
-                    new HomeMenu(player);
-                } else {
-                    new MultiplayerMenu(player);
-                }
-                room.removePlayer(player);
-                break;
-            case 49:
-                if (room.getHost().equals(player)) {
-                    if (room.getIsRunning()) {
-                        room.stopRoom();
-                    } else {
-                        room.startRoom();
-                    }
-                    new RoomMenu(player);
-                }
-                break;
-            case RoomMenu.SETTINGS_LOCATION:
-                if (!room.getIsRunning() && room.getHost() == player) {
-                    new SettingsMenu(player);
-                }
-                break;
-            case RoomMenu.SONG_LOCATION:
-                new SongMenu(player);
-                break;
+    @Override
+    protected void afterInventoryClick(InventoryClickEvent event) {
+        if (event.getSlot() != BACK_LOCATION && event.getSlot() != SONG_LOCATION && event.getSlot() != SETTINGS_LOCATION) {
+            new SettingsMenu((Player) event.getWhoClicked());
         }
     }
 }

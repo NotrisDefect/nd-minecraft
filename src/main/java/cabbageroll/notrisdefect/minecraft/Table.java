@@ -150,7 +150,7 @@ public class Table extends GameLogic {
             sb.append("B2B ");
         }
 
-        sb.append(convIntToPieceName(piece.getPieceNumber()));
+        sb.append(convIntToPieceName(piece.getColor()));
 
         switch (spinState) {
             case SPIN_MINI:
@@ -515,22 +515,6 @@ public class Table extends GameLogic {
         }
     }
 
-    private void colPrintNewRender2(float x, float y, int color) {
-        int blockX, blockY, blockZ;
-        int varI = imi != 0 ? imi : thickness;
-        int varJ = imj != 0 ? imj : thickness;
-        int varK = imk != 0 ? imk : thickness;
-        for (int i = 0; i < varI * varJ * varK; i++) {
-            blockX = location.getBlockX() + (int) Math.floor(x * WMX) + (int) Math.floor(y * HMX) + i % varI * varJ * varK;
-
-            blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + i % varJ * varK;
-
-            blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + i % varK;
-
-            printSingleBlockToAll(blockX, blockY, blockZ, color);
-        }
-    }
-
     @SuppressWarnings("unused")
     private void debug(String s) {
         System.out.println(s);
@@ -689,7 +673,7 @@ public class Table extends GameLogic {
         final Piece pieceFull = getCurrentPiece();
         final Point cpp = new Point(pieceFull.getX(), pieceFull.getY());
         final int rot = pieceFull.getRotation();
-        final int piece = getCurrentPiece().getPieceNumber();
+        final int piece = getCurrentPiece().getColor();
         final int[][] stage = getStage();
 
         int[][] newStageDisplay = new int[STAGESIZEY][STAGESIZEX];
@@ -738,8 +722,8 @@ public class Table extends GameLogic {
         }
 
         for (int i = 0; i < NEXTPIECESMAX; i++) {
-            for (Point point : getPoints(getNextPieces()[i].getPieceNumber(), 0)) {
-                newNextDisplay[point.y + i % NEXTVERTICAL * BOX][point.x + BOX * (i / NEXTVERTICAL)] = getNextPieces()[i].getPieceNumber();
+            for (Point point : getPoints(getNextPieces()[i].getColor(), 0)) {
+                newNextDisplay[point.y + i % NEXTVERTICAL * BOX][point.x + BOX * (i / NEXTVERTICAL)] = getNextPieces()[i].getColor();
             }
         }
 
@@ -751,8 +735,8 @@ public class Table extends GameLogic {
         }
 
         if (getHeldPiece() != null) {
-            for (Point point : getPoints(getHeldPiece().getPieceNumber(), 0)) {
-                newHoldDisplay[point.y][point.x] = getHeldPiece().getPieceNumber();
+            for (Point point : getPoints(getHeldPiece().getColor(), 0)) {
+                newHoldDisplay[point.y][point.x] = getHeldPiece().getColor();
             }
         }
 

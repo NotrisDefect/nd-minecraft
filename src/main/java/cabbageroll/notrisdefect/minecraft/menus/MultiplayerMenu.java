@@ -5,7 +5,6 @@ import com.cryptomorin.xseries.XMaterial;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class MultiplayerMenu extends Menu {
 
@@ -14,40 +13,23 @@ public class MultiplayerMenu extends Menu {
 
     public MultiplayerMenu(Player player) {
         createInventory(this, 54, "Multiplayer");
-        ItemStack border = XMaterial.GLASS_PANE.parseItem();
-        //fill the border with glass
         for (int i = 0; i < 9; i++) {
-            getInventory().setItem(i, border);
-        }
-        for (int i = 45; i < 54; i++) {
-            getInventory().setItem(i, border);
+            buttons.put(grid(1, i + 1), border);
+            buttons.put(grid(6, i + 1), border);
         }
 
-        //clickable items
+        buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> new HomeMenu(player)));
+        buttons.put(CREATEROOM_LOCATION, new Button(createItem(XMaterial.COAL_ORE, ChatColor.WHITE + "Create new room"), event -> {
+            Main.gs.createMPRoom(player);
+            new RoomMenu(player);
+        }));
+        buttons.put(LISTROOMS_LOCATION, new Button(createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + "Join a room"), event -> new JoinRoomMenu(player, 0)));
 
-        getInventory().setItem(BACK_LOCATION, createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"));
-        getInventory().setItem(CREATEROOM_LOCATION, createItem(XMaterial.COAL_ORE, ChatColor.WHITE + "Create new room"));
-        getInventory().setItem(LISTROOMS_LOCATION, createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + "Join a room"));
-
-
-        Main.gs.openMenu(player, this);
+        open(player);
     }
 
-    public static void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
-        int slot = event.getSlot();
-        event.setCancelled(true);
-        switch (slot) {
-            case BACK_LOCATION:
-                new HomeMenu(player);
-                break;
-            case MultiplayerMenu.CREATEROOM_LOCATION:
-                Main.gs.createMPRoom(player);
-                new RoomMenu(player);
-                break;
-            case MultiplayerMenu.LISTROOMS_LOCATION:
-                new JoinRoomMenu(player, 0);
-                break;
-        }
+    @Override
+    protected void afterInventoryClick(InventoryClickEvent event) {
+
     }
 }
