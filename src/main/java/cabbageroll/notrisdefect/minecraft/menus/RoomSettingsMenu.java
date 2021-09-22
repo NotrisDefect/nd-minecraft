@@ -7,9 +7,21 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class SettingsMenu extends Menu {
+public class RoomSettingsMenu extends Menu {
 
-    public SettingsMenu(Player player) {
+    public RoomSettingsMenu(Player player) {
+        super(player);
+    }
+
+    @Override
+    protected void afterInventoryClick(InventoryClickEvent event) {
+        if (event.getSlot() != BACK_LOCATION) {
+            new RoomSettingsMenu((Player) event.getWhoClicked());
+        }
+    }
+
+    @Override
+    protected void prepare() {
         createInventory(this, 54, "Settings");
         Table table = Main.gs.getTable(player);
 
@@ -45,14 +57,5 @@ public class SettingsMenu extends Menu {
         buttons.put(grid(5, 5), new Button(createItem(XMaterial.GREEN_STAINED_GLASS, "Garbage bottom left corner Y", "" + table.getGarbBLCY()), event -> table.moveGarbBLCYRelative(howMuch(event.getClick()))));
         buttons.put(grid(5, 9), new Button(createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + "NEXTVERTICAL", "" + table.getNEXTVERTICAL()), event -> table.setNEXTVERTICAL(table.getNEXTVERTICAL() + howMuch(event.getClick()))));
 
-        open(player);
-    }
-
-
-    @Override
-    protected void afterInventoryClick(InventoryClickEvent event) {
-        if (event.getSlot() != BACK_LOCATION) {
-            new SettingsMenu((Player) event.getWhoClicked());
-        }
     }
 }

@@ -1,4 +1,4 @@
-package cabbageroll.notrisdefect.minecraft;
+package cabbageroll.notrisdefect.minecraft.playerdata;
 
 import org.bukkit.inventory.ItemStack;
 

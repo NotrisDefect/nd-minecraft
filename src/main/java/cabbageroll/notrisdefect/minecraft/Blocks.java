@@ -1,5 +1,6 @@
 package cabbageroll.notrisdefect.minecraft;
 
+import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.inventory.ItemStack;
 

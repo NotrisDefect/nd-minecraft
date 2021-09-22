@@ -13,8 +13,8 @@ public class Room {
     private final String roomID;
     private final String roomName;
     private final boolean isSingleplayer;
-    public List<Player> alivePlayers = new ArrayList<>();
     public int index;
+    private List<Player> alivePlayers = new ArrayList<>();
     private Player host;
     private boolean isRunning;
     private boolean backfire;
@@ -72,20 +72,20 @@ public class Room {
         return host;
     }
 
-    public boolean getIsRunning() {
-        return isRunning;
-    }
-
-    public boolean getIsSingleplayer() {
-        return isSingleplayer;
-    }
-
     public String getRoomID() {
         return roomID;
     }
 
     public String getRoomName() {
         return roomName;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public boolean isSingleplayer() {
+        return isSingleplayer;
     }
 
     public void removePlayer(Player player) {
@@ -96,7 +96,7 @@ public class Room {
         Main.gs.getTable(player).leaveRoom();
         if (player == host) {
             if (players.size() == 0) {
-                Main.gs.deleteRoom(roomID);
+                Main.gs.deleteRoom(this);
             } else {
                 host = players.get(0);
                 host.sendMessage(Strings.hostChange);

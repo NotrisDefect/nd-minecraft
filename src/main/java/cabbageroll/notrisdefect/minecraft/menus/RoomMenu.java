@@ -18,6 +18,18 @@ public class RoomMenu extends Menu {
     public final static int SETTINGS_LOCATION = 53;
 
     public RoomMenu(Player player) {
+        super(player);
+    }
+
+    @Override
+    protected void afterInventoryClick(InventoryClickEvent event) {
+        if (event.getSlot() != BACK_LOCATION && event.getSlot() != SONG_LOCATION && event.getSlot() != SETTINGS_LOCATION) {
+            new RoomSettingsMenu((Player) event.getWhoClicked());
+        }
+    }
+
+    @Override
+    protected void prepare() {
         Room room = Main.gs.getRoom(player);
         createInventory(this, 54, room.getRoomName());
 
@@ -46,39 +58,35 @@ public class RoomMenu extends Menu {
         }
 
         if (room.getHost().equals(player)) {
-            if (room.getIsRunning()) {
+            if (room.isRunning()) {
                 buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"), event -> room.stopRoom()));
             } else {
-                if (!room.getIsSingleplayer() && room.players.size() == 1) {
+                if (!room.isSingleplayer() && room.players.size() == 1) {
                     buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed")));
                 } else {
                     buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"), event -> room.startRoom()));
                 }
             }
         } else {
-            buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.WHITE + "YOU ARE NOT THE HOST")));
+            buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings", ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "read")));
         }
 
-        buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> {
-            if (room.getIsSingleplayer()) {
+        if (room.isSingleplayer()) {
+            buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> {
                 new HomeMenu(player);
-            } else {
+                room.removePlayer(player);
+            }));
+        } else {
+            buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> {
                 new MultiplayerMenu(player);
-            }
-            room.removePlayer(player);
-        }));
-        buttons.put(SONG_LOCATION, new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song"), event -> new SongMenu(player)));
-        if (!room.getIsRunning() && room.getHost() == player) {
-            buttons.put(SETTINGS_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings"), event -> new SettingsMenu(player)));
+                room.removePlayer(player);
+            }));
         }
 
-        open(player);
-    }
-
-    @Override
-    protected void afterInventoryClick(InventoryClickEvent event) {
-        if (event.getSlot() != BACK_LOCATION && event.getSlot() != SONG_LOCATION && event.getSlot() != SETTINGS_LOCATION) {
-            new SettingsMenu((Player) event.getWhoClicked());
+        if (!room.isRunning() && room.getHost() == player) {
+            buttons.put(SONG_LOCATION, new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song"), event -> new RoomSongMenu(player)));
+            buttons.put(SETTINGS_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings", ChatColor.DARK_RED + "" + ChatColor.ITALIC + "write"), event -> new RoomSettingsMenu(player)));
         }
+
     }
 }

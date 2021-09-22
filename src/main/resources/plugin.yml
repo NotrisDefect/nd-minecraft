@@ -1,6 +1,6 @@
 name: NotrisDefect
 main: cabbageroll.notrisdefect.minecraft.Main
-version: 1.4.5
+version: 1.5
 api-version: 1.13
 softdepend: [ NoteBlockAPI, Netherboard ]
 commands:
@@ -22,3 +22,16 @@ permissions:
     default: false
   notrisdefect.use.experimental:
     default: false
+  notrisdefect.admin.*:
+    children:
+      notrisdefect.admin.flush: true
+      notrisdefect.admin.hosteverywhere: true
+      notrisdefect.admin.watch: true
+  notrisdefect.admin.flush:
+    default: false
+  notrisdefect.admin.hosteverywhere:
+    default: false
+  notrisdefect.admin.watch:
+    default: false
+
+

@@ -1,8 +1,8 @@
-package cabbageroll.notrisdefect.minecraft;
+package cabbageroll.notrisdefect.minecraft.playerdata;
 
 import java.io.Serializable;
 
-public class PlayerData implements Serializable {
+public class PersistentPlayerData implements Serializable {
 
     private boolean transparent = false;
     private boolean custom = false;

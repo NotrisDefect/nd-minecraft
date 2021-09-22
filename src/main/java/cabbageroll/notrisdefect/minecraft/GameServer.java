@@ -4,6 +4,8 @@ import cabbageroll.notrisdefect.minecraft.menus.HomeMenu;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
 import cabbageroll.notrisdefect.minecraft.menus.RoomMenu;
 import cabbageroll.notrisdefect.minecraft.menus.SkinMenu;
+import cabbageroll.notrisdefect.minecraft.playerdata.PersistentPlayerData;
+import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -16,6 +18,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class GameServer {
@@ -27,24 +31,25 @@ public class GameServer {
     Room ticks all alive tables that are in it.
     */
 
-    private final Map<String, Room> rooms = new LinkedHashMap<>();
-    private final Map<Player, Table> tables = new LinkedHashMap<>();
-    private final Map<Player, PlayerData> data = new HashMap<>();
+    private final Map<String, Room> roomMap = new LinkedHashMap<>();
+    private final List<Room> roomList = new LinkedList<>();
+    private final Map<Player, Table> tableMap = new HashMap<>();
+    private final Map<Player, PersistentPlayerData> offlineData = new HashMap<>();
 
     public GameServer() {
 
     }
 
-    public Room createMPRoom(Player player) {
-        Room room = new Room(player, false);
-        rooms.put(room.getRoomID(), room);
-        return room;
+    public List<Room> cloneRoomList() {
+        return new LinkedList<>(roomList);
     }
 
-    public Room createSPRoom(Player player) {
-        Room room = new Room(player, true);
-        rooms.put(room.getRoomID(), room);
-        return room;
+    public void createMPRoom(Player player) {
+        pushRoom(new Room(player, false));
+    }
+
+    public void createSPRoom(Player player) {
+        pushRoom(new Room(player, true));
     }
 
     public void deinitialize(Player player) {
@@ -59,7 +64,7 @@ public class GameServer {
             }
         }
 
-        tables.remove(player);
+        tableMap.remove(player);
 
         try {
             File file = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getName() + "_" + player.getUniqueId() + ".dat");
@@ -71,43 +76,44 @@ public class GameServer {
             }
             FileOutputStream fos = new FileOutputStream(file);
             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(fos);
-            oos.writeObject(data.get(player));
+            oos.writeObject(offlineData.get(player));
             oos.close();
             fos.close();
         } catch (IOException e) {
             Main.plugin.getLogger().warning(e.getMessage());
         }
 
-        data.remove(player);
+        offlineData.remove(player);
 
     }
 
-    public void deleteRoom(String s) {
-        rooms.remove(s);
+    public void deleteRoom(Room room) {
+        roomMap.remove(room.getRoomID());
+        roomList.remove(room);
     }
 
     public String[] generateRoomList() {
-        return rooms.keySet().toArray(new String[rooms.size()]);
+        return roomMap.keySet().toArray(new String[roomMap.size()]);
     }
 
-    public PlayerData getData(Player player) {
-        return data.get(player);
+    public PersistentPlayerData getData(Player player) {
+        return offlineData.get(player);
     }
 
     public Room getRoom(String s) {
-        return rooms.get(s);
+        return roomMap.get(s);
     }
 
     public Room getRoom(Player player) {
-        return tables.get(player).getRoom();
+        return tableMap.get(player).getRoom();
     }
 
     public Skin getSkin(Player player) {
-        return data.get(player).getSkin();
+        return offlineData.get(player).getSkin();
     }
 
     public Table getTable(Player player) {
-        return tables.get(player);
+        return tableMap.get(player);
     }
 
     public boolean hasMenuOpen(Player player) {
@@ -118,52 +124,58 @@ public class GameServer {
 
     public void initialize(Player player) {
         Table table = new Table(player);
-        tables.put(player, table);
+        tableMap.put(player, table);
         new HomeMenu(player);
-        PlayerData pd;
+        PersistentPlayerData pd;
 
         try {
             FileInputStream fis = new FileInputStream(Main.plugin.getDataFolder() + "/userdata/" + player.getName() + "_" + player.getUniqueId() + ".dat");
             BukkitObjectInputStream ois = new BukkitObjectInputStream(fis);
-            pd = (PlayerData) ois.readObject();
+            pd = (PersistentPlayerData) ois.readObject();
             ois.close();
             fis.close();
         } catch (IOException | ClassNotFoundException e) {
             Main.plugin.getLogger().warning(e.getMessage());
-            pd = new PlayerData();
+            pd = new PersistentPlayerData();
             pd.setSkin(new Skin(Blocks.empty));
         }
 
-        data.put(player, pd);
+        offlineData.put(player, pd);
     }
 
     public boolean isPlayerHere(Player player) {
-        return tables.containsKey(player);
+        return tableMap.containsKey(player);
     }
 
     public void openLastMenu(Player player) {
         //DUMB
-        if (tables.get(player).getLastMenuOpened() instanceof RoomMenu) {
+        if (tableMap.get(player).getLastMenuOpened() instanceof RoomMenu) {
             new RoomMenu(player);
         } else {
-            player.openInventory(tables.get(player).getLastMenuOpened().getInventory());
+            player.openInventory(tableMap.get(player).getLastMenuOpened().getInventory());
         }
     }
 
     public void openMenu(Player player, Menu menu) {
-        tables.get(player).setLastMenuOpened(menu);
+        tableMap.get(player).setLastMenuOpened(menu);
         player.openInventory(menu.getInventory());
     }
 
-    public void removeRoom(String s) {
-        rooms.remove(s);
+    public void popRoom(String s) {
+        roomList.remove(roomMap.get(s));
+        roomMap.remove(s);
     }
 
     public void setSkin(Player player, Skin skin) {
-        data.get(player).setSkin(skin);
+        offlineData.get(player).setSkin(skin);
     }
 
     private Menu getMenu(Player player) {
-        return tables.get(player).getLastMenuOpened();
+        return tableMap.get(player).getLastMenuOpened();
+    }
+
+    private void pushRoom(Room room) {
+        roomMap.put(room.getRoomID(), room);
+        roomList.add(room);
     }
 }

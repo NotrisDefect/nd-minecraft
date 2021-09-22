@@ -21,8 +21,15 @@ public abstract class Menu implements InventoryHolder {
 
     public final static int BACK_LOCATION = 0;
     protected final Map<Integer, Button> buttons = new HashMap<>();
+    protected final Player player;
     protected Button border = new Button(createItem(XMaterial.GLASS_PANE, "" + ChatColor.RESET));
     private Inventory inventory = null;
+
+    public Menu(Player player) {
+        this.player = player;
+        prepare();
+        open();
+    }
 
     public static int grid(int column, int row) {
         return (column - 1) * 9 + row - 1;
@@ -63,7 +70,6 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
         event.setCancelled(true);
 
         Button button = buttons.get(event.getSlot());
@@ -75,12 +81,17 @@ public abstract class Menu implements InventoryHolder {
 
     protected abstract void afterInventoryClick(InventoryClickEvent event);
 
-    protected void open(Player player) {
+    protected void open() {
+        placeAll();
+        Main.gs.openMenu(player, this);
+    }
+
+    protected void placeAll() {
         for (Map.Entry<Integer, Button> button : buttons.entrySet()) {
             inventory.setItem(button.getKey(), button.getValue().getItem());
         }
-
-        Main.gs.openMenu(player, this);
     }
+
+    protected abstract void prepare();
 
 }

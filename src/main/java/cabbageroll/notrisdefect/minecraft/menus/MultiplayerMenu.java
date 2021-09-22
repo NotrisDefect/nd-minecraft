@@ -12,6 +12,16 @@ public class MultiplayerMenu extends Menu {
     public final static int LISTROOMS_LOCATION = 23;
 
     public MultiplayerMenu(Player player) {
+        super(player);
+    }
+
+    @Override
+    protected void afterInventoryClick(InventoryClickEvent event) {
+
+    }
+
+    @Override
+    protected void prepare() {
         createInventory(this, 54, "Multiplayer");
         for (int i = 0; i < 9; i++) {
             buttons.put(grid(1, i + 1), border);
@@ -23,13 +33,7 @@ public class MultiplayerMenu extends Menu {
             Main.gs.createMPRoom(player);
             new RoomMenu(player);
         }));
-        buttons.put(LISTROOMS_LOCATION, new Button(createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + "Join a room"), event -> new JoinRoomMenu(player, 0)));
-
-        open(player);
-    }
-
-    @Override
-    protected void afterInventoryClick(InventoryClickEvent event) {
+        buttons.put(LISTROOMS_LOCATION, new Button(createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + "Join a room"), event -> new RoomListMenu(player)));
 
     }
 }
