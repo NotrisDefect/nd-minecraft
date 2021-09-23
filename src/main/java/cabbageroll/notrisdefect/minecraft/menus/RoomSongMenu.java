@@ -5,7 +5,6 @@ import cabbageroll.notrisdefect.minecraft.Room;
 import cabbageroll.notrisdefect.minecraft.functions.softdepend.NoteBlockAPIYes;
 import com.cryptomorin.xseries.XMaterial;
 import com.xxmicloxx.NoteBlockAPI.model.Playlist;
-import com.xxmicloxx.NoteBlockAPI.model.Song;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,10 +16,9 @@ public class RoomSongMenu extends Menu {
     private final static int pagesize = 36;
     private final static int MINUSPAGE_LOCATION = 45;
     private final static int PLUSPAGE_LOCATION = 53;
-
-    private int page = 0;
     private final Room room = Main.gs.getRoom(player);
     private final Playlist playlist = NoteBlockAPIYes.playlist;
+    private int page = 0;
 
     public RoomSongMenu(Player player) {
         super(player);
@@ -65,15 +63,14 @@ public class RoomSongMenu extends Menu {
             if (playlist.getCount() > page * pagesize) {
                 break;
             }
-            Song song = playlist.get(pagesize * page + i);
             String name;
             if (playlist.get(i).getPath() == null) {
                 name = NoteBlockAPIYes.classpathSongs[i];
             } else {
                 name = playlist.get(i).getPath().getName().replaceAll(".nbs$", "");
             }
-            int finalI = i;
-            buttons.put(SONG_LOCATION_MIN + i, new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + name), event -> room.index = pagesize * page + finalI));
+            int index = pagesize * page + i;
+            buttons.put(SONG_LOCATION_MIN + i, new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + name), event -> room.index = index));
         }
         for (int j = i; j < pagesize; j++) {
             buttons.remove(SONG_LOCATION_MIN + i);

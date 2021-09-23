@@ -1,7 +1,7 @@
 package cabbageroll.notrisdefect.minecraft.menus;
 
-import cabbageroll.notrisdefect.minecraft.Blocks;
 import cabbageroll.notrisdefect.minecraft.Main;
+import cabbageroll.notrisdefect.minecraft.playerdata.Blocks;
 import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;

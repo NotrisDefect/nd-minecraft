@@ -68,7 +68,7 @@ public class RoomMenu extends Menu {
                 }
             }
         } else {
-            buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings", ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "read")));
+            buttons.put(SETTINGS_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings", ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "read")));
         }
 
         if (room.isSingleplayer()) {

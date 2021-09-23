@@ -1,5 +1,6 @@
-package cabbageroll.notrisdefect.minecraft;
+package cabbageroll.notrisdefect.minecraft.listeners;
 
+import cabbageroll.notrisdefect.minecraft.Main;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

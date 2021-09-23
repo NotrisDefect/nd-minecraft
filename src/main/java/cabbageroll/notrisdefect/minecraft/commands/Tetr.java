@@ -45,7 +45,7 @@ public class Tetr implements CommandExecutor, Listener {
                 }
             } else switch (command) {
                 case Strings.bench:
-                    if (player.hasPermission("notrisdefect.use.experimental")) {
+                    if (player.hasPermission(Strings.permUnsafe)) {
                         int people = Integer.parseInt(args[1]);
                         int rooms = Integer.parseInt(args[2]);
                         int duration = Integer.parseInt(args[3]);
@@ -61,7 +61,7 @@ public class Tetr implements CommandExecutor, Listener {
                     Choice.help(sender);
                     break;
                 case Strings.joinroom:
-                    if (sender.hasPermission("notrisdefect.use.experimental")) {
+                    if (sender.hasPermission(Strings.permUnsafe)) {
                         Main.gs.getRoom(args[1]).addPlayer(player);
                         new RoomMenu(player);
                     } else {

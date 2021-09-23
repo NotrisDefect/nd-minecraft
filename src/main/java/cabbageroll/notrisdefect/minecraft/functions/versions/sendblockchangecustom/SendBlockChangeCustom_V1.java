@@ -1,7 +1,7 @@
 package cabbageroll.notrisdefect.minecraft.functions.versions.sendblockchangecustom;
 
-import cabbageroll.notrisdefect.minecraft.Blocks;
 import cabbageroll.notrisdefect.minecraft.Main;
+import cabbageroll.notrisdefect.minecraft.playerdata.Blocks;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

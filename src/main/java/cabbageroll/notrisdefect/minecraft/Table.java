@@ -17,6 +17,14 @@ import java.util.Map;
 
 public class Table extends GameLogic {
 
+    public static final byte GHOST_Z = 9;
+    public static final byte GHOST_L = 10;
+    public static final byte GHOST_O = 11;
+    public static final byte GHOST_S = 12;
+    public static final byte GHOST_I = 13;
+    public static final byte GHOST_J = 14;
+    public static final byte GHOST_T = 15;
+
     private static final int BOX = 4;
     private static final int FRONTROWS = 30;
     private static final int BACKROWS = 20;
@@ -687,7 +695,7 @@ public class Table extends GameLogic {
         }
 
         for (Point point : getPoints(piece, rot)) {
-            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = 9 + piece;
+            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = GHOST_Z + piece;
         }
 
         for (Point point : getPoints(piece, rot)) {

@@ -3,17 +3,6 @@ package cabbageroll.notrisdefect.minecraft;
 import java.awt.Color;
 
 public class Constants {
-    public static final int idLength = 3;
-    public static final String idCharSet = "ABCDEF";
-    public static final boolean iKnowWhatIAmDoing = true;
-
-    public static final String[] NAMES = {
-        "blockZ", "blockL", "blockO", "blockS", "blockI", "blockJ", "blockT",
-        "background", "garbage",
-        "ghostZ", "ghostL", "ghostO", "ghostS", "ghostI", "ghostJ", "ghostT",
-        "zone"
-    };
-
     public static final DeathAnimation deathAnim = DeathAnimation.GRAYSCALE;
 
     public static Color intToColor(int number) {
