@@ -13,7 +13,7 @@ public class Room {
     private final String roomID;
     private final String roomName;
     private final boolean isSingleplayer;
-    public int index;
+    public int songIndex;
     private List<Player> alivePlayers = new ArrayList<>();
     private Player host;
     private boolean isRunning;
@@ -31,7 +31,7 @@ public class Room {
         } else {
             roomName = "Multiplayer @" + roomID;
         }
-        index = -1;
+        songIndex = -1;
     }
 
     public void addPlayer(Player player) {
@@ -110,23 +110,16 @@ public class Room {
 
     public void startRoom() {
         isRunning = true;
+        Main.noteBlockAPI.startPlaying(this, songIndex);
 
-        if (isSingleplayer || players.size() >= 2) {
+        long seed = (long) (Math.random() * Long.MAX_VALUE);
 
-            Main.noteBlockAPI.startPlaying(this, index);
-
-            long seed = (long) (Math.random() * Long.MAX_VALUE);
-
-            for (Player player : players) {
-                Table table = getTable(player);
-                table.initTable(seed);
-            }
-            alivePlayers = new ArrayList<>(players);
-            roomLoop();
-        } else {
-            host.sendMessage(Strings.notEnoughPlayers);
+        for (Player player : players) {
+            Table table = getTable(player);
+            table.initTable(seed);
         }
-
+        alivePlayers = new ArrayList<>(players);
+        roomLoop();
     }
 
     public void stopRoom() {
@@ -188,7 +181,7 @@ public class Room {
             }
         }
         alivePlayers = stillAlivePlayers;
-        if (stillAlivePlayers.size() < (isSingleplayer ? 1 : 2)) {
+        if (alivePlayers.size() < (isSingleplayer ? 1 : 2)) {
             stopRoom();
         }
     }

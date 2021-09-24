@@ -87,6 +87,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     protected void placeAll() {
+        inventory.clear();
         for (Map.Entry<Integer, Button> button : buttons.entrySet()) {
             inventory.setItem(button.getKey(), button.getValue().getItem());
         }

@@ -2,6 +2,7 @@ package cabbageroll.notrisdefect.minecraft.menus;
 
 import cabbageroll.notrisdefect.minecraft.Main;
 import cabbageroll.notrisdefect.minecraft.Room;
+import cabbageroll.notrisdefect.minecraft.Strings;
 import com.cryptomorin.xseries.XMaterial;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,9 +14,9 @@ import java.util.Collections;
 
 public class RoomMenu extends Menu {
 
-    public final static int GAME_LOCATION = 49;
-    public final static int SONG_LOCATION = 52;
-    public final static int SETTINGS_LOCATION = 53;
+    public final static int GAME_LOCATION = grid(6, 5);
+    public final static int SONG_LOCATION = grid(6, 8);
+    public final static int SETTINGS_LOCATION = grid(6, 9);
 
     public RoomMenu(Player player) {
         super(player);
@@ -24,7 +25,7 @@ public class RoomMenu extends Menu {
     @Override
     protected void afterInventoryClick(InventoryClickEvent event) {
         if (event.getSlot() != BACK_LOCATION && event.getSlot() != SONG_LOCATION && event.getSlot() != SETTINGS_LOCATION) {
-            new RoomSettingsMenu((Player) event.getWhoClicked());
+            new RoomMenu((Player) event.getWhoClicked());
         }
     }
 
@@ -48,8 +49,6 @@ public class RoomMenu extends Menu {
             itemmeta.setDisplayName(ChatColor.WHITE + p.getName());
             if (room.getHost().equals(p)) {
                 itemmeta.setLore(Collections.singletonList(ChatColor.DARK_RED + "HOST"));
-            } else {
-                itemmeta.setLore(null);
             }
 
             item.setItemMeta(itemmeta);
@@ -59,33 +58,35 @@ public class RoomMenu extends Menu {
 
         if (room.getHost().equals(player)) {
             if (room.isRunning()) {
-                buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.ANVIL, ChatColor.WHITE + "ABORT"), event -> room.stopRoom()));
+                buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.ANVIL, ChatColor.YELLOW + "ABORT"), event -> room.stopRoom()));
             } else {
                 if (!room.isSingleplayer() && room.players.size() == 1) {
-                    buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.DARK_PURPLE + "2 players needed")));
+                    buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.DARK_RED + "2 players needed"), event -> player.sendMessage(Strings.notEnoughPlayers)));
                 } else {
-                    buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.DIAMOND_SWORD, ChatColor.WHITE + "START"), event -> room.startRoom()));
+                    buttons.put(GAME_LOCATION, new Button(createItem(XMaterial.DIAMOND_SWORD, ChatColor.DARK_GREEN + "START"), event -> room.startRoom()));
                 }
+                buttons.put(SONG_LOCATION, new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song"), event -> new RoomSongMenu(player)));
+                buttons.put(SETTINGS_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings"), event -> new RoomSettingsMenu(player)));
+
             }
         } else {
-            buttons.put(SETTINGS_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings", ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "read")));
+            if (room.isRunning()) {
+
+            } else {
+                buttons.put(SETTINGS_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings", ChatColor.YELLOW + "" + ChatColor.ITALIC + "read only")));
+            }
         }
 
         if (room.isSingleplayer()) {
-            buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> {
+            buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.RED + "Leave"), event -> {
                 new HomeMenu(player);
                 room.removePlayer(player);
             }));
         } else {
-            buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> {
-                new MultiplayerMenu(player);
+            buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.RED + "Leave"), event -> {
+                new ListMenu(player);
                 room.removePlayer(player);
             }));
-        }
-
-        if (!room.isRunning() && room.getHost() == player) {
-            buttons.put(SONG_LOCATION, new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song"), event -> new RoomSongMenu(player)));
-            buttons.put(SETTINGS_LOCATION, new Button(createItem(XMaterial.COMPASS, ChatColor.WHITE + "Settings", ChatColor.DARK_RED + "" + ChatColor.ITALIC + "write"), event -> new RoomSettingsMenu(player)));
         }
 
     }

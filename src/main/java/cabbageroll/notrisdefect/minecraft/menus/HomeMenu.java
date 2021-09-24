@@ -8,9 +8,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class HomeMenu extends Menu {
 
-    public final static int MULTIPLAYER_LOCATION = 21;
-    public final static int SINGLEPLAYER_LOCATION = 22;
-    public final static int SKINEDITOR_LOCATION = 23;
+    public final static int MULTIPLAYER_LOCATION = grid(3, 4);
+    public final static int SINGLEPLAYER_LOCATION = grid(3, 5);
+    public final static int SKINEDITOR_LOCATION = grid(3, 6);
 
     public HomeMenu(Player player) {
         super(player);
@@ -30,7 +30,7 @@ public class HomeMenu extends Menu {
             buttons.put(grid(6, i + 1), border);
         }
 
-        buttons.put(MULTIPLAYER_LOCATION, new Button(createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer"), event -> new MultiplayerMenu(player)));
+        buttons.put(MULTIPLAYER_LOCATION, new Button(createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer"), event -> new ListMenu(player)));
         buttons.put(SINGLEPLAYER_LOCATION, new Button(createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer"), event -> {
             Main.gs.createSPRoom(player);
             new RoomMenu(player);

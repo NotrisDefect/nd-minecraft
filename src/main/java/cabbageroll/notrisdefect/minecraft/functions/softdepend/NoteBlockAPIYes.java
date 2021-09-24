@@ -99,7 +99,9 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
     @Override
     public void startPlaying(Room room, int index) {
         int random;
-        if (index == -1) {
+        if (index == -2) {
+            return;
+        } else if (index == -1) {
             random = (int) (Math.random() * numberOfSongs);
             playSong(room, random);
         } else {
