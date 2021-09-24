@@ -42,7 +42,13 @@ public class GameServer {
     }
 
     public List<Room> cloneRoomList() {
-        return new LinkedList<>(roomList);
+        List<Room> mpRooms = new LinkedList<>();
+        for (Room room : roomList) {
+            if (!room.isSingleplayer()) {
+                mpRooms.add(room);
+            }
+        }
+        return mpRooms;
     }
 
     public void createMPRoom(Player player) {
@@ -165,6 +171,10 @@ public class GameServer {
     public void popRoom(String s) {
         roomList.remove(roomMap.get(s));
         roomMap.remove(s);
+    }
+
+    public boolean roomExists(Room room) {
+        return roomList.contains(room);
     }
 
     public void setSkin(Player player, Skin skin) {

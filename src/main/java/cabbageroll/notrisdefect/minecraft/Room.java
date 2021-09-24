@@ -90,8 +90,11 @@ public class Room {
 
     public void removePlayer(Player player) {
         Main.noteBlockAPI.removePlayer(this, player);
-        getTable(player).extAbortGame();
-        getTable(player).destroyTable();
+        Table table = getTable(player);
+        if (!table.isDead()) {
+            table.extAbortGame();
+        }
+        table.destroyTable();
         players.remove(player);
         Main.gs.getTable(player).leaveRoom();
         if (player == host) {

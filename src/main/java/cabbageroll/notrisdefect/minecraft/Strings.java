@@ -20,6 +20,8 @@ public class Strings {
     public static final String hostChange = pluginName2 + " Since the old room host left, you became the new host.";
     public static final String gameInProgress = pluginName2 + " Game is in progress, wait for the round to finish.";
     public static final String notEnoughPlayers = Strings.pluginName2 + " 2 players are needed";
+    public static final String doesntExist = Strings.pluginName2 + " This room no longer exists, consider refreshing.";
+
 
     public static String nowPlaying(String song) {
         return Strings.pluginName2 + " Playing: " + song;

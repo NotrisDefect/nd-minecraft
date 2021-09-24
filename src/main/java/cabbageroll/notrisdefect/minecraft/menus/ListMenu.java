@@ -2,6 +2,7 @@ package cabbageroll.notrisdefect.minecraft.menus;
 
 import cabbageroll.notrisdefect.minecraft.Main;
 import cabbageroll.notrisdefect.minecraft.Room;
+import cabbageroll.notrisdefect.minecraft.Strings;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -54,9 +55,14 @@ public class ListMenu extends Menu {
     private void updateButtons() {
         if (page > 0) {
             buttons.put(MINUSPAGE_LOCATION, new Button(createItem(XMaterial.ARROW, ChatColor.WHITE + "Previous page"), event -> page--));
+        } else {
+            buttons.put(MINUSPAGE_LOCATION, border);
         }
+
         if (rooms.size() > (page + 1) * pagesize) {
             buttons.put(PLUSPAGE_LOCATION, new Button(createItem(XMaterial.ARROW, ChatColor.WHITE + "Next page"), event -> page++));
+        } else {
+            buttons.put(PLUSPAGE_LOCATION, border);
         }
 
         int i;
@@ -67,6 +73,10 @@ public class ListMenu extends Menu {
             }
             Room room = rooms.get(page * pagesize + i);
             buttons.put(ROOM_LOCATION_MIN + i, new Button(createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.getRoomName()), event -> {
+                if (!Main.gs.roomExists(room)) {
+                    player.sendMessage(Strings.doesntExist);
+                    return;
+                }
                 room.addPlayer(player);
                 new RoomMenu(player);
             }));
