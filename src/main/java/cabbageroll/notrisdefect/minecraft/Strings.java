@@ -11,6 +11,7 @@ public class Strings {
     public static final String mainCommand = "notrisdefect";
     public static final String permUnsafe = "notrisdefect.use.experimental";
     public static final String permMP = "notrisdefect.use.multiplayer";
+    public static final String permSkinEditor = "notrisdefect.use.skineditor";
     public static final String permSP = "notrisdefect.use.singleplayer";
     public static final String permFlush = "notrisdefect.admin.flush";
     public static final String permHostEverywhere = "notrisdefect.admin.hosteverywhere";
@@ -22,6 +23,9 @@ public class Strings {
     public static final String notEnoughPlayers = Strings.pluginName2 + " 2 players are needed";
     public static final String doesntExist = Strings.pluginName2 + " This room no longer exists, consider refreshing.";
 
+    public static String noPermission(String perm) {
+        return Strings.pluginName2 + " Missing permission " + perm;
+    }
 
     public static String nowPlaying(String song) {
         return Strings.pluginName2 + " Playing: " + song;
