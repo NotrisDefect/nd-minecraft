@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 public class Button {
 
     private final ItemStack item;
-    public ButtonClick bc;
+    private final ButtonClick bc;
 
     public Button(ItemStack is, ButtonClick bc) {
         item = is;

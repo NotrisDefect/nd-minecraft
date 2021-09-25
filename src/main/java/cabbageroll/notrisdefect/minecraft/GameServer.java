@@ -99,10 +99,6 @@ public class GameServer {
         roomList.remove(room);
     }
 
-    public String[] generateRoomList() {
-        return roomMap.keySet().toArray(new String[roomMap.size()]);
-    }
-
     public PersistentPlayerData getData(Player player) {
         return offlineData.get(player);
     }
@@ -132,7 +128,6 @@ public class GameServer {
     public void initialize(Player player) {
         Table table = new Table(player);
         tableMap.put(player, table);
-        new HomeMenu(player);
         PersistentPlayerData pd;
 
         try {
@@ -142,7 +137,7 @@ public class GameServer {
             ois.close();
             fis.close();
         } catch (IOException | ClassNotFoundException e) {
-            Main.plugin.getLogger().warning(e.getMessage());
+            e.printStackTrace();
             pd = new PersistentPlayerData();
             pd.setSkin(new Skin(Blocks.empty));
         }
@@ -155,6 +150,10 @@ public class GameServer {
     }
 
     public void openLastMenu(Player player) {
+        if (tableMap.get(player).getLastMenuOpened() == null) {
+            new HomeMenu(player);
+            return;
+        }
         //DUMB
         if (tableMap.get(player).getLastMenuOpened() instanceof RoomMenu) {
             new RoomMenu(player);

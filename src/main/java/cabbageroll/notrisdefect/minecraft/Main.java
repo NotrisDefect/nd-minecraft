@@ -1,7 +1,6 @@
 package cabbageroll.notrisdefect.minecraft;
 
-import cabbageroll.notrisdefect.minecraft.commands.Choice;
-import cabbageroll.notrisdefect.minecraft.commands.Tetr;
+import cabbageroll.notrisdefect.minecraft.commands.MainCommand;
 import cabbageroll.notrisdefect.minecraft.functions.softdepend.Netherboard;
 import cabbageroll.notrisdefect.minecraft.functions.softdepend.NetherboardNo;
 import cabbageroll.notrisdefect.minecraft.functions.softdepend.NetherboardYes;
@@ -27,8 +26,8 @@ import java.util.Scanner;
 
 public class Main extends JavaPlugin implements Listener {
 
+    public static final GameServer gs = new GameServer();
     public static Main plugin;
-    public static GameServer gs = new GameServer();
     public static Functions functions;
     public static Netherboard netherboard;
     public static NoteBlockAPI noteBlockAPI;
@@ -41,15 +40,15 @@ public class Main extends JavaPlugin implements Listener {
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
             getLogger().severe("Unsupported server version " + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]);
-            Choice.disablePlugin();
+            Bukkit.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
         PluginCommand rootCommand = getCommand(Strings.mainCommand);
         if (rootCommand != null) {
-            rootCommand.setExecutor(Tetr.getInstance());
+            rootCommand.setExecutor(MainCommand.getInstance());
         } else {
-            Choice.disablePlugin();
+            Bukkit.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
@@ -57,7 +56,7 @@ public class Main extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(Listeners.getInstance(), this);
         getServer().getPluginManager().registerEvents(TableListeners.getInstance(), this);
-        getServer().getPluginManager().registerEvents(Tetr.getInstance(), this);
+        getServer().getPluginManager().registerEvents(MainCommand.getInstance(), this);
 
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
             getLogger().severe("NoteBlockAPI is missing.");

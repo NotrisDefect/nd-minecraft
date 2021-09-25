@@ -22,7 +22,7 @@ public abstract class Menu implements InventoryHolder {
     public final static int BACK_LOCATION = 0;
     protected final Map<Integer, Button> buttons = new HashMap<>();
     protected final Player player;
-    protected Button border = new Button(createItem(XMaterial.GLASS_PANE, "" + ChatColor.RESET));
+    protected final Button border = new Button(createItem(XMaterial.GLASS_PANE, "" + ChatColor.RESET));
     private Inventory inventory = null;
 
     public Menu(Player player) {

@@ -1,12 +1,13 @@
 package cabbageroll.notrisdefect.minecraft;
 
 public class Strings {
-    public static final String bench = "bench";
     public static final String controls = "controls";
     public static final String help = "help";
     public static final String joinroom = "fastjoin";
-    public static final String restart = "flush";
+    public static final String flush = "flush";
     public static final String sfx = "sfx";
+    public static final String disable = "disable";
+    public static final String gui = "gui";
     public static final String tetrachannel = "tetrachannel";
     public static final String mainCommand = "notrisdefect";
     public static final String permUnsafe = "notrisdefect.use.experimental";

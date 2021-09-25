@@ -24,14 +24,8 @@ permissions:
     default: false
   notrisdefect.admin.*:
     children:
-      notrisdefect.admin.flush: true
-      notrisdefect.admin.hosteverywhere: true
-      notrisdefect.admin.watch: true
-  notrisdefect.admin.flush:
-    default: false
-  notrisdefect.admin.hosteverywhere:
-    default: false
-  notrisdefect.admin.watch:
+      notrisdefect.admin.manage: true
+  notrisdefect.admin.manage:
     default: false
 
 
