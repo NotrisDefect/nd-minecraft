@@ -92,124 +92,6 @@ public class Table extends GameLogic {
         Main.netherboard.removeBoard(player);
     }
 
-    @Override
-    public void evtGameover() {
-        switch (Constants.deathAnim) {
-            case EXPLOSION:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        colPrintNewForce(j, i);
-                    }
-                }
-
-                for (int i = STAGESIZEY - FRONTROWS; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        turnToFallingBlock(j, i, 1, getStage()[i][j]);
-                    }
-                }
-                break;
-            case GRAYSCALE:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        if (getStage()[i][j] != PIECE_NONE)
-                            colPrintNewRender(j, i, PIECE_GARBAGE);
-                    }
-                }
-                break;
-            case CLEAR:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        if (getStage()[i][j] != PIECE_NONE) {
-                            colPrintNewRender(j, i, PIECE_NONE);
-                        }
-                    }
-                }
-            case DISAPPEAR:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        colPrintNewForce(j, i);
-                    }
-                }
-
-            case NONE:
-                break;
-        }
-    }
-
-    @Override
-    public void evtLineClear(int height, int[] line) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < STAGESIZEX; i++) {
-                    turnToFallingBlock(i, height, 0.3, line[i]);
-                }
-            }
-        }.runTask(Main.plugin);
-
-        playSound(Sounds.lineClear, 5f, 1f);
-    }
-
-    @Override
-    public void evtLockPiece(Piece piece, int linesCleared, int spinState, int combo, int backToBack) {
-        StringBuilder sb = new StringBuilder();
-
-        if (backToBack > 0) {
-            sb.append("B2B ");
-        }
-
-        sb.append(convIntToPieceName(piece.getColor()));
-
-        switch (spinState) {
-            case SPIN_MINI:
-                sb.append(" SPIN MINI");
-                break;
-            case SPIN_FULL:
-                sb.append(" SPIN");
-                break;
-            default:
-                break;
-        }
-
-        switch (linesCleared) {
-            case 1:
-                sb.append(" SINGLE");
-                break;
-            case 2:
-                sb.append(" DOUBLE");
-                break;
-            case 3:
-                sb.append(" TRIPLE");
-                break;
-            case 4:
-                sb.append(" NOTRIS");
-                break;
-            default:
-                break;
-        }
-
-        if (combo > -1) {
-            sb.append(" ").append(combo).append(" COMBO");
-        }
-
-        ActionBar.sendActionBar(player, sb.toString());
-    }
-
-    @Override
-    public void evtPerfectClear() {
-        Main.functions.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
-    }
-
-    @Override
-    public void evtSendGarbage(int i) {
-        room.forwardGarbage(i, player);
-    }
-
-    @Override
-    public void evtSpin() {
-        playSound(Sounds.spin, 5f, 1f);
-    }
-
     public int getGarbBLCX() {
         return garbBLCX;
     }
@@ -466,6 +348,120 @@ public class Table extends GameLogic {
 
     public void updateWholeTableTo(Player player) {
 
+    }
+
+    @Override
+    protected void evtGameover() {
+        switch (Constants.deathAnim) {
+            case EXPLOSION:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        colPrintNewForce(j, i);
+                    }
+                }
+
+                for (int i = STAGESIZEY - FRONTROWS; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        turnToFallingBlock(j, i, 1, getStage()[i][j]);
+                    }
+                }
+                break;
+            case GRAYSCALE:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        if (getStage()[i][j] != PIECE_NONE)
+                            colPrintNewRender(j, i, PIECE_GARBAGE);
+                    }
+                }
+                break;
+            case CLEAR:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        if (getStage()[i][j] != PIECE_NONE) {
+                            colPrintNewRender(j, i, PIECE_NONE);
+                        }
+                    }
+                }
+            case DISAPPEAR:
+                for (int i = 0; i < STAGESIZEY; i++) {
+                    for (int j = 0; j < STAGESIZEX; j++) {
+                        colPrintNewForce(j, i);
+                    }
+                }
+
+            case NONE:
+                break;
+        }
+    }
+
+    @Override
+    protected void evtLineClear(int height, int[] line) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < STAGESIZEX; i++) {
+                    turnToFallingBlock(i, height, 0.3, line[i]);
+                }
+            }
+        }.runTask(Main.plugin);
+
+        playSound(Sounds.lineClear, 5f, 1f);
+    }
+
+    @Override
+    protected void evtLockPiece(Piece piece, int linesCleared, int spinState, int combo, int backToBack) {
+        StringBuilder sb = new StringBuilder();
+
+        if (backToBack > 0) {
+            sb.append("B2B ");
+        }
+
+        sb.append(convIntToPieceName(piece.getColor()));
+
+        switch (spinState) {
+            case SPIN_MINI:
+                sb.append(" SPIN MINI");
+                break;
+            case SPIN_FULL:
+                sb.append(" SPIN");
+                break;
+        }
+
+        switch (linesCleared) {
+            case 1:
+                sb.append(" SINGLE");
+                break;
+            case 2:
+                sb.append(" DOUBLE");
+                break;
+            case 3:
+                sb.append(" TRIPLE");
+                break;
+            case 4:
+                sb.append(" NOTRIS");
+                break;
+        }
+
+        if (combo > -1) {
+            sb.append(" ").append(combo).append(" COMBO");
+        }
+
+        ActionBar.sendActionBar(player, sb.toString());
+    }
+
+    @Override
+    protected void evtPerfectClear() {
+        Main.functions.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
+    }
+
+    @Override
+    protected void evtSendGarbage(int i) {
+        room.forwardGarbage(i, player);
+    }
+
+    @Override
+    protected void evtSpin() {
+        playSound(Sounds.spin, 5f, 1f);
     }
 
     private void cleanAll() {

@@ -35,6 +35,10 @@ public class Room {
     }
 
     public void addPlayer(Player player) {
+        if (players.size() + spectators.size() == 36) {
+            player.sendMessage("This room is full!");
+            return;
+        }
         players.add(player);
         Main.gs.getTable(player).joinRoom(this);
         Main.noteBlockAPI.addPlayer(this, player);

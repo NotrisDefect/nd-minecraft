@@ -44,7 +44,7 @@ public class MainCommand implements CommandExecutor, Listener {
 
             if (sender.hasPermission(Strings.permManage)) {
                 sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.disable).append(" - permanently disable the plugin");
-                sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.flush).append(" - flush all current session data");
+                //sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.flush).append(" - flush all current session data");
             }
 
             sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.help).append(" - shows this help page");
