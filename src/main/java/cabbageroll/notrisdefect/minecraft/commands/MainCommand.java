@@ -28,28 +28,29 @@ public class MainCommand implements CommandExecutor, Listener {
 
     private static final MainCommand instance = new MainCommand();
     private final Map<String, SubCommand> commands = new HashMap<>();
+    private final ChatColor color = ChatColor.BLUE;
 
     private MainCommand() {
         commands.put(Strings.help, (sender, cmd, label, args) -> {
-            ChatColor color = ChatColor.BLUE;
+            StringBuilder sb = new StringBuilder();
 
-            StringBuilder sb = new StringBuilder(color + Strings.pluginName + " help");
-            sb.append("\n" + color + "Aliases: notrisdefect, notris, nd");
-            //sb.append("\n" + color + "For additional help do /" + Strings.mainCommand + " " + Strings.help + " [subcommand]");
+            sb.append(color).append(Strings.pluginName).append(' ').append(Strings.help);
+
+            sb.append('\n').append(color).append("Aliases: notrisdefect, notris, nd");
 
             if (sender instanceof Player) {
-                sb.append("\n" + color + "/" + label + " - open game window");
+                sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.gui + " - open game window");
             }
 
-            if (sender.hasPermission("notrisdefect.use.experimental")) {
-                sb.append("\n" + color + "/" + label + " " + Strings.flush + " - flush all current session data");
+            if (sender.hasPermission(Strings.permManage)) {
+                sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.disable).append(" - permanently disable the plugin");
+                sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.flush).append(" - flush all current session data");
             }
 
-            sb.append("\n" + color + "/" + label + " " + Strings.help + " - shows this help page");
-
-            sb.append("\n" + color + "/" + label + " " + Strings.controls + " - shows guide on how to set the controls");
-
-            sb.append("\n" + color + "/" + label + " " + Strings.tetrachannel + " <nickname> - get stats of a player from ch.tetr.io");
+            sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.help).append(" - shows this help page");
+            sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.controls).append(" - shows guide on how to set the controls");
+            sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.tetrachannel).append(" <nickname> - get stats of a player from ch.tetr.io");
+            sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.sfx).append(" - show sounds");
 
             sender.sendMessage(sb.toString());
             return true;
@@ -108,41 +109,54 @@ public class MainCommand implements CommandExecutor, Listener {
             return false;
         });
         commands.put(Strings.disable, (sender, cmd, label, args) -> {
-            Bukkit.getServer().getPluginManager().disablePlugin(Main.plugin);
-            return true;
+            if (sender.hasPermission(Strings.permManage)) {
+                Bukkit.getServer().getPluginManager().disablePlugin(Main.plugin);
+                return true;
+            }
+            return false;
+        });
+        commands.put(Strings.flush, (sender, cmd, label, args) -> {
+            if (sender.hasPermission(Strings.permManage)) {
+                Main.gs.flush();
+                return true;
+            }
+            return false;
         });
         commands.put(Strings.tetrachannel, (sender, cmd, label, args) -> {
             String nickname = args[1];
             new Thread(() -> {
-                URLConnection connection = null;
+                URLConnection connection;
                 try {
                     connection = new URL("https://ch.tetr.io/api/users/" + nickname.toLowerCase()).openConnection();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
                 }
                 connection.setRequestProperty("User-Agent", Bukkit.getServer().toString());
 
                 try {
                     connection.connect();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
                 }
 
-                BufferedReader reader = null;
+                BufferedReader reader;
                 try {
-                    reader = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                    reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
                 }
                 StringBuilder sb = new StringBuilder();
-                int idk;
+                int ch;
                 try {
-                    while ((idk = reader.read()) != -1) {
-                        sb.append((char) idk);
+                    while ((ch = reader.read()) != -1) {
+                        sb.append((char) ch);
                     }
                 } catch (IOException e) {
-                    Main.plugin.getLogger().warning(e.getMessage());
+                    e.printStackTrace();
+                    return;
                 }
                 String jsonString = sb.toString();
                 Gson gson = new Gson();

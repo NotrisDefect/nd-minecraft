@@ -14,9 +14,7 @@ public class Strings {
     public static final String permMP = "notrisdefect.use.multiplayer";
     public static final String permSkinEditor = "notrisdefect.use.skineditor";
     public static final String permSP = "notrisdefect.use.singleplayer";
-    public static final String permFlush = "notrisdefect.admin.flush";
-    public static final String permHostEverywhere = "notrisdefect.admin.hosteverywhere";
-    public static final String permWatch = "notrisdefect.admin.watch";
+    public static final String permManage = "notrisdefect.admin.manage";
     public static final String pluginName = Main.plugin.getName();
     public static final String pluginName2 = "[" + pluginName + "]";
     public static final String hostChange = pluginName2 + " Since the old room host left, you became the new host.";

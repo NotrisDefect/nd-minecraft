@@ -99,6 +99,10 @@ public class GameServer {
         roomList.remove(room);
     }
 
+    public void flush() {
+
+    }
+
     public PersistentPlayerData getData(Player player) {
         return offlineData.get(player);
     }
