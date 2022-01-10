@@ -1,8 +1,8 @@
 name: NotrisDefect
 main: cabbageroll.notrisdefect.minecraft.Main
-version: 1.5
+version: 1.5.1
 api-version: 1.13
-softdepend: [ NoteBlockAPI, Netherboard ]
+softdepend: [ NoteBlockAPI, Netherboard, ProtocolLib ]
 commands:
   notrisdefect:
     description: Please use "/nd help" for help

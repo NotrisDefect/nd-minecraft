@@ -17,50 +17,59 @@ import java.util.Map;
 
 public class Table extends GameLogic {
 
-    public static final byte GHOST_Z = 9;
-    public static final byte GHOST_L = 10;
-    public static final byte GHOST_O = 11;
-    public static final byte GHOST_S = 12;
-    public static final byte GHOST_I = 13;
-    public static final byte GHOST_J = 14;
-    public static final byte GHOST_T = 15;
+    public static final int GHOST_OFFSET = 9;
 
     private static final int BOX = 4;
     private static final int FRONTROWS = 30;
     private static final int BACKROWS = 20;
     private static final int thickness = 1;
+
     private final Player player;
+
     public boolean enableAnimations = true;
+
+    private Room room;
+    private Menu lastMenuOpened;
+    private Location location;
+
+    // board elements
     private int NEXTVERTICAL = 5;
-    private int holdTLCX = -7;
+    private int holdTLCX = -3 - BOX;
     private int holdTLCY = STAGESIZEY / 2;
     private int nextTLCX = STAGESIZEX + 3;
     private int nextTLCY = STAGESIZEY / 2;
     private int garbBLCX = -2;
     private int garbBLCY = STAGESIZEY - 1;
-    private Room room;
-    private Menu lastMenuOpened;
-    private Location location;
+
+    // multipliers
     private int WMX;
     private int WMY;
     private int WMZ;
     private int HMX;
     private int HMY;
     private int HMZ;
+
+    // helper variables
     private int imi;
     private int imj;
     private int imk;
+
+    // rendering
     private int[][] oldStageDisplay;
     private int[] oldGQDisplay;
     private int[][] oldNextDisplay;
     private int[][] oldHoldDisplay;
+    private long linesPrinted;
+    private long piecesPrinted;
+    private boolean wasHeld;
+    private boolean everHeld;
 
     public Table(Player player) {
         super();
         this.player = player;
     }
 
-    private static char convIntToPieceName(int p) {
+    private static char intToPieceName(int p) {
         switch (p) {
             case PIECE_Z:
                 return 'Z';
@@ -416,7 +425,7 @@ public class Table extends GameLogic {
             sb.append("B2B ");
         }
 
-        sb.append(convIntToPieceName(piece.getColor()));
+        sb.append(intToPieceName(piece.getColor()));
 
         switch (spinState) {
             case SPIN_MINI:
@@ -451,7 +460,7 @@ public class Table extends GameLogic {
 
     @Override
     protected void evtPerfectClear() {
-        Main.functions.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
+        Main.protocollib.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
     }
 
     @Override
@@ -496,7 +505,7 @@ public class Table extends GameLogic {
                     blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
                     Block b = location.getWorld().getBlockAt(blockX, blockY, blockZ);
                     for (Player player : room.players) {
-                        Main.functions.sendBlockChangeCustom(player,
+                        Main.protocollib.sendBlockChangeCustom(player,
                             new Location(location.getWorld(), blockX, blockY, blockZ), b);
                     }
                 }
@@ -549,7 +558,7 @@ public class Table extends GameLogic {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (isDead()) {
+                if (getGameState() == STATE_DEAD) {
                     this.cancel();
                 } else {
                     render();
@@ -628,6 +637,11 @@ public class Table extends GameLogic {
         oldNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL)];
         oldHoldDisplay = new int[BOX][BOX];
         oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
+        linesPrinted = 0;
+        //to print on first tick
+        piecesPrinted = -1;
+        wasHeld = false;
+        everHeld = false;
 
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
@@ -661,9 +675,9 @@ public class Table extends GameLogic {
     private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
         if (color == PIECE_NONE && Main.gs.getData(player).isTransparent()) {
             Block b = location.getWorld().getBlockAt(x, y, z);
-            Main.functions.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
+            Main.protocollib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
         } else {
-            Main.functions.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), color);
+            Main.protocollib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), color);
         }
     }
 
@@ -681,23 +695,38 @@ public class Table extends GameLogic {
         final int[][] stage = getStage();
 
         int[][] newStageDisplay = new int[STAGESIZEY][STAGESIZEX];
-        int[] newGQDisplay = new int[PLAYABLEROWS];
-        int[][] newNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL)];
-        int[][] newHoldDisplay = new int[BOX][BOX];
-
         // update stage
         for (int i = 0; i < STAGESIZEY; i++) {
             System.arraycopy(stage[i], 0, newStageDisplay[i], 0, STAGESIZEX);
         }
 
         for (Point point : getPoints(piece, rot)) {
-            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = GHOST_Z + piece;
+            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = GHOST_OFFSET + piece;
         }
 
         for (Point point : getPoints(piece, rot)) {
             newStageDisplay[point.y + cpp.y][point.x + cpp.x] = piece;
         }
 
+        // print stage
+        for (int i = 0; i < STAGESIZEY; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                if (newStageDisplay[i][j] != oldStageDisplay[i][j]) {
+                    if (newStageDisplay[i][j] == PIECE_NONE && i >= STAGESIZEY - BACKROWS) {
+                        colPrintNewRender(j, i, newStageDisplay[i][j]);
+                    } else if (i >= STAGESIZEY - FRONTROWS) {
+                        if (newStageDisplay[i][j] != PIECE_NONE) {
+                            colPrintNewRender(j, i, newStageDisplay[i][j]);
+                        } else {
+                            colPrintNewForce(j, i);
+                        }
+                    }
+                }
+            }
+        }
+        oldStageDisplay = newStageDisplay;
+
+        int[] newGQDisplay = new int[PLAYABLEROWS];
         // update garbage meter
         int total = 0;
         int color;
@@ -718,80 +747,71 @@ public class Table extends GameLogic {
             newGQDisplay[i] = PIECE_NONE;
         }
 
-        // update next queue
-        for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
-                newNextDisplay[i][j] = PIECE_NONE;
-            }
-        }
-
-        for (int i = 0; i < NEXTPIECESMAX; i++) {
-            for (Point point : getPoints(getNextPieces()[i].getColor(), 0)) {
-                newNextDisplay[point.y + i % NEXTVERTICAL * BOX][point.x + BOX * (i / NEXTVERTICAL)] = getNextPieces()[i].getColor();
-            }
-        }
-
-        // update hold
-        for (int i = 0; i < BOX; i++) {
-            for (int j = 0; j < BOX; j++) {
-                newHoldDisplay[i][j] = PIECE_NONE;
-            }
-        }
-
-        if (getHeldPiece() != null) {
-            for (Point point : getPoints(getHeldPiece().getColor(), 0)) {
-                newHoldDisplay[point.y][point.x] = getHeldPiece().getColor();
-            }
-        }
-
-        // print stage
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
-                if (newStageDisplay[i][j] != oldStageDisplay[i][j]) {
-                    if (newStageDisplay[i][j] == PIECE_NONE && i >= STAGESIZEY - BACKROWS) {
-                        colPrintNewRender(j, i, newStageDisplay[i][j]);
-                    } else if (i >= STAGESIZEY - FRONTROWS) {
-                        if (newStageDisplay[i][j] != PIECE_NONE) {
-                            colPrintNewRender(j, i, newStageDisplay[i][j]);
-                        } else {
-                            colPrintNewForce(j, i);
-                        }
-                    }
-                }
-            }
-        }
-
         // print garbage meter
         for (int i = 0; i < PLAYABLEROWS; i++) {
             if (newGQDisplay[i] != oldGQDisplay[i]) {
                 colPrintNewRender(garbBLCX, garbBLCY - i, newGQDisplay[i]);
             }
         }
+        oldGQDisplay = newGQDisplay;
 
-        // print next queue
-        for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
-                if (newNextDisplay[i][j] != oldNextDisplay[i][j]) {
-                    colPrintNewRender(nextTLCX + j, nextTLCY + i, newNextDisplay[i][j]);
+        if (piecesPrinted < getTotalPiecesPlaced() || (!everHeld && getHeldPiece() != null && !wasHeld && isHeld())) {
+            int[][] newNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL)];
+            // update next queue
+            for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
+                for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
+                    newNextDisplay[i][j] = PIECE_NONE;
                 }
             }
+
+            for (int i = 0; i < NEXTPIECESMAX; i++) {
+                for (Point point : getPoints(getNextPieces()[i].getColor(), 0)) {
+                    newNextDisplay[point.y + i % NEXTVERTICAL * BOX][point.x + BOX * (i / NEXTVERTICAL)] = getNextPieces()[i].getColor();
+                }
+            }
+
+            // print next queue
+            for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
+                for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
+                    if (newNextDisplay[i][j] != oldNextDisplay[i][j]) {
+                        colPrintNewRender(nextTLCX + j, nextTLCY + i, newNextDisplay[i][j]);
+                    }
+                }
+            }
+
+            piecesPrinted = getTotalPiecesPlaced();
+
+            oldNextDisplay = newNextDisplay;
         }
 
-        // print hold
-        for (int i = 0; i < BOX; i++) {
-            for (int j = 0; j < BOX; j++) {
-                if (newHoldDisplay[i][j] != oldHoldDisplay[i][j]) {
-                    colPrintNewRender(holdTLCX + j, holdTLCY + i, newHoldDisplay[i][j]);
+        if (wasHeld != isHeld()) {
+            int[][] newHoldDisplay = new int[BOX][BOX];
+            // update hold
+            for (int i = 0; i < BOX; i++) {
+                for (int j = 0; j < BOX; j++) {
+                    newHoldDisplay[i][j] = PIECE_NONE;
                 }
             }
+            if (getHeldPiece() != null) {
+                for (Point point : getPoints(getHeldPiece().getColor(), 0)) {
+                    newHoldDisplay[point.y][point.x] = getHeldPiece().getColor();
+                }
+            }
+
+            // print hold
+            for (int i = 0; i < BOX; i++) {
+                for (int j = 0; j < BOX; j++) {
+                    if (newHoldDisplay[i][j] != oldHoldDisplay[i][j]) {
+                        colPrintNewRender(holdTLCX + j, holdTLCY + i, newHoldDisplay[i][j]);
+                    }
+                }
+            }
+            wasHeld = isHeld();
+            everHeld = true;
+            oldHoldDisplay = newHoldDisplay;
         }
 
         sendScoreboard();
-
-        oldStageDisplay = newStageDisplay;
-        oldGQDisplay = newGQDisplay;
-        oldNextDisplay = newNextDisplay;
-        oldHoldDisplay = newHoldDisplay;
     }
 
     private void sendScoreboard() {
@@ -803,7 +823,8 @@ public class Table extends GameLogic {
         text.put(3, "Pieces: " + getTotalPiecesPlaced());
         text.put(2, "Score: " + getTotalScore());
         text.put(1, "Time: " + getTicksPassed());
-        text.put(0, "Counter: " + (int) (getCounter() / getLimit() * 100) + "%");
+        text.put(0, "Counter: " + getCounter() + "/" + getCounterEnd());
+        text.put(-1, "State: " + getGameState());
 
         Main.netherboard.sendScoreboard(player, text);
     }
@@ -832,7 +853,7 @@ public class Table extends GameLogic {
                     tey = location.getBlockY() + x * WMY + y * HMY + j;
                     for (int k = 0; k < (imk != 0 ? imk : thickness); k++) {
                         tez = location.getBlockZ() + x * WMZ + y * HMZ + k;
-                        Main.functions.sendFallingBlockCustom(player, new Location(location.getWorld(), tex - WMZ * 2, tey, tez + WMX * 2), color, xv, yv, zv);
+                        Main.protocollib.sendFallingBlockCustom(player, new Location(location.getWorld(), tex - WMZ * 2, tey, tez + WMX * 2), color, xv, yv, zv);
                     }
                 }
             }

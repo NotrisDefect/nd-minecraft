@@ -2,7 +2,7 @@ package cabbageroll.notrisdefect.minecraft.menus;
 
 import cabbageroll.notrisdefect.minecraft.Main;
 import cabbageroll.notrisdefect.minecraft.Room;
-import cabbageroll.notrisdefect.minecraft.functions.softdepend.NoteBlockAPIYes;
+import cabbageroll.notrisdefect.minecraft.softdepend.noteblockapi.NoteBlockAPIYes;
 import com.cryptomorin.xseries.XMaterial;
 import com.xxmicloxx.NoteBlockAPI.model.Playlist;
 import org.bukkit.ChatColor;

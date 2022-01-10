@@ -24,9 +24,9 @@ public class TableListeners implements Listener {
         if (Main.gs.isPlayerHere(player)) {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
-                if (table != null && !table.isDead()) {
-                    int itemId = event.getNewSlot();
-                    switch (itemId) {
+                if (table != null && table.getGameState() != Table.STATE_DEAD) {
+                    int slot = event.getNewSlot();
+                    switch (slot) {
                         case 0:
                             table.extMovePieceLeft();
                             break;
@@ -66,7 +66,7 @@ public class TableListeners implements Listener {
         if (Main.gs.isPlayerHere(player)) {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
-                if (!table.isDead()) {
+                if (table.getGameState() != Table.STATE_DEAD) {
                     Location from = event.getFrom();
                     Location to = event.getTo();
 
@@ -140,7 +140,7 @@ public class TableListeners implements Listener {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
                 if (player.isSneaking()) {
-                    if (table != null && !table.isDead()) {
+                    if (table != null && table.getGameState() != Table.STATE_DEAD) {
                         table.extStartZone();
                     }
                 }

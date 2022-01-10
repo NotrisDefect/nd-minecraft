@@ -1,14 +1,16 @@
 package cabbageroll.notrisdefect.minecraft;
 
 import cabbageroll.notrisdefect.minecraft.commands.MainCommand;
-import cabbageroll.notrisdefect.minecraft.functions.softdepend.Netherboard;
-import cabbageroll.notrisdefect.minecraft.functions.softdepend.NetherboardNo;
-import cabbageroll.notrisdefect.minecraft.functions.softdepend.NetherboardYes;
-import cabbageroll.notrisdefect.minecraft.functions.softdepend.NoteBlockAPI;
-import cabbageroll.notrisdefect.minecraft.functions.softdepend.NoteBlockAPINo;
-import cabbageroll.notrisdefect.minecraft.functions.softdepend.NoteBlockAPIYes;
-import cabbageroll.notrisdefect.minecraft.functions.util.Version;
-import cabbageroll.notrisdefect.minecraft.functions.versions.Functions;
+import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.Netherboard;
+import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.NetherboardNo;
+import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.NetherboardYes;
+import cabbageroll.notrisdefect.minecraft.softdepend.noteblockapi.NoteBlockAPI;
+import cabbageroll.notrisdefect.minecraft.softdepend.noteblockapi.NoteBlockAPINo;
+import cabbageroll.notrisdefect.minecraft.softdepend.noteblockapi.NoteBlockAPIYes;
+import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLib;
+import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLibNo;
+import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLibYes;
+import cabbageroll.notrisdefect.minecraft.util.Version;
 import cabbageroll.notrisdefect.minecraft.listeners.Listeners;
 import cabbageroll.notrisdefect.minecraft.listeners.TableListeners;
 import org.bukkit.Bukkit;
@@ -28,9 +30,11 @@ public class Main extends JavaPlugin implements Listener {
 
     public static final GameServer gs = new GameServer();
     public static Main plugin;
-    public static Functions functions;
+    public static ProtocolLib protocollib;
     public static Netherboard netherboard;
     public static NoteBlockAPI noteBlockAPI;
+    public String nmsVersion;
+    public int numericalVersion;
 
     @Override
     public void onEnable() {
@@ -39,7 +43,7 @@ public class Main extends JavaPlugin implements Listener {
         if (versionIsSupported()) {
             Bukkit.getPluginManager().registerEvents(this, this);
         } else {
-            getLogger().severe("Unsupported server version " + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3]);
+            getLogger().severe("Unsupported server version");
             Bukkit.getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -71,8 +75,22 @@ public class Main extends JavaPlugin implements Listener {
             getLogger().severe("Netherboard is missing.");
             netherboard = new NetherboardNo();
         } else {
+            if (numericalVersion > 16) {
+                getLogger().warning("Netherboard supports only up to 1.17.1 when this was written. Be careful.");
+            }
             getLogger().info("Netherboard OK.");
             netherboard = new NetherboardYes();
+        }
+
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
+            getLogger().severe("ProtocolLib is missing.");
+            protocollib = new ProtocolLibNo();
+        } else {
+            if (numericalVersion > 16) {
+                getLogger().warning("ProtocolLib currently serves no purpose for 1.17+");
+            }
+            getLogger().info("ProtocolLib OK.");
+            protocollib = new ProtocolLibYes();
         }
 
         long timeEnd = System.nanoTime();
@@ -112,15 +130,9 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     private boolean versionIsSupported() {
-        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-
-        getLogger().info("Your server is running version " + version);
-
-        try {
-            functions = (Functions) Class.forName("cabbageroll.notrisdefect.minecraft.functions.versions.Functions_" + version.substring(1)).newInstance();
-            return true;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            return false;
-        }
+        nmsVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        numericalVersion = Integer.parseInt(nmsVersion.split("_")[1]);
+        getLogger().info("Your server is running version " + nmsVersion + " (" + numericalVersion + ")");
+        return numericalVersion > 7;
     }
 }

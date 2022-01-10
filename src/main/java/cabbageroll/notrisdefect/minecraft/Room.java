@@ -95,7 +95,7 @@ public class Room {
     public void removePlayer(Player player) {
         Main.noteBlockAPI.removePlayer(this, player);
         Table table = getTable(player);
-        if (!table.isDead()) {
+        if (table.getGameState() != Table.STATE_DEAD) {
             table.extAbortGame();
         }
         table.destroyTable();
@@ -181,7 +181,7 @@ public class Room {
         ArrayList<Player> stillAlivePlayers = new ArrayList<>(alivePlayers);
         for (Player player : alivePlayers) {
             Table table = getTable(player);
-            if (table == null || table.isDead()) {
+            if (table == null || table.getGameState() == Table.STATE_DEAD) {
                 stillAlivePlayers.remove(player);
             } else {
                 table.extTick();

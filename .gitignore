@@ -1,10 +1,12 @@
 Secret.java
-/bin/
-/.settings/
 .classpath
 .project
-/.idea/
 *.iml
-/classes/
 *.log
-/target/
+.idea/
+.settings/
+bin/
+classes/
+META-INF/
+out/
+target/
