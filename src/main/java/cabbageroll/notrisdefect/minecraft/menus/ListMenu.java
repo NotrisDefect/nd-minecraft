@@ -12,11 +12,6 @@ import java.util.List;
 
 public class ListMenu extends Menu {
 
-    private final static int ROOM_LOCATION_MIN = 9;
-    private final static int pagesize = 36;
-    private final static int MINUSPAGE_LOCATION = grid(6, 1);
-    private final static int PLUSPAGE_LOCATION = grid(6, 9);
-
     private List<Room> rooms;
 
     private int page = 0;
@@ -27,8 +22,9 @@ public class ListMenu extends Menu {
 
     @Override
     protected void afterInventoryClick(InventoryClickEvent event) {
-        if (event.getSlot() == MINUSPAGE_LOCATION || event.getSlot() == PLUSPAGE_LOCATION) {
-            updateButtons();
+        if (event.getSlot() == PREV_PAGE_LOCATION || event.getSlot() == NEXT_PAGE_LOCATION) {
+            clearContent();
+            updateContent();
             placeAll();
         }
     }
@@ -37,52 +33,45 @@ public class ListMenu extends Menu {
     protected void prepare() {
         rooms = Main.gs.cloneRoomList();
         createInventory(this, 54, "Join room");
-        for (int i = 0; i < 9; i++) {
-            buttons.put(grid(1, i + 1), border);
-            buttons.put(grid(6, i + 1), border);
-        }
+        addBorder();
 
-        buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> new HomeMenu(player)));
+        addButton(BACK_LOCATION, event -> new HomeMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
-        buttons.put(grid(1, 2), new Button(createItem(XMaterial.COAL_ORE, net.md_5.bungee.api.ChatColor.WHITE + "Create new room"), event -> {
+        addButton(grid(1, 2), event -> {
             Main.gs.createMPRoom(player);
             new RoomMenu(player);
-        }));
+        }, XMaterial.COAL_ORE, ChatColor.WHITE + "Create new room");
 
-        updateButtons();
+        updateContent();
     }
 
-    private void updateButtons() {
+    private void updateContent() {
         if (page > 0) {
-            buttons.put(MINUSPAGE_LOCATION, new Button(createItem(XMaterial.ARROW, ChatColor.WHITE + "Previous page"), event -> page--));
+            addButton(PREV_PAGE_LOCATION, event -> page--, XMaterial.ARROW, ChatColor.WHITE + "Previous page");
         } else {
-            buttons.put(MINUSPAGE_LOCATION, border);
+            addButton(PREV_PAGE_LOCATION, empty);
         }
 
-        if (rooms.size() > (page + 1) * pagesize) {
-            buttons.put(PLUSPAGE_LOCATION, new Button(createItem(XMaterial.ARROW, ChatColor.WHITE + "Next page"), event -> page++));
+        if (rooms.size() > (page + 1) * PAGE_SIZE) {
+            addButton(NEXT_PAGE_LOCATION, event -> page++, XMaterial.ARROW, ChatColor.WHITE + "Next page");
         } else {
-            buttons.put(PLUSPAGE_LOCATION, border);
+            addButton(NEXT_PAGE_LOCATION, empty);
         }
 
-        int i;
-
-        for (i = 0; i < pagesize; i++) {
-            if (rooms.size() <= page * pagesize + i) {
+        for (int i = 0; i < PAGE_SIZE; i++) {
+            if (rooms.size() <= page * PAGE_SIZE + i) {
                 break;
             }
-            Room room = rooms.get(page * pagesize + i);
-            buttons.put(ROOM_LOCATION_MIN + i, new Button(createItem(XMaterial.COAL_BLOCK, ChatColor.WHITE + room.getRoomName()), event -> {
+
+            Room room = rooms.get(page * PAGE_SIZE + i);
+            addButton(CONTENT_BEGINNING + i, event -> {
                 if (!Main.gs.roomExists(room)) {
                     player.sendMessage(Strings.doesntExist);
                     return;
                 }
                 room.addPlayer(player);
                 new RoomMenu(player);
-            }));
-        }
-        for (int j = i; j < pagesize; j++) {
-            buttons.remove(ROOM_LOCATION_MIN + j);
+            }, XMaterial.COAL_BLOCK, ChatColor.WHITE + room.getRoomName());
         }
     }
 }

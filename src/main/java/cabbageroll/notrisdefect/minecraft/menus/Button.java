@@ -30,4 +30,5 @@ public class Button {
     public interface ButtonClick {
         void onClick(InventoryClickEvent event);
     }
+
 }

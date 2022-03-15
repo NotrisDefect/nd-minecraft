@@ -149,7 +149,7 @@ public class GameServer {
         offlineData.put(player, pd);
     }
 
-    public boolean isPlayerHere(Player player) {
+    public boolean isPlayerUsingThePlugin(Player player) {
         return tableMap.containsKey(player);
     }
 

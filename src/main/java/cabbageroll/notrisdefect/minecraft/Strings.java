@@ -17,10 +17,10 @@ public class Strings {
     public static final String permManage = "notrisdefect.admin.manage";
     public static final String pluginName = Main.plugin.getName();
     public static final String pluginName2 = "[" + pluginName + "]";
-    public static final String hostChange = pluginName2 + " Since the old room host left, you became the new host.";
+    public static final String ownerChange = pluginName2 + " You are now owner of this room.";
     public static final String gameInProgress = pluginName2 + " Game is in progress, wait for the round to finish.";
-    public static final String notEnoughPlayers = Strings.pluginName2 + " 2 players are needed";
-    public static final String doesntExist = Strings.pluginName2 + " This room no longer exists, consider refreshing.";
+    public static final String notEnoughPlayers = Strings.pluginName2 + " 2 players are needed.";
+    public static final String doesntExist = Strings.pluginName2 + " This room no longer exists.";
 
     public static String noPermission(String perm) {
         return Strings.pluginName2 + " Missing permission " + perm;

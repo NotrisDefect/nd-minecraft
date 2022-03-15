@@ -1,6 +1,8 @@
 package cabbageroll.notrisdefect.minecraft;
 
 import cabbageroll.notrisdefect.minecraft.commands.MainCommand;
+import cabbageroll.notrisdefect.minecraft.listeners.Listeners;
+import cabbageroll.notrisdefect.minecraft.listeners.TableListeners;
 import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.Netherboard;
 import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.NetherboardNo;
 import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.NetherboardYes;
@@ -11,8 +13,6 @@ import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLib;
 import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLibNo;
 import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLibYes;
 import cabbageroll.notrisdefect.minecraft.util.Version;
-import cabbageroll.notrisdefect.minecraft.listeners.Listeners;
-import cabbageroll.notrisdefect.minecraft.listeners.TableListeners;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -104,7 +104,7 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (gs.isPlayerHere(player)) {
+        if (gs.isPlayerUsingThePlugin(player)) {
             Main.gs.deinitialize(player);
         }
     }

@@ -10,7 +10,7 @@ public class Skin implements Serializable {
 
     public Skin(ItemStack... blocks) {
         if (blocks.length != 17) {
-            throw new IllegalArgumentException("i need 17, i got " + blocks.length);
+            throw new IllegalArgumentException(blocks.length + " blocks given, 17 required");
         }
         this.blocks = blocks;
     }

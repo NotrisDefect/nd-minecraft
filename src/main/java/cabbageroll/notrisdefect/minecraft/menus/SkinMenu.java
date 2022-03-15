@@ -1,6 +1,7 @@
 package cabbageroll.notrisdefect.minecraft.menus;
 
 import cabbageroll.notrisdefect.minecraft.Main;
+import cabbageroll.notrisdefect.minecraft.Table;
 import cabbageroll.notrisdefect.minecraft.playerdata.Blocks;
 import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import com.cryptomorin.xseries.XMaterial;
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 public class SkinMenu extends Menu {
 
     public final static int TORCH_LOCATION = 8;
-    public final static int[] BLOCK_LOCATIONS = {28, 29, 30, 31, 32, 33, 34, 11, 13, 37, 38, 39, 40, 41, 42, 43, 15};
+    public final static int[] BLOCK_LOCATIONS = {11, 28, 29, 30, 31, 32, 33, 34, 13, 15, 37, 38, 39, 40, 41, 42, 43};
 
     public SkinMenu(Player player) {
         super(player);
@@ -21,40 +22,40 @@ public class SkinMenu extends Menu {
 
     public static Skin toSkin(Inventory inv) {
         ItemStack[] blocks = new ItemStack[17];
+
         for (int i = 0; i < 7; i++) {
             if (inv.getItem(28 + i) != null) {
-                blocks[i] = inv.getItem(28 + i);
+                blocks[i + 1] = inv.getItem(28 + i);
             } else {
-                blocks[i] = new ItemStack(XMaterial.AIR.parseMaterial());
+                blocks[i + 1] = new ItemStack(XMaterial.AIR.parseMaterial());
             }
         }
 
         // save ghost
         for (int i = 0; i < 7; i++) {
             if (inv.getItem(37 + i) != null) {
-                blocks[i + 9] = inv.getItem(37 + i);
+                blocks[i + Table.GHOST_OFFSET] = inv.getItem(37 + i);
             } else {
-                blocks[i + 9] = new ItemStack(XMaterial.AIR.parseMaterial());
+                blocks[i + Table.GHOST_OFFSET] = new ItemStack(XMaterial.AIR.parseMaterial());
             }
         }
 
-        // other
         if (inv.getItem(11) != null) {
-            blocks[7] = inv.getItem(11);
+            blocks[Table.PIECE_NONE] = inv.getItem(11);
         } else {
-            blocks[7] = new ItemStack(XMaterial.AIR.parseMaterial());
+            blocks[Table.PIECE_NONE] = new ItemStack(XMaterial.AIR.parseMaterial());
         }
 
         if (inv.getItem(13) != null) {
-            blocks[8] = inv.getItem(13);
+            blocks[Table.PIECE_GARBAGE] = inv.getItem(13);
         } else {
-            blocks[8] = new ItemStack(XMaterial.AIR.parseMaterial());
+            blocks[Table.PIECE_GARBAGE] = new ItemStack(XMaterial.AIR.parseMaterial());
         }
 
         if (inv.getItem(15) != null) {
-            blocks[16] = inv.getItem(15);
+            blocks[Table.PIECE_ZONE] = inv.getItem(15);
         } else {
-            blocks[16] = new ItemStack(XMaterial.AIR.parseMaterial());
+            blocks[Table.PIECE_ZONE] = new ItemStack(XMaterial.AIR.parseMaterial());
         }
         return new Skin(blocks);
     }
@@ -69,7 +70,7 @@ public class SkinMenu extends Menu {
         createInventory(this, 54, "Skin editor");
 
         for (int i = 0; i < 54; i++) {
-            buttons.put(i, border);
+            addButton(i, empty);
         }
 
         Skin skin;
@@ -80,35 +81,35 @@ public class SkinMenu extends Menu {
         }
 
         for (int i = 0; i < 17; i++) {
-            buttons.put(BLOCK_LOCATIONS[i], new Button(skin.get(i), event -> event.setCancelled(false)));
+            addButton(BLOCK_LOCATIONS[i], event -> event.setCancelled(false), skin.get(i));
             if (skin.get(i).getType() == XMaterial.AIR.parseMaterial()) {
-                buttons.put(BLOCK_LOCATIONS[i], new Button(skin.get(i), event -> {
+                addButton(BLOCK_LOCATIONS[i], event -> {
                     if (event.getCurrentItem().getType() == XMaterial.AIR.parseMaterial()) {
                         if (event.getSlot() == 11 && event.getCursor().getType() == XMaterial.AIR.parseMaterial()) {
                             Main.gs.getData(player).swapTransparent();
                             player.sendMessage("Transparency turned " + (Main.gs.getData(player).isTransparent() ? "on" : "off"));
                         }
                     }
-                }));
+                }, skin.get(i));
             }
         }
 
-        buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), event -> {
+        addButton(BACK_LOCATION, event -> {
             if (Main.gs.getData(player).isCustom()) {
                 Inventory inv = event.getClickedInventory();
                 Main.gs.setSkin(player, toSkin(inv));
             }
             new HomeMenu(player);
-        }));
+        }, XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
-        buttons.put(TORCH_LOCATION, new Button(createItem(XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.gs.getData(player).isCustom() ? ChatColor.BOLD : "") + "Default", ChatColor.WHITE + "" + (Main.gs.getData(player).isCustom() ? ChatColor.BOLD : "") + "Custom"), event -> {
+        addButton(TORCH_LOCATION, event -> {
             if (Main.gs.getData(player).isCustom()) {
                 Inventory inv = event.getClickedInventory();
                 Main.gs.setSkin(player, toSkin(inv));
             }
             Main.gs.getData(player).swapCustom();
             new SkinMenu(player);
-        }));
+        }, XMaterial.TORCH, ChatColor.WHITE + "" + (!Main.gs.getData(player).isCustom() ? ChatColor.BOLD : "") + "Default", ChatColor.WHITE + "" + (Main.gs.getData(player).isCustom() ? ChatColor.BOLD : "") + "Custom");
 
     }
 

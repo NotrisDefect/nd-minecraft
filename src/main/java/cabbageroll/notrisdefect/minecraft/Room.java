@@ -15,22 +15,18 @@ public class Room {
     private final boolean isSingleplayer;
     public int songIndex;
     private List<Player> alivePlayers = new ArrayList<>();
-    private Player host;
+    private Player owner;
     private boolean isRunning;
     private boolean backfire;
 
-    public Room(Player host, boolean isSingleplayer) {
+    public Room(Player owner, boolean isSingleplayer) {
         Main.noteBlockAPI.newRSP(this);
         roomID = Integer.toHexString(hashCode());
 
-        this.host = host;
-        addPlayer(host);
+        this.owner = owner;
+        addPlayer(owner);
         this.isSingleplayer = isSingleplayer;
-        if (isSingleplayer) {
-            roomName = "Singleplayer @" + roomID;
-        } else {
-            roomName = "Multiplayer @" + roomID;
-        }
+        roomName = (isSingleplayer ? "Singleplayer @" : "Multiplayer @") + roomID;
         songIndex = -1;
     }
 
@@ -63,7 +59,7 @@ public class Room {
                     int random = (int) (Math.random() * alivePlayers.size());
                     table = getTable(alivePlayers.get(random));
                 } while (table.getPlayer() == sender && !backfire);
-                table.extAddGarbage(n);
+                table.doAddGarbage(n);
             }
         }
     }
@@ -72,8 +68,8 @@ public class Room {
         return backfire;
     }
 
-    public Player getHost() {
-        return host;
+    public Player getOwner() {
+        return owner;
     }
 
     public String getRoomID() {
@@ -96,17 +92,17 @@ public class Room {
         Main.noteBlockAPI.removePlayer(this, player);
         Table table = getTable(player);
         if (table.getGameState() != Table.STATE_DEAD) {
-            table.extAbortGame();
+            table.doAbort();
         }
         table.destroyTable();
         players.remove(player);
         Main.gs.getTable(player).leaveRoom();
-        if (player == host) {
+        if (player == owner) {
             if (players.size() == 0) {
                 Main.gs.deleteRoom(this);
             } else {
-                host = players.get(0);
-                host.sendMessage(Strings.hostChange);
+                owner = players.get(0);
+                owner.sendMessage(Strings.ownerChange);
             }
         }
     }
@@ -141,7 +137,8 @@ public class Room {
         Main.noteBlockAPI.setPlaying(this, false);
 
         for (Player player : alivePlayers) {
-            getTable(player).extAbortGame();
+            getTable(player).doAbort();
+            getTable(player).drawLogo(Table.PIECE_NONE, Table.PIECE_ZONE);
         }
     }
 
@@ -184,7 +181,7 @@ public class Room {
             if (table == null || table.getGameState() == Table.STATE_DEAD) {
                 stillAlivePlayers.remove(player);
             } else {
-                table.extTick();
+                table.doTick();
             }
         }
         alivePlayers = stillAlivePlayers;

@@ -17,17 +17,57 @@ import java.util.Map;
 
 public class Table extends GameLogic {
 
-    public static final int GHOST_OFFSET = 9;
-
+    public static final int GHOST_OFFSET = 10;
     private static final int BOX = 4;
     private static final int FRONTROWS = 30;
     private static final int BACKROWS = 20;
-    private static final int thickness = 1;
-
+    private static final int THICKNESS = 1;
     private final Player player;
+    // stupid
+    private final int[][] logo = {
+        {0, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 0, 0, 1, 1, 1, 1, 0, 0, 0},
+        {0, 0, 1, 1, 1, 1, 0, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 1, 1, 0, 1, 1, 1, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+        {0, 0, 1, 1, 1, 1, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 0, 0, 0, 1, 1, 1, 1, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 1, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 1, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 1, 1, 0, 0, 0, 0},
+        {1, 1, 0, 0, 1, 1, 1, 0, 0, 0},
+        {1, 1, 0, 1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 0, 1, 1, 0, 1, 1, 0, 0},
+        {1, 1, 1, 1, 1, 0, 1, 1, 0, 0},
+        {0, 1, 1, 1, 0, 0, 1, 1, 0, 0},
+        {0, 0, 1, 1, 0, 0, 0, 0, 0, 0}
+    };
 
     public boolean enableAnimations = true;
-
     private Room room;
     private Menu lastMenuOpened;
     private Location location;
@@ -90,7 +130,7 @@ public class Table extends GameLogic {
             case PIECE_GARBAGE:
                 return '#';
             case PIECE_ZONE:
-                return 'W';
+                return 'N';
             default:
                 return '?';
         }
@@ -99,6 +139,43 @@ public class Table extends GameLogic {
     public void destroyTable() {
         cleanAll();
         Main.netherboard.removeBoard(player);
+    }
+
+    public void drawLogo(int color0, int color1) {
+        // temp fix
+        if (STAGESIZEY != 40 || STAGESIZEX != 10) {
+            drawAll(color1);
+        }
+
+        for (int i = 0; i < STAGESIZEY - BACKROWS; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                if (logo[i][j] == 1) {
+                    colPrintNewRender(j, i, color1);
+                } else {
+                    colPrintNewForce(j, i);
+                }
+            }
+        }
+
+        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
+            for (int j = 0; j < STAGESIZEX; j++) {
+                colPrintNewRender(j, i, logo[i][j] == 0 ? color0 : color1);
+            }
+        }
+
+        for (int i = 0; i < PLAYABLEROWS; i++) {
+            colPrintNewRender(garbBLCX, garbBLCY - i, color0);
+        }
+        for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
+            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
+                colPrintNewRender(nextTLCX + j, nextTLCY + i, color0);
+            }
+        }
+        for (int i = 0; i < BOX; i++) {
+            for (int j = 0; j < BOX; j++) {
+                colPrintNewRender(holdTLCX + j, holdTLCY + i, color0);
+            }
+        }
     }
 
     public int getGarbBLCX() {
@@ -137,14 +214,14 @@ public class Table extends GameLogic {
         this.lastMenuOpened = lastMenuOpened;
     }
 
-    public int getNEXTPIECESMAX() {
-        return NEXTPIECESMAX;
+    public int getNEXTPIECES() {
+        return NEXTPIECES;
     }
 
-    public void setNEXTPIECESMAX(int NEXTPIECESMAX) {
+    public void setNEXTPIECES(int NEXTPIECES) {
         cleanAll();
-        this.NEXTPIECESMAX = NEXTPIECESMAX;
-        drawAll(PIECE_ZONE);
+        this.NEXTPIECES = NEXTPIECES;
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public int getNEXTVERTICAL() {
@@ -154,7 +231,7 @@ public class Table extends GameLogic {
     public void setNEXTVERTICAL(int NEXTVERTICAL) {
         cleanAll();
         this.NEXTVERTICAL = NEXTVERTICAL;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public int getNextTLCX() {
@@ -172,7 +249,7 @@ public class Table extends GameLogic {
     public void setPLAYABLEROWS(int PLAYABLEROWS) {
         cleanAll();
         this.PLAYABLEROWS = PLAYABLEROWS;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public Player getPlayer() {
@@ -190,7 +267,7 @@ public class Table extends GameLogic {
     public void setSTAGESIZEX(int STAGESIZEX) {
         cleanAll();
         this.STAGESIZEX = STAGESIZEX;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public int getSTAGESIZEY() {
@@ -200,7 +277,7 @@ public class Table extends GameLogic {
     public void setSTAGESIZEY(int STAGESIZEY) {
         cleanAll();
         this.STAGESIZEY = STAGESIZEY;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public int getWMX() {
@@ -229,7 +306,7 @@ public class Table extends GameLogic {
 
     public void initTable(long seed) {
         prepare();
-        extStartGame(seed);
+        doStart(seed);
         Main.netherboard.createBoard(player, "Stats");
         gameLoop();
     }
@@ -237,7 +314,7 @@ public class Table extends GameLogic {
     public void joinRoom(Room r) {
         room = r;
         position();
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void leaveRoom() {
@@ -247,37 +324,37 @@ public class Table extends GameLogic {
     public void moveGarbBLCXRelative(int n) {
         cleanAll();
         garbBLCX += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void moveGarbBLCYRelative(int n) {
         cleanAll();
         garbBLCY += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void moveHoldTLCXRelative(int n) {
         cleanAll();
         holdTLCX += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void moveHoldTLCYRelative(int n) {
         cleanAll();
         holdTLCY += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void moveNextTLCXRelative(int n) {
         cleanAll();
         nextTLCX += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void moveNextTLCYRelative(int n) {
         cleanAll();
         nextTLCY += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void moveTable(int x, int y, int z) {
@@ -285,7 +362,7 @@ public class Table extends GameLogic {
         location.setX(x);
         location.setY(y);
         location.setZ(z);
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void moveTableRelative(int x, int y, int z) {
@@ -295,64 +372,69 @@ public class Table extends GameLogic {
     public void reposition() {
         cleanAll();
         position();
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public void rotateX() {
         cleanAll();
         setWidthMultiplier(WMX, -WMZ, WMY);
         setHeightMultiplier(HMX, -HMZ, HMY);
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_Z);
     }
 
     public void rotateY() {
         cleanAll();
         setWidthMultiplier(WMZ, WMY, -WMX);
         setHeightMultiplier(HMZ, HMY, -HMX);
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_S);
     }
 
     public void rotateZ() {
         cleanAll();
         setWidthMultiplier(-WMY, WMX, WMZ);
         setHeightMultiplier(-HMY, HMX, HMZ);
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_J);
+    }
+
+    public void setDelays(int psd, int lcd) {
+        PIECESPAWNDELAY = psd;
+        LINECLEARDELAY = lcd;
     }
 
     public void skewHX(int n) {
         cleanAll();
         HMX += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_Z);
     }
 
     public void skewHY(int n) {
         cleanAll();
         HMY += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_S);
     }
 
     public void skewHZ(int n) {
         cleanAll();
         HMZ += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_J);
     }
 
     public void skewWX(int n) {
         cleanAll();
         WMX += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_Z);
     }
 
     public void skewWY(int n) {
         cleanAll();
         WMY += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_S);
     }
 
     public void skewWZ(int n) {
         cleanAll();
         WMZ += n;
-        drawAll(PIECE_ZONE);
+        drawLogo(PIECE_NONE, PIECE_J);
     }
 
     public void updateWholeTableTo(Player player) {
@@ -483,7 +565,7 @@ public class Table extends GameLogic {
             colPrintNewForce(garbBLCX, garbBLCY - i);
         }
         for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
+            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
                 colPrintNewForce(nextTLCX + j, nextTLCY + i);
             }
         }
@@ -497,11 +579,11 @@ public class Table extends GameLogic {
     private void colPrintNewForce(float x, float y) {
         int blockX, blockY, blockZ;
 
-        for (int i = 0; i < (imi != 0 ? imi : thickness); i++) {
+        for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
             blockX = location.getBlockX() + (int) Math.floor(x * WMX) + (int) Math.floor(y * HMX) + i;
-            for (int j = 0; j < (imj != 0 ? imj : thickness); j++) {
+            for (int j = 0; j < (imj != 0 ? imj : THICKNESS); j++) {
                 blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
-                for (int k = 0; k < (imk != 0 ? imk : thickness); k++) {
+                for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                     blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
                     Block b = location.getWorld().getBlockAt(blockX, blockY, blockZ);
                     for (Player player : room.players) {
@@ -516,11 +598,11 @@ public class Table extends GameLogic {
     private void colPrintNewRender(float x, float y, int color) {
         int blockX, blockY, blockZ;
 
-        for (int i = 0; i < (imi != 0 ? imi : thickness); i++) {
+        for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
             blockX = location.getBlockX() + (int) Math.floor(x * WMX) + (int) Math.floor(y * HMX) + i;
-            for (int j = 0; j < (imj != 0 ? imj : thickness); j++) {
+            for (int j = 0; j < (imj != 0 ? imj : THICKNESS); j++) {
                 blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
-                for (int k = 0; k < (imk != 0 ? imk : thickness); k++) {
+                for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                     blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
                     printSingleBlockToAll(blockX, blockY, blockZ, color);
                 }
@@ -543,7 +625,7 @@ public class Table extends GameLogic {
             colPrintNewRender(garbBLCX, garbBLCY - i, color);
         }
         for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
+            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
                 colPrintNewRender(nextTLCX + j, nextTLCY + i, color);
             }
         }
@@ -634,7 +716,7 @@ public class Table extends GameLogic {
         cleanAll();
 
         oldGQDisplay = new int[PLAYABLEROWS];
-        oldNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL)];
+        oldNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL)];
         oldHoldDisplay = new int[BOX][BOX];
         oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
         linesPrinted = 0;
@@ -659,7 +741,7 @@ public class Table extends GameLogic {
             colPrintNewRender(garbBLCX, garbBLCY - i, PIECE_NONE);
         }
         for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
+            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
                 oldNextDisplay[i][j] = PIECE_NONE;
                 colPrintNewRender(nextTLCX + j, nextTLCY + i, PIECE_NONE);
             }
@@ -701,7 +783,7 @@ public class Table extends GameLogic {
         }
 
         for (Point point : getPoints(piece, rot)) {
-            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = GHOST_OFFSET + piece;
+            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = GHOST_OFFSET + piece - 1;
         }
 
         for (Point point : getPoints(piece, rot)) {
@@ -736,7 +818,7 @@ public class Table extends GameLogic {
             total += num;
         }
 
-        color = (total / PLAYABLEROWS) % 7;
+        color = (total / PLAYABLEROWS) % 7 + 1;
         total = total % PLAYABLEROWS;
 
         for (int i = 0; i < total; i++) {
@@ -755,16 +837,16 @@ public class Table extends GameLogic {
         }
         oldGQDisplay = newGQDisplay;
 
-        if (piecesPrinted < getTotalPiecesPlaced() || (!everHeld && getHeldPiece() != null && !wasHeld && isHeld())) {
-            int[][] newNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL)];
+        if (piecesPrinted < getTotalPiecesPlaced() || (!everHeld && getHeldPiece() != null && !wasHeld && getHeld())) {
+            int[][] newNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL)];
             // update next queue
             for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-                for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
+                for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
                     newNextDisplay[i][j] = PIECE_NONE;
                 }
             }
 
-            for (int i = 0; i < NEXTPIECESMAX; i++) {
+            for (int i = 0; i < NEXTPIECES; i++) {
                 for (Point point : getPoints(getNextPieces()[i].getColor(), 0)) {
                     newNextDisplay[point.y + i % NEXTVERTICAL * BOX][point.x + BOX * (i / NEXTVERTICAL)] = getNextPieces()[i].getColor();
                 }
@@ -772,7 +854,7 @@ public class Table extends GameLogic {
 
             // print next queue
             for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-                for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECESMAX / (double) NEXTVERTICAL); j++) {
+                for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
                     if (newNextDisplay[i][j] != oldNextDisplay[i][j]) {
                         colPrintNewRender(nextTLCX + j, nextTLCY + i, newNextDisplay[i][j]);
                     }
@@ -784,7 +866,7 @@ public class Table extends GameLogic {
             oldNextDisplay = newNextDisplay;
         }
 
-        if (wasHeld != isHeld()) {
+        if (wasHeld != getHeld()) {
             int[][] newHoldDisplay = new int[BOX][BOX];
             // update hold
             for (int i = 0; i < BOX; i++) {
@@ -806,7 +888,7 @@ public class Table extends GameLogic {
                     }
                 }
             }
-            wasHeld = isHeld();
+            wasHeld = getHeld();
             everHeld = true;
             oldHoldDisplay = newHoldDisplay;
         }
@@ -822,9 +904,9 @@ public class Table extends GameLogic {
         text.put(4, "Lines: " + getTotalLinesCleared());
         text.put(3, "Pieces: " + getTotalPiecesPlaced());
         text.put(2, "Score: " + getTotalScore());
-        text.put(1, "Time: " + getTicksPassed());
+        text.put(1, "Tick: " + getTicksPassed());
         text.put(0, "Counter: " + getCounter() + "/" + getCounterEnd());
-        text.put(-1, "State: " + getGameState());
+        text.put(-1, "Debug: " + getGameState() + getSpinState());
 
         Main.netherboard.sendScoreboard(player, text);
     }
@@ -847,11 +929,11 @@ public class Table extends GameLogic {
             double xv = d * (2 - Math.random() * 4) * imi;
             double yv = d * (8 - Math.random() * 10) * imj;
             double zv = d * (2 - Math.random() * 4) * imk;
-            for (int i = 0; i < (imi != 0 ? imi : thickness); i++) {
+            for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
                 tex = location.getBlockX() + x * WMX + y * HMX + i;
-                for (int j = 0; j < (imj != 0 ? imj : thickness); j++) {
+                for (int j = 0; j < (imj != 0 ? imj : THICKNESS); j++) {
                     tey = location.getBlockY() + x * WMY + y * HMY + j;
-                    for (int k = 0; k < (imk != 0 ? imk : thickness); k++) {
+                    for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                         tez = location.getBlockZ() + x * WMZ + y * HMZ + k;
                         Main.protocollib.sendFallingBlockCustom(player, new Location(location.getWorld(), tex - WMZ * 2, tey, tez + WMX * 2), color, xv, yv, zv);
                     }
@@ -859,6 +941,28 @@ public class Table extends GameLogic {
             }
         }
     }
+
+
+    /*
+    Aelita/vision:
+        passive - 2 extra next pieces
+        active - can see where next garbage hole will be
+    Odd/spins:
+        passive - all spin
+        active - stupid spin
+    Ulrich/speed:
+        passive - less line clear delay
+        active - triplicate next piece
+    William/power:
+        passive - back to back chain
+        active - zone mechanic
+    Yumi/teleportation:
+        passive - ascension kick table
+        active - next 3 spins of current piece deal damage
+    private enum Ability {
+        VISION, SPINS, SPEED, POWER, TELEPORTATION
+    }
+     */
 
 }
 

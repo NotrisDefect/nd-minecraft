@@ -189,7 +189,7 @@ public class MainCommand implements CommandExecutor, Listener {
             player = (Player) sender;
         }
 
-        if (player != null && !Main.gs.isPlayerHere(player)) {
+        if (player != null && !Main.gs.isPlayerUsingThePlugin(player)) {
             Main.gs.initialize(player);
         }
 

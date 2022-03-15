@@ -12,11 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 //used only if noteblockapi is present
 public class RoomSongMenu extends Menu {
 
-    private final static int SONG_LOCATION_MIN = grid(2, 1);
-    private final static int pagesize = 36;
-    private final static int MINUSPAGE_LOCATION = grid(6, 1);
-    private final static int PLUSPAGE_LOCATION = grid(6, 9);
-
     private final Room room = Main.gs.getRoom(player);
     private Playlist playlist;
 
@@ -28,8 +23,9 @@ public class RoomSongMenu extends Menu {
 
     @Override
     protected void afterInventoryClick(InventoryClickEvent event) {
-        if (event.getSlot() == MINUSPAGE_LOCATION || event.getSlot() == PLUSPAGE_LOCATION) {
-            updateButtons();
+        if (event.getSlot() == PREV_PAGE_LOCATION || event.getSlot() == NEXT_PAGE_LOCATION) {
+            clearContent();
+            updateContent();
             placeAll();
         }
     }
@@ -39,49 +35,41 @@ public class RoomSongMenu extends Menu {
         playlist = NoteBlockAPIYes.playlist;
         createInventory(this, 54, "Choose song");
         Room room = Main.gs.getRoom(player);
+        addBorder();
 
-        for (int i = 0; i < 9; i++) {
-            buttons.put(grid(1, i + 1), border);
-            buttons.put(grid(6, i + 1), border);
-        }
+        addButton(BACK_LOCATION, (event) -> new RoomMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
+        addButton(grid(1, 2), (event) -> room.songIndex = -2, XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "None");
+        addButton(grid(1, 3), (event) -> room.songIndex = -1, XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "Random");
 
-        buttons.put(BACK_LOCATION, new Button(createItem(XMaterial.BEDROCK, ChatColor.WHITE + "Back"), (event) -> new RoomMenu(player)));
-        buttons.put(grid(1, 2), new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "None"), (event) -> room.songIndex = -2));
-        buttons.put(grid(1, 3), new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "Random"), (event) -> room.songIndex = -1));
-
-        updateButtons();
+        updateContent();
     }
 
-    private void updateButtons() {
+    private void updateContent() {
         if (page > 0) {
-            buttons.put(MINUSPAGE_LOCATION, new Button(createItem(XMaterial.ARROW, ChatColor.WHITE + "Previous page"), event -> page--));
+            addButton(PREV_PAGE_LOCATION, event -> page--, XMaterial.ARROW, ChatColor.WHITE + "Previous page");
         } else {
-            buttons.put(MINUSPAGE_LOCATION, border);
-        }
-        if (playlist.getCount() > (page + 1) * pagesize) {
-            buttons.put(PLUSPAGE_LOCATION, new Button(createItem(XMaterial.ARROW, ChatColor.WHITE + "Next page"), event -> page++));
-        } else {
-            buttons.put(PLUSPAGE_LOCATION, border);
+            addButton(PREV_PAGE_LOCATION, empty);
         }
 
-        int i;
+        if (playlist.getCount() > (page + 1) * PAGE_SIZE) {
+            addButton(NEXT_PAGE_LOCATION, event -> page++, XMaterial.ARROW, ChatColor.WHITE + "Next page");
+        } else {
+            addButton(NEXT_PAGE_LOCATION, empty);
+        }
 
-        for (i = 0; i < pagesize; i++) {
-            if (playlist.getCount() <= page * pagesize + i) {
+        for (int i = 0; i < PAGE_SIZE; i++) {
+            if (playlist.getCount() <= page * PAGE_SIZE + i) {
                 break;
             }
+
             String name;
-            if (playlist.get(page * pagesize + i).getPath() == null) {
+            if (playlist.get(page * PAGE_SIZE + i).getPath() == null) {
                 name = NoteBlockAPIYes.classpathSongs[i];
             } else {
-                name = playlist.get(page * pagesize + i).getPath().getName().replaceAll(".nbs$", "");
+                name = playlist.get(page * PAGE_SIZE + i).getPath().getName().replaceAll(".nbs$", "");
             }
-            int index = page * pagesize + i;
-            buttons.put(SONG_LOCATION_MIN + i, new Button(createItem(XMaterial.NOTE_BLOCK, ChatColor.WHITE + name), event -> room.songIndex = index));
+            int index = page * PAGE_SIZE + i;
+            addButton(CONTENT_BEGINNING + i, event -> room.songIndex = index, XMaterial.NOTE_BLOCK, ChatColor.WHITE + name);
         }
-        for (int j = i; j < pagesize; j++) {
-            buttons.remove(SONG_LOCATION_MIN + j);
-        }
-
     }
 }

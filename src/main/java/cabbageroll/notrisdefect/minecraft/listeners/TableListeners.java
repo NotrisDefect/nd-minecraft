@@ -21,35 +21,35 @@ public class TableListeners implements Listener {
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
-        if (Main.gs.isPlayerHere(player)) {
+        if (Main.gs.isPlayerUsingThePlugin(player)) {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
                 if (table != null && table.getGameState() != Table.STATE_DEAD) {
                     int slot = event.getNewSlot();
                     switch (slot) {
                         case 0:
-                            table.extMovePieceLeft();
+                            table.doMoveLeft();
                             break;
                         case 1:
-                            table.extMovePieceRight();
+                            table.doMoveRight();
                             break;
                         case 2:
-                            table.extDropPieceSoftMax();
+                            table.doInstantSoftDrop();
                             break;
                         case 3:
-                            table.extDropPieceHard();
+                            table.doHardDrop();
                             break;
                         case 4:
-                            table.extRotatePieceCCW();
+                            table.doRotateCCW();
                             break;
                         case 5:
-                            table.extRotatePieceCW();
+                            table.doRotateCW();
                             break;
                         case 6:
-                            table.extRotatePiece180();
+                            table.doRotate180();
                             break;
                         case 7:
-                            table.extHoldPiece();
+                            table.doHold();
                             break;
                         case 8:
                             return;
@@ -63,7 +63,7 @@ public class TableListeners implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (Main.gs.isPlayerHere(player)) {
+        if (Main.gs.isPlayerUsingThePlugin(player)) {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
                 if (table.getGameState() != Table.STATE_DEAD) {
@@ -77,54 +77,92 @@ public class TableListeners implements Listener {
                         event.getPlayer().teleport(from.setDirection(to.getDirection()));
                     }
 
-                    if (Math.abs(dx) > Math.abs(dz)) {
-                        /*
-                        100
-                        001
-                        -100
-                        00-1
-                         */
-                        if (table.getWMX() > table.getWMZ() && table.getWMX() > 0) {
-                            if (to.getX() < from.getX()) {
-                                table.extMovePieceLeft();
-                            } else if (to.getX() > from.getX()) {
-                                table.extMovePieceRight();
+                    if (Math.abs(dx) * 3 > Math.abs(dz)) {
+                        if (table.getWMX() > 0) {
+                            if (dx < 0) {
+                                table.doMoveLeft();
+                            } else {
+                                table.doMoveRight();
                             }
-                        } else if (table.getWMX() < table.getWMZ() && table.getWMZ() > 0) {
-                            if (to.getX() < from.getX()) {
-                                table.extDropPieceSoft();
-                            }
-                        } else if (table.getWMX() < table.getWMZ() && table.getWMX() < 0) {
-                            if (to.getX() > from.getX()) {
-                                table.extMovePieceLeft();
-                            } else if (to.getX() < from.getX()) {
-                                table.extMovePieceRight();
-                            }
-                        } else if (table.getWMX() > table.getWMZ() && table.getWMZ() < 0) {
-                            if (to.getX() > from.getX()) {
-                                table.extDropPieceSoft();
+                        } else if (table.getWMX() < 0) {
+                            if (dx > 0) {
+                                table.doMoveLeft();
+                            } else {
+                                table.doMoveRight();
                             }
                         }
-                    } else if (Math.abs(dx) < Math.abs(dz)) {
-                        if (table.getWMX() > table.getWMZ() && table.getWMX() > 0) {
-                            if (to.getZ() > from.getZ()) {
-                                table.extDropPieceSoft();
+
+                        if (table.getHMX() > 0) {
+                            if (dx < 0) {
+                                table.doSoftDrop();
+                            } else {
+                                table.doRotateCW();
                             }
-                        } else if (table.getWMX() < table.getWMZ() && table.getWMZ() > 0) {
-                            if (to.getZ() < from.getZ()) {
-                                table.extMovePieceLeft();
-                            } else if (to.getZ() > from.getZ()) {
-                                table.extMovePieceRight();
+                        } else if (table.getHMX() < 0) {
+                            if (dx > 0) {
+                                table.doSoftDrop();
+                            } else {
+                                table.doRotateCW();
                             }
-                        } else if (table.getWMX() < table.getWMZ() && table.getWMX() < 0) {
-                            if (to.getZ() < from.getZ()) {
-                                table.extDropPieceSoft();
+                        } else {
+                            //pissyshitty
+                            if (table.getWMZ() > 0) {
+                                if (dx < 0) {
+                                    table.doSoftDrop();
+                                } else {
+                                    table.doRotateCW();
+                                }
+                            } else if (table.getWMZ() < 0) {
+                                if (dx > 0) {
+                                    table.doSoftDrop();
+                                } else {
+                                    table.doRotateCW();
+                                }
                             }
-                        } else if (table.getWMX() > table.getWMZ() && table.getWMZ() < 0) {
-                            if (to.getZ() > from.getZ()) {
-                                table.extMovePieceLeft();
-                            } else if (to.getZ() < from.getZ()) {
-                                table.extMovePieceRight();
+                        }
+                    }
+
+                    if (Math.abs(dz) * 3 > Math.abs(dx)) {
+                        if (table.getWMZ() > 0) {
+                            if (dz < 0) {
+                                table.doMoveLeft();
+                            } else {
+                                table.doMoveRight();
+                            }
+                        } else if (table.getWMZ() < 0) {
+                            if (dz > 0) {
+                                table.doMoveLeft();
+                            } else {
+                                table.doMoveRight();
+                            }
+                        }
+
+                        if (table.getHMZ() > 0) {
+                            if (dz < 0) {
+                                table.doSoftDrop();
+                            } else {
+                                table.doRotateCW();
+                            }
+                        } else if (table.getHMZ() < 0) {
+                            if (dz > 0) {
+                                table.doSoftDrop();
+                            } else {
+                                table.doRotateCW();
+                            }
+                        } else {
+                            //pissyshitty
+                            if (table.getWMX() > 0) {
+                                if (dz > 0) {
+                                    table.doSoftDrop();
+                                } else {
+                                    table.doRotateCW();
+                                }
+                            } else if (table.getWMX() < 0) {
+                                if (dz < 0) {
+                                    table.doSoftDrop();
+                                } else {
+                                    table.doRotateCW();
+                                }
                             }
                         }
                     }
@@ -136,12 +174,12 @@ public class TableListeners implements Listener {
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
-        if (Main.gs.isPlayerHere(player)) {
+        if (Main.gs.isPlayerUsingThePlugin(player)) {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
                 if (player.isSneaking()) {
                     if (table != null && table.getGameState() != Table.STATE_DEAD) {
-                        table.extStartZone();
+                        table.doZone();
                     }
                 }
             }

@@ -6,7 +6,7 @@
 
     <groupId>NotrisDefect</groupId>
     <artifactId>nd-minecraft</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>22.0.0</version>
+            <version>23.0.0</version>
         </dependency>
         <dependency>
             <groupId>fr.minuskube</groupId>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>8.5.0.1</version>
+            <version>8.6.2</version>
         </dependency>
         <dependency>
             <groupId>pl.joegreen</groupId>

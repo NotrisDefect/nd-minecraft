@@ -25,29 +25,25 @@ public class HomeMenu extends Menu {
     @Override
     protected void prepare() {
         createInventory(this, 54, "Home");
-
-        for (int i = 0; i < 9; i++) {
-            buttons.put(grid(1, i + 1), border);
-            buttons.put(grid(6, i + 1), border);
-        }
+        addBorder();
 
         if (player.hasPermission(Strings.permMP)) {
-            buttons.put(MULTIPLAYER_LOCATION, new Button(createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer"), event -> new ListMenu(player)));
+            addButton(MULTIPLAYER_LOCATION, event -> new ListMenu(player), XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer");
         } else {
-            buttons.put(MULTIPLAYER_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.RED + "No permission"), event -> player.sendMessage(Strings.noPermission(Strings.permMP))));
+            addButton(MULTIPLAYER_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permMP)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }
         if (player.hasPermission(Strings.permSP)) {
-            buttons.put(SINGLEPLAYER_LOCATION, new Button(createItem(XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer"), event -> {
+            addButton(SINGLEPLAYER_LOCATION, event -> {
                 Main.gs.createSPRoom(player);
                 new RoomMenu(player);
-            }));
+            }, XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer");
         } else {
-            buttons.put(SINGLEPLAYER_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.RED + "No permission"), event -> player.sendMessage(Strings.noPermission(Strings.permSP))));
+            addButton(SINGLEPLAYER_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permSP)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }
         if (player.hasPermission(Strings.permSkinEditor)) {
-            buttons.put(SKINEDITOR_LOCATION, new Button(createItem(XMaterial.SHEARS, ChatColor.WHITE + "Skin editor"), event -> new SkinMenu(player)));
+            addButton(SKINEDITOR_LOCATION, event -> new SkinMenu(player), XMaterial.SHEARS, ChatColor.WHITE + "Skin editor");
         } else {
-            buttons.put(SKINEDITOR_LOCATION, new Button(createItem(XMaterial.BARRIER, ChatColor.RED + "No permission"), event -> player.sendMessage(Strings.noPermission(Strings.permSkinEditor))));
+            addButton(SKINEDITOR_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permSkinEditor)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }
     }
 }
