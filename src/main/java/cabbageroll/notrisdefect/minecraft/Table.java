@@ -641,7 +641,9 @@ public class Table extends GameLogic {
             @Override
             public void run() {
                 if (getGameState() == STATE_DEAD) {
-                    sendScoreboard();
+                    if (player.isOnline()) {
+                        sendScoreboard();
+                    }
                     this.cancel();
                 } else {
                     render();
