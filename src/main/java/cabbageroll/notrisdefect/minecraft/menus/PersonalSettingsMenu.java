@@ -47,6 +47,6 @@ public class PersonalSettingsMenu extends Menu {
         addButton(grid(5, 2), event -> table.skewHY(howMuch(event.getClick())), XMaterial.GREEN_BANNER, "Height Y multiplier", "" + table.getHMY());
         addButton(grid(5, 3), event -> table.skewHZ(howMuch(event.getClick())), XMaterial.BLUE_BANNER, "Height Z multiplier", "" + table.getHMZ());
 
-        addButton(grid(2, 4), event -> table.reposition(), XMaterial.COMPASS, "reposition");
+        addButton(grid(2, 4), event -> table.reposition(), XMaterial.COMPASS, "Reposition");
     }
 }

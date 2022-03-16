@@ -32,8 +32,8 @@ public class RoomSettingsMenu extends Menu {
 
         addButton(BACK_LOCATION, event -> new RoomMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
-        addButton(grid(2, 1), event -> room.players.forEach(player -> Main.gs.getTable(player).setDelays(100, 500)), XMaterial.GOLD_BLOCK, ChatColor.WHITE + "Enable delays");
-        addButton(grid(2, 2), event -> room.players.forEach(player -> Main.gs.getTable(player).setDelays(0, 0)), XMaterial.GOLD_BLOCK, ChatColor.WHITE + "Disable delays");
+        addButton(grid(2, 1), event -> room.players.forEach(player -> Main.gs.getTable(player).setDelays(100, 500)), XMaterial.GOLD_BLOCK, ChatColor.WHITE + "Enable delays", "PSD: 100ms", "LCD: 500ms");
+        addButton(grid(2, 2), event -> room.players.forEach(player -> Main.gs.getTable(player).setDelays(0, 0)), XMaterial.GOLD_BLOCK, ChatColor.WHITE + "Disable delays", "PSD: 0ms", "LCD: 0ms");
     }
 
 }

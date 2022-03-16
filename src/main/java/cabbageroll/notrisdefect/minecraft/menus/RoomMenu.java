@@ -61,10 +61,12 @@ public class RoomMenu extends Menu {
             }
         }
 
-        addButton(MY_SETTINGS_LOCATION, event -> new PersonalSettingsMenu(player), XMaterial.STICK, ChatColor.WHITE + "My settings");
+        if (!room.isRunning()) {
+            addButton(MY_SETTINGS_LOCATION, event -> new PersonalSettingsMenu(player), XMaterial.STICK, ChatColor.WHITE + "My settings");
 
-        if (player.hasPermission(Strings.permUnsafe)) {
-            addButton(EXTRA_SETTINGS_LOCATION, event -> new ExperimentalSettingsMenu(player), XMaterial.CLOCK, ChatColor.WHITE + "CLOCK?mclock");
+            if (player.hasPermission(Strings.permUnsafe)) {
+                addButton(EXTRA_SETTINGS_LOCATION, event -> new ExperimentalSettingsMenu(player), XMaterial.CLOCK, ChatColor.WHITE + "Experimental");
+            }
         }
 
         if (room.isSingleplayer()) {
