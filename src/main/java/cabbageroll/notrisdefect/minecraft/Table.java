@@ -104,9 +104,23 @@ public class Table extends GameLogic {
     private boolean wasHeld;
     private boolean everHeld;
 
+    // movement
+    private Location from;
+    private static int GAP = 3;
+    private int leftEmptyFor;
+    private int rightEmptyFor;
+    private int downEmptyFor;
+
+    private int movLeft = 0;
+    private int movRight = 0;
+    private int movSoft = 0;
+    private int movCW = 0;
+
     public Table(Player player) {
         super();
         this.player = player;
+        DAS = 200;
+        ARR = 50;
     }
 
     private static char intToPieceName(int p) {
@@ -728,6 +742,11 @@ public class Table extends GameLogic {
         wasHeld = false;
         everHeld = false;
 
+        from = player.getLocation();
+        leftEmptyFor = GAP;
+        rightEmptyFor = GAP;
+        downEmptyFor = GAP;
+
         for (int i = 0; i < STAGESIZEY; i++) {
             for (int j = 0; j < STAGESIZEX; j++) {
                 oldStageDisplay[i][j] = PIECE_NONE;
@@ -909,7 +928,7 @@ public class Table extends GameLogic {
         text.put(2, "Score: " + getTotalScore());
         text.put(1, "Tick: " + getTicksPassed());
         text.put(0, "Counter: " + getCounter() + "/" + getCounterEnd());
-        text.put(-1, "Debug: " + getGameState() + getSpinState());
+        text.put(-1, "Debug: " + getGameState() + getSpinState() + leftEmptyFor + rightEmptyFor + downEmptyFor + movLeft + movRight + movSoft + movCW);
 
         Main.netherboard.sendScoreboard(player, text);
     }
@@ -924,6 +943,105 @@ public class Table extends GameLogic {
         WMX = x;
         WMY = y;
         WMZ = z;
+    }
+
+    public void checkMovement() {
+        Location to = player.getLocation();
+
+        double dx = to.getX() - from.getX();
+        double dz = to.getZ() - from.getZ();
+
+        if (dx != 0 || dz != 0) {
+            player.teleport(from.setDirection(to.getDirection()));
+        }
+
+        movLeft = 0;
+        movRight = 0;
+        movSoft = 0;
+        movCW = 0;
+
+        if (Math.abs(dx) * 3 > Math.abs(dz)) {
+            if (WMX * dx < 0) {
+                movLeft++;
+            } else if (WMX * dx > 0) {
+                movRight++;
+            }
+
+            if (HMX * dx < 0) {
+                movSoft++;
+            } else if (HMX * dx > 0) {
+                movCW++;
+            } else {
+                if (WMZ * dx < 0) {
+                    movSoft++;
+                } else if (WMZ * dx > 0) {
+                    movCW++;
+                }
+            }
+        }
+
+        if (Math.abs(dz) * 3 > Math.abs(dx)) {
+            if (WMZ * dz < 0) {
+                movLeft++;
+            } else if (WMZ * dz > 0) {
+                movRight++;
+            }
+
+            if (HMZ * dz < 0) {
+                movSoft++;
+            } else if (HMZ * dz > 0) {
+                movCW++;
+            } else {
+                if (WMX * dz < 0) {
+                    movCW++;
+                } else if (WMX * dz > 0) {
+                    movSoft++;
+                }
+            }
+        }
+
+        if (movLeft == 0) {
+            leftEmptyFor++;
+        } else {
+            leftEmptyFor = 0;
+        }
+
+        if (movRight == 0) {
+            rightEmptyFor++;
+        } else {
+            rightEmptyFor = 0;
+        }
+
+        if (movSoft == 0) {
+            downEmptyFor++;
+        } else {
+            downEmptyFor = 0;
+        }
+
+        if (movCW > 0) {
+            doRotateCW();
+        }
+
+        if (leftEmptyFor < GAP) {
+            doPressLeft();
+        } else {
+            doReleaseLeft();
+            leftEmptyFor = GAP;
+        }
+
+        if (rightEmptyFor < GAP) {
+            doPressRight();
+        } else {
+            doReleaseRight();
+            rightEmptyFor = GAP;
+        }
+
+        if (downEmptyFor < GAP) {
+            doPressDown();
+        } else {
+            doReleaseDown();
+            downEmptyFor = GAP;
+        }
     }
 
     private void turnToFallingBlock(int x, int y, double d, int color) {
@@ -944,28 +1062,5 @@ public class Table extends GameLogic {
             }
         }
     }
-
-
-    /*
-    Aelita/vision:
-        passive - 2 extra next pieces
-        active - can see where next garbage hole will be
-    Odd/spins:
-        passive - all spin
-        active - stupid spin
-    Ulrich/speed:
-        passive - less line clear delay
-        active - triplicate next piece
-    William/power:
-        passive - back to back chain
-        active - zone mechanic
-    Yumi/teleportation:
-        passive - ascension kick table
-        active - next 3 spins of current piece deal damage
-    private enum Ability {
-        VISION, SPINS, SPEED, POWER, TELEPORTATION
-    }
-     */
-
 }
 

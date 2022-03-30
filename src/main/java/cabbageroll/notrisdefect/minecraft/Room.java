@@ -177,6 +177,7 @@ public class Room {
             if (table == null || table.getGameState() == Table.STATE_DEAD) {
                 stillAlivePlayers.remove(player);
             } else {
+                table.checkMovement();
                 table.doTick();
             }
         }
