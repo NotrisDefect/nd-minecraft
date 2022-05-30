@@ -2,6 +2,7 @@ package cabbageroll.notrisdefect.minecraft;
 
 import cabbageroll.notrisdefect.core.GameLogic;
 import cabbageroll.notrisdefect.core.Piece;
+import cabbageroll.notrisdefect.core.Point;
 import cabbageroll.notrisdefect.minecraft.initialization.Sounds;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
 import com.cryptomorin.xseries.messages.ActionBar;
@@ -11,17 +12,21 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Table extends GameLogic {
 
-    public static final int GHOST_OFFSET = 10;
+    public static final int GHOST_OFFSET = 11;
     private static final int BOX = 4;
     private static final int FRONTROWS = 30;
     private static final int BACKROWS = 20;
     private static final int THICKNESS = 1;
+    private static final int GAP = 2;
+    public static DeathAnimation deathAnim = DeathAnimation.GRAYSCALE;
+    private final int AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
+    private final int DOWNMOVE = getSTAGESIZEY() - (getPLAYABLEROWS() >> 1);
+    private final int SIDEMOVE = (getSTAGESIZEX() >> 1);
     private final Player player;
     // stupid
     private final int[][] logo = {
@@ -66,21 +71,19 @@ public class Table extends GameLogic {
         {0, 1, 1, 1, 0, 0, 1, 1, 0, 0},
         {0, 0, 1, 1, 0, 0, 0, 0, 0, 0}
     };
-
     public boolean enableAnimations = true;
+    private boolean ZONEENABLED = false;
     private Room room;
     private Menu lastMenuOpened;
     private Location location;
-
     // board elements
     private int NEXTVERTICAL = 5;
     private int holdTLCX = -3 - BOX;
-    private int holdTLCY = STAGESIZEY / 2;
-    private int nextTLCX = STAGESIZEX + 3;
-    private int nextTLCY = STAGESIZEY / 2;
+    private int holdTLCY = getSTAGESIZEY() / 2;
+    private int nextTLCX = getSTAGESIZEX() + 3;
+    private int nextTLCY = getSTAGESIZEY() / 2;
     private int garbBLCX = -2;
-    private int garbBLCY = STAGESIZEY - 1;
-
+    private int garbBLCY = getSTAGESIZEY() - 1;
     // multipliers
     private int WMX;
     private int WMY;
@@ -88,12 +91,11 @@ public class Table extends GameLogic {
     private int HMX;
     private int HMY;
     private int HMZ;
-
     // helper variables
     private int imi;
     private int imj;
     private int imk;
-
+    private boolean flipupdown;
     // rendering
     private int[][] oldStageDisplay;
     private int[] oldGQDisplay;
@@ -103,14 +105,11 @@ public class Table extends GameLogic {
     private long piecesPrinted;
     private boolean wasHeld;
     private boolean everHeld;
-
     // movement
     private Location from;
-    private static int GAP = 3;
     private int leftEmptyFor;
     private int rightEmptyFor;
     private int downEmptyFor;
-
     private int movLeft = 0;
     private int movRight = 0;
     private int movSoft = 0;
@@ -119,8 +118,10 @@ public class Table extends GameLogic {
     public Table(Player player) {
         super();
         this.player = player;
-        DAS = 200;
-        ARR = 50;
+    }
+
+    public static DeathAnimation getDeathAnim() {
+        return deathAnim;
     }
 
     private static char intToPieceName(int p) {
@@ -145,8 +146,115 @@ public class Table extends GameLogic {
                 return '#';
             case PIECE_ZONE:
                 return 'N';
+            case PIECE_NUKE:
+                return 'U';
             default:
                 return '?';
+        }
+    }
+
+    public void checkMovement() {
+        Location to = player.getLocation();
+
+        double dx = to.getX() - from.getX();
+        double dz = to.getZ() - from.getZ();
+
+        if (dx != 0 || dz != 0) {
+            player.teleport(from.setDirection(to.getDirection()));
+        }
+
+        movLeft = 0;
+        movRight = 0;
+        movSoft = 0;
+        movCW = 0;
+
+        if (Math.abs(dx) * 3 > Math.abs(dz)) {
+            if (WMX * dx < 0) {
+                movLeft++;
+            } else if (WMX * dx > 0) {
+                movRight++;
+            }
+
+            if (HMX * dx < 0) {
+                movSoft++;
+            } else if (HMX * dx > 0) {
+                movCW++;
+            } else {
+                if (WMZ * dx < 0) {
+                    movSoft++;
+                } else if (WMZ * dx > 0) {
+                    movCW++;
+                }
+            }
+        }
+
+        if (Math.abs(dz) * 3 > Math.abs(dx)) {
+            if (WMZ * dz < 0) {
+                movLeft++;
+            } else if (WMZ * dz > 0) {
+                movRight++;
+            }
+
+            if (HMZ * dz < 0) {
+                movSoft++;
+            } else if (HMZ * dz > 0) {
+                movCW++;
+            } else {
+                if (WMX * dz < 0) {
+                    movCW++;
+                } else if (WMX * dz > 0) {
+                    movSoft++;
+                }
+            }
+        }
+
+        if (flipupdown) {
+            int temp = movSoft;
+            movSoft = movCW;
+            movCW = temp;
+        }
+
+        if (movLeft == 0) {
+            leftEmptyFor++;
+        } else {
+            leftEmptyFor = 0;
+        }
+
+        if (movRight == 0) {
+            rightEmptyFor++;
+        } else {
+            rightEmptyFor = 0;
+        }
+
+        if (movSoft == 0) {
+            downEmptyFor++;
+        } else {
+            downEmptyFor = 0;
+        }
+
+        if (movCW > 0) {
+            doRotateCW();
+        }
+
+        if (leftEmptyFor < GAP) {
+            doPressLeft();
+        } else {
+            doReleaseLeft();
+            leftEmptyFor = GAP;
+        }
+
+        if (rightEmptyFor < GAP) {
+            doPressRight();
+        } else {
+            doReleaseRight();
+            rightEmptyFor = GAP;
+        }
+
+        if (downEmptyFor < GAP) {
+            doPressDown();
+        } else {
+            doReleaseDown();
+            downEmptyFor = GAP;
         }
     }
 
@@ -157,12 +265,13 @@ public class Table extends GameLogic {
 
     public void drawLogo(int color0, int color1) {
         // temp fix
-        if (STAGESIZEY != 40 || STAGESIZEX != 10) {
+        if (getSTAGESIZEY() != 40 || getSTAGESIZEX() != 10) {
             drawAll(color1);
+            return;
         }
 
-        for (int i = 0; i < STAGESIZEY - BACKROWS; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
+        for (int i = 0; i < getSTAGESIZEY() - BACKROWS; i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
                 if (logo[i][j] == 1) {
                     colPrintNewRender(j, i, color1);
                 } else {
@@ -171,17 +280,17 @@ public class Table extends GameLogic {
             }
         }
 
-        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
+        for (int i = getSTAGESIZEY() - BACKROWS; i < getSTAGESIZEY(); i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
                 colPrintNewRender(j, i, logo[i][j] == 0 ? color0 : color1);
             }
         }
 
-        for (int i = 0; i < PLAYABLEROWS; i++) {
+        for (int i = 0; i < getPLAYABLEROWS(); i++) {
             colPrintNewRender(garbBLCX, garbBLCY - i, color0);
         }
         for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
+            for (int j = 0; j < BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
                 colPrintNewRender(nextTLCX + j, nextTLCY + i, color0);
             }
         }
@@ -228,16 +337,6 @@ public class Table extends GameLogic {
         this.lastMenuOpened = lastMenuOpened;
     }
 
-    public int getNEXTPIECES() {
-        return NEXTPIECES;
-    }
-
-    public void setNEXTPIECES(int NEXTPIECES) {
-        cleanAll();
-        this.NEXTPIECES = NEXTPIECES;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
-    }
-
     public int getNEXTVERTICAL() {
         return NEXTVERTICAL;
     }
@@ -256,42 +355,12 @@ public class Table extends GameLogic {
         return nextTLCY;
     }
 
-    public int getPLAYABLEROWS() {
-        return PLAYABLEROWS;
-    }
-
-    public void setPLAYABLEROWS(int PLAYABLEROWS) {
-        cleanAll();
-        this.PLAYABLEROWS = PLAYABLEROWS;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
-    }
-
     public Player getPlayer() {
         return player;
     }
 
     public Room getRoom() {
         return room;
-    }
-
-    public int getSTAGESIZEX() {
-        return STAGESIZEX;
-    }
-
-    public void setSTAGESIZEX(int STAGESIZEX) {
-        cleanAll();
-        this.STAGESIZEX = STAGESIZEX;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
-    }
-
-    public int getSTAGESIZEY() {
-        return STAGESIZEY;
-    }
-
-    public void setSTAGESIZEY(int STAGESIZEY) {
-        cleanAll();
-        this.STAGESIZEY = STAGESIZEY;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
     }
 
     public int getWMX() {
@@ -323,6 +392,14 @@ public class Table extends GameLogic {
         doStart(seed);
         Main.netherboard.createBoard(player, "Stats");
         gameLoop();
+    }
+
+    public boolean isZONEENABLED() {
+        return ZONEENABLED;
+    }
+
+    public void setZONEENABLED(boolean ZONEENABLED) {
+        this.ZONEENABLED = ZONEENABLED;
     }
 
     public void joinRoom(Room r) {
@@ -410,9 +487,150 @@ public class Table extends GameLogic {
         drawLogo(PIECE_NONE, PIECE_J);
     }
 
-    public void setDelays(int psd, int lcd) {
-        PIECESPAWNDELAY = psd;
-        LINECLEARDELAY = lcd;
+    @Override
+    public void setNEXTPIECES(int n) {
+        cleanAll();
+        super.setNEXTPIECES(n);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
+    }
+
+    @Override
+    public void setPLAYABLEROWS(int n) {
+        cleanAll();
+        super.setPLAYABLEROWS(n);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
+    }
+
+    @Override
+    public void setSTAGESIZEX(int n) {
+        cleanAll();
+        super.setSTAGESIZEX(n);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
+    }
+
+    @Override
+    public void setSTAGESIZEY(int n) {
+        cleanAll();
+        super.setSTAGESIZEY(n);
+        drawLogo(PIECE_NONE, PIECE_ZONE);
+    }
+
+    @Override
+    protected void evtGameover() {
+        switch (deathAnim) {
+            case EXPLOSION:
+                for (int i = 0; i < getSTAGESIZEY(); i++) {
+                    for (int j = 0; j < getSTAGESIZEX(); j++) {
+                        colPrintNewForce(j, i);
+                    }
+                }
+
+                for (int i = getSTAGESIZEY() - FRONTROWS; i < getSTAGESIZEY(); i++) {
+                    for (int j = 0; j < getSTAGESIZEX(); j++) {
+                        turnToFallingBlock(j, i, 1, getStage()[i][j]);
+                    }
+                }
+                break;
+            case GRAYSCALE:
+                for (int i = 0; i < getSTAGESIZEY(); i++) {
+                    for (int j = 0; j < getSTAGESIZEX(); j++) {
+                        if (getStage()[i][j] != PIECE_NONE)
+                            colPrintNewRender(j, i, PIECE_GARBAGE);
+                    }
+                }
+                break;
+            case CLEAR:
+                for (int i = 0; i < getSTAGESIZEY(); i++) {
+                    for (int j = 0; j < getSTAGESIZEX(); j++) {
+                        if (getStage()[i][j] != PIECE_NONE) {
+                            colPrintNewRender(j, i, PIECE_NONE);
+                        }
+                    }
+                }
+            case DISAPPEAR:
+                for (int i = 0; i < getSTAGESIZEY(); i++) {
+                    for (int j = 0; j < getSTAGESIZEX(); j++) {
+                        colPrintNewForce(j, i);
+                    }
+                }
+
+            case NONE:
+                break;
+        }
+    }
+
+    @Override
+    protected void evtLineClear(int height, int[] line) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < getSTAGESIZEX(); i++) {
+                    turnToFallingBlock(i, height, 0.3, line[i]);
+                }
+            }
+        }.runTask(Main.plugin);
+
+        playSound(Sounds.lineClear, 5f, 1f);
+    }
+
+    @Override
+    protected void evtLockPiece(Piece piece, int linesCleared, int spinState, int combo, int backToBack, boolean nuke) {
+        StringBuilder sb = new StringBuilder();
+
+        if (backToBack > 0) {
+            sb.append("B2B ");
+        }
+
+        sb.append(intToPieceName(piece.getColor()));
+
+        switch (spinState) {
+            case SPIN_MINI:
+                sb.append("-SPIN MINI");
+                break;
+            case SPIN_FULL:
+                sb.append("-SPIN");
+                break;
+        }
+
+        switch (linesCleared) {
+            case 1:
+                sb.append(" SINGLE");
+                break;
+            case 2:
+                sb.append(" DOUBLE");
+                break;
+            case 3:
+                sb.append(" TRIPLE");
+                break;
+            case 4:
+                sb.append(" NOTRIS");
+                break;
+        }
+
+        if (nuke && linesCleared > 0) {
+            sb.append("+");
+        }
+
+        if (combo > -1) {
+            sb.append(" ").append(combo).append(" COMBO");
+        }
+
+        ActionBar.sendActionBar(player, sb.toString());
+    }
+
+    @Override
+    protected void evtPerfectClear() {
+        Main.protocollib.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
+    }
+
+    @Override
+    protected void evtSendGarbage(int i) {
+        room.forwardGarbage(i, player);
+    }
+
+    @Override
+    protected void evtSpin() {
+        playSound(Sounds.spin, 5f, 1f);
     }
 
     public void skewHX(int n) {
@@ -451,135 +669,25 @@ public class Table extends GameLogic {
         drawLogo(PIECE_NONE, PIECE_J);
     }
 
+    public void switchDeathAnim() {
+        deathAnim = deathAnim.next();
+    }
+
     public void updateWholeTableTo(Player player) {
 
     }
 
-    @Override
-    protected void evtGameover() {
-        switch (Constants.deathAnim) {
-            case EXPLOSION:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        colPrintNewForce(j, i);
-                    }
-                }
-
-                for (int i = STAGESIZEY - FRONTROWS; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        turnToFallingBlock(j, i, 1, getStage()[i][j]);
-                    }
-                }
-                break;
-            case GRAYSCALE:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        if (getStage()[i][j] != PIECE_NONE)
-                            colPrintNewRender(j, i, PIECE_GARBAGE);
-                    }
-                }
-                break;
-            case CLEAR:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        if (getStage()[i][j] != PIECE_NONE) {
-                            colPrintNewRender(j, i, PIECE_NONE);
-                        }
-                    }
-                }
-            case DISAPPEAR:
-                for (int i = 0; i < STAGESIZEY; i++) {
-                    for (int j = 0; j < STAGESIZEX; j++) {
-                        colPrintNewForce(j, i);
-                    }
-                }
-
-            case NONE:
-                break;
-        }
-    }
-
-    @Override
-    protected void evtLineClear(int height, int[] line) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < STAGESIZEX; i++) {
-                    turnToFallingBlock(i, height, 0.3, line[i]);
-                }
-            }
-        }.runTask(Main.plugin);
-
-        playSound(Sounds.lineClear, 5f, 1f);
-    }
-
-    @Override
-    protected void evtLockPiece(Piece piece, int linesCleared, int spinState, int combo, int backToBack) {
-        StringBuilder sb = new StringBuilder();
-
-        if (backToBack > 0) {
-            sb.append("B2B ");
-        }
-
-        sb.append(intToPieceName(piece.getColor()));
-
-        switch (spinState) {
-            case SPIN_MINI:
-                sb.append(" SPIN MINI");
-                break;
-            case SPIN_FULL:
-                sb.append(" SPIN");
-                break;
-        }
-
-        switch (linesCleared) {
-            case 1:
-                sb.append(" SINGLE");
-                break;
-            case 2:
-                sb.append(" DOUBLE");
-                break;
-            case 3:
-                sb.append(" TRIPLE");
-                break;
-            case 4:
-                sb.append(" NOTRIS");
-                break;
-        }
-
-        if (combo > -1) {
-            sb.append(" ").append(combo).append(" COMBO");
-        }
-
-        ActionBar.sendActionBar(player, sb.toString());
-    }
-
-    @Override
-    protected void evtPerfectClear() {
-        Main.protocollib.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
-    }
-
-    @Override
-    protected void evtSendGarbage(int i) {
-        room.forwardGarbage(i, player);
-    }
-
-    @Override
-    protected void evtSpin() {
-        playSound(Sounds.spin, 5f, 1f);
-    }
-
     private void cleanAll() {
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
+        for (int i = 0; i < getSTAGESIZEY(); i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
                 colPrintNewForce(j, i);
             }
         }
-        for (int i = 0; i < PLAYABLEROWS; i++) {
+        for (int i = 0; i < getPLAYABLEROWS(); i++) {
             colPrintNewForce(garbBLCX, garbBLCY - i);
         }
         for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
+            for (int j = 0; j < BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
                 colPrintNewForce(nextTLCX + j, nextTLCY + i);
             }
         }
@@ -630,16 +738,16 @@ public class Table extends GameLogic {
     }
 
     private void drawAll(int color) {
-        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
+        for (int i = getSTAGESIZEY() - BACKROWS; i < getSTAGESIZEY(); i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
                 colPrintNewRender(j, i, color);
             }
         }
-        for (int i = 0; i < PLAYABLEROWS; i++) {
+        for (int i = 0; i < getPLAYABLEROWS(); i++) {
             colPrintNewRender(garbBLCX, garbBLCY - i, color);
         }
         for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
+            for (int j = 0; j < BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
                 colPrintNewRender(nextTLCX + j, nextTLCY + i, color);
             }
         }
@@ -666,7 +774,7 @@ public class Table extends GameLogic {
         }.runTaskTimer(Main.plugin, 0, 1);
     }
 
-    private boolean isThereAProblem() {
+    private boolean isTableValid() {
         boolean bwx = WMX != 0;
         boolean bwy = WMY != 0;
         boolean bwz = WMZ != 0;
@@ -674,7 +782,7 @@ public class Table extends GameLogic {
         boolean bhy = HMY != 0;
         boolean bhz = HMZ != 0;
 
-        return (!bwx && !bwy && !bwz) || (!bhx && !bhy && !bhz);
+        return (bwx || bwy || bwz) && (bhx || bhy || bhz) && (bwx != bhx || bwy != bhy || bwz != bhz);
     }
 
     private void playSound(Sound sound, float volume, float pitch) {
@@ -689,39 +797,76 @@ public class Table extends GameLogic {
 
     private void position() {
         Location playerLocation = player.getLocation();
-        this.location = new Location(playerLocation.getWorld(), 0, 0, 0);
+        location = new Location(playerLocation.getWorld(), playerLocation.getBlockX(), playerLocation.getBlockY(), playerLocation.getBlockZ());
         float yaw = player.getLocation().getYaw();
         yaw = (yaw % 360 + 360) % 360;
-        if (45 <= yaw && yaw < 135) {
-            setWidthMultiplier(0, 0, -1);
-            setHeightMultiplier(0, -1, 0);
-            this.location.setX(playerLocation.getBlockX() - PLAYABLEROWS * 1.5);
-            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - PLAYABLEROWS / 2);
-            this.location.setZ(playerLocation.getBlockZ() + STAGESIZEX / 2);
-        } else if (135 <= yaw && yaw < 225) {
-            setWidthMultiplier(1, 0, 0);
-            setHeightMultiplier(0, -1, 0);
-            this.location.setX(playerLocation.getBlockX() - STAGESIZEX / 2);
-            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - PLAYABLEROWS / 2);
-            this.location.setZ(playerLocation.getBlockZ() - PLAYABLEROWS * 1.5);
-        } else if (225 <= yaw && yaw < 315) {
-            setWidthMultiplier(0, 0, 1);
-            setHeightMultiplier(0, -1, 0);
-            this.location.setX(playerLocation.getBlockX() + PLAYABLEROWS * 1.5);
-            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - PLAYABLEROWS / 2);
-            this.location.setZ(playerLocation.getBlockZ() - STAGESIZEX / 2);
-        } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
-            setWidthMultiplier(-1, 0, 0);
-            setHeightMultiplier(0, -1, 0);
-            this.location.setX(playerLocation.getBlockX() + STAGESIZEX / 2);
-            this.location.setY(playerLocation.getBlockY() + STAGESIZEY - PLAYABLEROWS / 2);
-            this.location.setZ(playerLocation.getBlockZ() + PLAYABLEROWS * 1.5);
+        float pitch = player.getLocation().getPitch();
+        if (pitch < -45) {
+            location.add(0, AWAYMOVE, 0);
+            flipupdown = false;
+            if (45 <= yaw && yaw < 135) {
+                setWidthMultiplier(0, 0, -1);
+                setHeightMultiplier(-1, 0, 0);
+                location.add(DOWNMOVE, 0, SIDEMOVE);
+            } else if (135 <= yaw && yaw < 225) {
+                setWidthMultiplier(1, 0, 0);
+                setHeightMultiplier(0, 0, -1);
+                location.add(-SIDEMOVE, 0, DOWNMOVE);
+            } else if (225 <= yaw && yaw < 315) {
+                setWidthMultiplier(0, 0, 1);
+                setHeightMultiplier(1, 0, 0);
+                location.add(-DOWNMOVE, 0, -SIDEMOVE);
+            } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
+                setWidthMultiplier(-1, 0, 0);
+                setHeightMultiplier(0, 0, 1);
+                location.add(SIDEMOVE, 0, -DOWNMOVE);
+            }
+        } else if (-45 <= pitch && pitch < 45) {
+            location.add(0, DOWNMOVE, 0);
+            flipupdown = false;
+            if (45 <= yaw && yaw < 135) {
+                setWidthMultiplier(0, 0, -1);
+                setHeightMultiplier(0, -1, 0);
+                location.add(-AWAYMOVE, 0, SIDEMOVE);
+            } else if (135 <= yaw && yaw < 225) {
+                setWidthMultiplier(1, 0, 0);
+                setHeightMultiplier(0, -1, 0);
+                location.add(-SIDEMOVE, 0, -AWAYMOVE);
+            } else if (225 <= yaw && yaw < 315) {
+                setWidthMultiplier(0, 0, 1);
+                setHeightMultiplier(0, -1, 0);
+                location.add(AWAYMOVE, 0, -SIDEMOVE);
+            } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
+                setWidthMultiplier(-1, 0, 0);
+                setHeightMultiplier(0, -1, 0);
+                location.add(SIDEMOVE, 0, AWAYMOVE);
+            }
+        } else if (45 <= pitch) {
+            location.add(0, -AWAYMOVE, 0);
+            flipupdown = true;
+            if (45 <= yaw && yaw < 135) {
+                setWidthMultiplier(0, 0, -1);
+                setHeightMultiplier(1, 0, 0);
+                location.add(-DOWNMOVE, 0, SIDEMOVE);
+            } else if (135 <= yaw && yaw < 225) {
+                setWidthMultiplier(1, 0, 0);
+                setHeightMultiplier(0, 0, 1);
+                location.add(-SIDEMOVE, 0, -DOWNMOVE);
+            } else if (225 <= yaw && yaw < 315) {
+                setWidthMultiplier(0, 0, 1);
+                setHeightMultiplier(-1, 0, 0);
+                location.add(DOWNMOVE, 0, -SIDEMOVE);
+            } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
+                setWidthMultiplier(-1, 0, 0);
+                setHeightMultiplier(0, 0, -1);
+                location.add(SIDEMOVE, 0, DOWNMOVE);
+            }
         }
     }
 
     private void prepare() {
-        if (isThereAProblem()) {
-            player.sendMessage("there was a problem");
+        if (!isTableValid()) {
+            player.sendMessage("Invalid table multipliers");
         }
 
         imi = Math.max(Math.abs(WMX), Math.abs(HMX));
@@ -732,10 +877,10 @@ public class Table extends GameLogic {
 
         cleanAll();
 
-        oldGQDisplay = new int[PLAYABLEROWS];
-        oldNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL)];
+        oldGQDisplay = new int[getPLAYABLEROWS()];
+        oldNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL)];
         oldHoldDisplay = new int[BOX][BOX];
-        oldStageDisplay = new int[STAGESIZEY][STAGESIZEX];
+        oldStageDisplay = new int[getSTAGESIZEY()][getSTAGESIZEX()];
         linesPrinted = 0;
         //to print on first tick
         piecesPrinted = -1;
@@ -747,23 +892,23 @@ public class Table extends GameLogic {
         rightEmptyFor = GAP;
         downEmptyFor = GAP;
 
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
+        for (int i = 0; i < getSTAGESIZEY(); i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
                 oldStageDisplay[i][j] = PIECE_NONE;
             }
         }
-        for (int i = STAGESIZEY - BACKROWS; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
+        for (int i = getSTAGESIZEY() - BACKROWS; i < getSTAGESIZEY(); i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
                 colPrintNewRender(j, i, PIECE_NONE);
             }
         }
 
-        for (int i = 0; i < PLAYABLEROWS; i++) {
+        for (int i = 0; i < getPLAYABLEROWS(); i++) {
             oldGQDisplay[i] = PIECE_NONE;
             colPrintNewRender(garbBLCX, garbBLCY - i, PIECE_NONE);
         }
         for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-            for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
+            for (int j = 0; j < BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
                 oldNextDisplay[i][j] = PIECE_NONE;
                 colPrintNewRender(nextTLCX + j, nextTLCY + i, PIECE_NONE);
             }
@@ -798,10 +943,10 @@ public class Table extends GameLogic {
         final int piece = getCurrentPiece().getColor();
         final int[][] stage = getStage();
 
-        int[][] newStageDisplay = new int[STAGESIZEY][STAGESIZEX];
+        int[][] newStageDisplay = new int[getSTAGESIZEY()][getSTAGESIZEX()];
         // update stage
-        for (int i = 0; i < STAGESIZEY; i++) {
-            System.arraycopy(stage[i], 0, newStageDisplay[i], 0, STAGESIZEX);
+        for (int i = 0; i < getSTAGESIZEY(); i++) {
+            System.arraycopy(stage[i], 0, newStageDisplay[i], 0, getSTAGESIZEX());
         }
 
         for (Point point : getPoints(piece, rot)) {
@@ -813,12 +958,12 @@ public class Table extends GameLogic {
         }
 
         // print stage
-        for (int i = 0; i < STAGESIZEY; i++) {
-            for (int j = 0; j < STAGESIZEX; j++) {
+        for (int i = 0; i < getSTAGESIZEY(); i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
                 if (newStageDisplay[i][j] != oldStageDisplay[i][j]) {
-                    if (newStageDisplay[i][j] == PIECE_NONE && i >= STAGESIZEY - BACKROWS) {
+                    if (newStageDisplay[i][j] == PIECE_NONE && i >= getSTAGESIZEY() - BACKROWS) {
                         colPrintNewRender(j, i, newStageDisplay[i][j]);
-                    } else if (i >= STAGESIZEY - FRONTROWS) {
+                    } else if (i >= getSTAGESIZEY() - FRONTROWS) {
                         if (newStageDisplay[i][j] != PIECE_NONE) {
                             colPrintNewRender(j, i, newStageDisplay[i][j]);
                         } else {
@@ -830,7 +975,7 @@ public class Table extends GameLogic {
         }
         oldStageDisplay = newStageDisplay;
 
-        int[] newGQDisplay = new int[PLAYABLEROWS];
+        int[] newGQDisplay = new int[getPLAYABLEROWS()];
         // update garbage meter
         int total = 0;
         int color;
@@ -840,19 +985,19 @@ public class Table extends GameLogic {
             total += num;
         }
 
-        color = (total / PLAYABLEROWS) % 7 + 1;
-        total = total % PLAYABLEROWS;
+        color = (total / getPLAYABLEROWS()) % 7 + 1;
+        total = total % getPLAYABLEROWS();
 
         for (int i = 0; i < total; i++) {
             newGQDisplay[i] = color;
         }
 
-        for (int i = total; i < PLAYABLEROWS; i++) {
+        for (int i = total; i < getPLAYABLEROWS(); i++) {
             newGQDisplay[i] = PIECE_NONE;
         }
 
         // print garbage meter
-        for (int i = 0; i < PLAYABLEROWS; i++) {
+        for (int i = 0; i < getPLAYABLEROWS(); i++) {
             if (newGQDisplay[i] != oldGQDisplay[i]) {
                 colPrintNewRender(garbBLCX, garbBLCY - i, newGQDisplay[i]);
             }
@@ -860,15 +1005,15 @@ public class Table extends GameLogic {
         oldGQDisplay = newGQDisplay;
 
         if (piecesPrinted < getTotalPiecesPlaced() || (!everHeld && getHeldPiece() != null && !wasHeld && getHeld())) {
-            int[][] newNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL)];
+            int[][] newNextDisplay = new int[BOX * NEXTVERTICAL][BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL)];
             // update next queue
             for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-                for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
+                for (int j = 0; j < BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
                     newNextDisplay[i][j] = PIECE_NONE;
                 }
             }
 
-            for (int i = 0; i < NEXTPIECES; i++) {
+            for (int i = 0; i < getNEXTPIECES(); i++) {
                 for (Point point : getPoints(getNextPieces()[i].getColor(), 0)) {
                     newNextDisplay[point.y + i % NEXTVERTICAL * BOX][point.x + BOX * (i / NEXTVERTICAL)] = getNextPieces()[i].getColor();
                 }
@@ -876,7 +1021,7 @@ public class Table extends GameLogic {
 
             // print next queue
             for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
-                for (int j = 0; j < BOX * (int) Math.ceil(NEXTPIECES / (double) NEXTVERTICAL); j++) {
+                for (int j = 0; j < BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
                     if (newNextDisplay[i][j] != oldNextDisplay[i][j]) {
                         colPrintNewRender(nextTLCX + j, nextTLCY + i, newNextDisplay[i][j]);
                     }
@@ -945,105 +1090,6 @@ public class Table extends GameLogic {
         WMZ = z;
     }
 
-    public void checkMovement() {
-        Location to = player.getLocation();
-
-        double dx = to.getX() - from.getX();
-        double dz = to.getZ() - from.getZ();
-
-        if (dx != 0 || dz != 0) {
-            player.teleport(from.setDirection(to.getDirection()));
-        }
-
-        movLeft = 0;
-        movRight = 0;
-        movSoft = 0;
-        movCW = 0;
-
-        if (Math.abs(dx) * 3 > Math.abs(dz)) {
-            if (WMX * dx < 0) {
-                movLeft++;
-            } else if (WMX * dx > 0) {
-                movRight++;
-            }
-
-            if (HMX * dx < 0) {
-                movSoft++;
-            } else if (HMX * dx > 0) {
-                movCW++;
-            } else {
-                if (WMZ * dx < 0) {
-                    movSoft++;
-                } else if (WMZ * dx > 0) {
-                    movCW++;
-                }
-            }
-        }
-
-        if (Math.abs(dz) * 3 > Math.abs(dx)) {
-            if (WMZ * dz < 0) {
-                movLeft++;
-            } else if (WMZ * dz > 0) {
-                movRight++;
-            }
-
-            if (HMZ * dz < 0) {
-                movSoft++;
-            } else if (HMZ * dz > 0) {
-                movCW++;
-            } else {
-                if (WMX * dz < 0) {
-                    movCW++;
-                } else if (WMX * dz > 0) {
-                    movSoft++;
-                }
-            }
-        }
-
-        if (movLeft == 0) {
-            leftEmptyFor++;
-        } else {
-            leftEmptyFor = 0;
-        }
-
-        if (movRight == 0) {
-            rightEmptyFor++;
-        } else {
-            rightEmptyFor = 0;
-        }
-
-        if (movSoft == 0) {
-            downEmptyFor++;
-        } else {
-            downEmptyFor = 0;
-        }
-
-        if (movCW > 0) {
-            doRotateCW();
-        }
-
-        if (leftEmptyFor < GAP) {
-            doPressLeft();
-        } else {
-            doReleaseLeft();
-            leftEmptyFor = GAP;
-        }
-
-        if (rightEmptyFor < GAP) {
-            doPressRight();
-        } else {
-            doReleaseRight();
-            rightEmptyFor = GAP;
-        }
-
-        if (downEmptyFor < GAP) {
-            doPressDown();
-        } else {
-            doReleaseDown();
-            downEmptyFor = GAP;
-        }
-    }
-
     private void turnToFallingBlock(int x, int y, double d, int color) {
         if (enableAnimations) {
             int tex, tey, tez;
@@ -1060,6 +1106,15 @@ public class Table extends GameLogic {
                     }
                 }
             }
+        }
+    }
+
+    public enum DeathAnimation {
+        NONE, EXPLOSION, GRAYSCALE, CLEAR, DISAPPEAR;
+        private static final DeathAnimation[] vals = values();
+
+        public DeathAnimation next() {
+            return vals[(this.ordinal() + 1) % vals.length];
         }
     }
 }

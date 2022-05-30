@@ -65,7 +65,7 @@ public class TableListeners implements Listener {
             if (Main.gs.getRoom(player) != null) {
                 Table table = Main.gs.getTable(player);
                 if (player.isSneaking()) {
-                    if (table != null && table.getGameState() != Table.STATE_DEAD) {
+                    if (table != null && table.getGameState() != Table.STATE_DEAD && table.isZONEENABLED()) {
                         table.doZone();
                     }
                 }

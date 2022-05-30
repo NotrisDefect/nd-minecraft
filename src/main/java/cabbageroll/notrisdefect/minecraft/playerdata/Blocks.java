@@ -15,6 +15,7 @@ public class Blocks {
         XMaterial.PURPLE_WOOL.parseItem(),
         XMaterial.LIGHT_GRAY_WOOL.parseItem(),
         XMaterial.WHITE_WOOL.parseItem(),
+        XMaterial.TNT.parseItem(),
         XMaterial.RED_STAINED_GLASS.parseItem(),
         XMaterial.ORANGE_STAINED_GLASS.parseItem(),
         XMaterial.YELLOW_STAINED_GLASS.parseItem(),
@@ -25,6 +26,7 @@ public class Blocks {
     );
 
     public static final ItemStack[] empty = new ItemStack[]{
+        XMaterial.AIR.parseItem(),
         XMaterial.AIR.parseItem(),
         XMaterial.AIR.parseItem(),
         XMaterial.AIR.parseItem(),

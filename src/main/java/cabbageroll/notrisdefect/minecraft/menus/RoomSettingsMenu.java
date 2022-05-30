@@ -2,6 +2,7 @@ package cabbageroll.notrisdefect.minecraft.menus;
 
 import cabbageroll.notrisdefect.minecraft.Main;
 import cabbageroll.notrisdefect.minecraft.Room;
+import cabbageroll.notrisdefect.minecraft.Table;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -32,8 +33,17 @@ public class RoomSettingsMenu extends Menu {
 
         addButton(BACK_LOCATION, event -> new RoomMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
-        addButton(grid(2, 1), event -> room.players.forEach(player -> Main.gs.getTable(player).setDelays(100, 500)), XMaterial.GOLD_BLOCK, ChatColor.WHITE + "Enable delays", "PSD: 100ms", "LCD: 500ms");
-        addButton(grid(2, 2), event -> room.players.forEach(player -> Main.gs.getTable(player).setDelays(0, 0)), XMaterial.GOLD_BLOCK, ChatColor.WHITE + "Disable delays", "PSD: 0ms", "LCD: 0ms");
+        addButton(grid(2, 1), event -> room.players.forEach(player -> {
+            getTable(player).setPIECESPAWNDELAY(getTable(player).getPIECESPAWNDELAY() == 0 ? 100 : 0);
+            getTable(player).setLINECLEARDELAY(getTable(player).getLINECLEARDELAY() == 0 ? 500 : 0);
+        }), XMaterial.GOLD_BLOCK, ChatColor.WHITE + "Delays", "Piece spawn delay: " + getTable(player).getPIECESPAWNDELAY() + "ms", "Line clear delay: " + getTable(player).getLINECLEARDELAY() + "ms");
+        addButton(grid(2, 2), event -> room.players.forEach(player -> getTable(player).setENABLENUKES(!getTable(player).isENABLENUKES())), XMaterial.TNT, ChatColor.WHITE + "Garbage type", getTable(player).isENABLENUKES() ? "Nukes" : "Holes");
+        addButton(grid(2, 3), event -> room.players.forEach(player -> getTable(player).setENABLEALWAYSGARBAGE(!getTable(player).isENABLEALWAYSGARBAGE())), XMaterial.TNT, ChatColor.WHITE + "Garbage entry", getTable(player).isENABLEALWAYSGARBAGE() ? "Always" : "No lines cleared");
+        addButton(grid(2, 4), event -> room.players.forEach(player -> getTable(player).setENABLEALLSPIN(!getTable(player).isENABLEALLSPIN())), XMaterial.TNT, ChatColor.WHITE + "Spin type", getTable(player).isENABLEALLSPIN() ? "Z, L, S, J, T spins" : "T spins");
+    }
+
+    private Table getTable(Player player) {
+        return Main.gs.getTable(player);
     }
 
 }

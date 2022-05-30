@@ -31,6 +31,7 @@ public class ExperimentalSettingsMenu extends Menu {
         }
 
         addButton(BACK_LOCATION, event -> new RoomMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
+
         addButton(grid(2, 1), event -> table.moveHoldTLCXRelative(howMuch(event.getClick())), XMaterial.RED_STAINED_GLASS, "Hold top left corner X", "" + table.getHoldTLCX());
         addButton(grid(2, 2), event -> table.moveHoldTLCYRelative(howMuch(event.getClick())), XMaterial.GREEN_STAINED_GLASS, "Hold top left corner Y", "" + table.getHoldTLCY());
 
@@ -47,6 +48,8 @@ public class ExperimentalSettingsMenu extends Menu {
 
         addButton(grid(2, 5), event -> Main.gs.getRoom(player).toggleBackfire(), XMaterial.FLINT_AND_STEEL, "backfire", "" + Main.gs.getRoom(player).getBackfire());
         addButton(grid(2, 6), event -> table.enableAnimations ^= true, XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks", "" + table.enableAnimations);
+        addButton(grid(2, 7), event -> table.setZONEENABLED(!table.isZONEENABLED()), XMaterial.ENCHANTED_BOOK, ChatColor.WHITE + "Enable zone", "" + table.isZONEENABLED());
     }
+
 
 }

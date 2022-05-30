@@ -129,19 +129,6 @@ public class Room {
         backfire ^= true;
     }
 
-    private void afterLoopStopped() {
-        Main.noteBlockAPI.setPlaying(this, false);
-
-        for (Player player : alivePlayers) {
-            getTable(player).doAbort();
-            getTable(player).drawLogo(Table.PIECE_NONE, Table.PIECE_ZONE);
-        }
-    }
-
-    private Table getTable(Player player) {
-        return Main.gs.getTable(player);
-    }
-
     private void roomLoop() {
         new Thread(() -> {
             final double expectedTickTime = 1e9 / Table.TPS;
@@ -169,6 +156,20 @@ public class Room {
             }.runTask(Main.plugin);
         }).start();
     }
+
+    private void afterLoopStopped() {
+        Main.noteBlockAPI.setPlaying(this, false);
+
+        for (Player player : alivePlayers) {
+            getTable(player).doAbort();
+            getTable(player).drawLogo(Table.PIECE_NONE, Table.PIECE_ZONE);
+        }
+    }
+
+    private Table getTable(Player player) {
+        return Main.gs.getTable(player);
+    }
+
 
     private void tick() {
         ArrayList<Player> stillAlivePlayers = new ArrayList<>(alivePlayers);
