@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 public class TableListeners implements Listener {
 
@@ -26,13 +25,17 @@ public class TableListeners implements Listener {
                     int slot = event.getNewSlot();
                     switch (slot) {
                         case 0:
-                            table.doMoveLeft();
+                            table.doPressLeft();
+                            table.doReleaseLeft();
                             break;
                         case 1:
-                            table.doMoveRight();
+                            table.doPressRight();
+                            table.doReleaseRight();
                             break;
                         case 2:
-                            table.doInstantSoftDrop();
+                            if (table.isZONEENABLED()) {
+                                table.doZone();
+                            }
                             break;
                         case 3:
                             table.doHardDrop();
@@ -53,21 +56,6 @@ public class TableListeners implements Listener {
                             return;
                     }
                     player.getInventory().setHeldItemSlot(8);
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-        Player player = event.getPlayer();
-        if (Main.gs.isPlayerUsingThePlugin(player)) {
-            if (Main.gs.getRoom(player) != null) {
-                Table table = Main.gs.getTable(player);
-                if (player.isSneaking()) {
-                    if (table != null && table.getGameState() != Table.STATE_DEAD && table.isZONEENABLED()) {
-                        table.doZone();
-                    }
                 }
             }
         }

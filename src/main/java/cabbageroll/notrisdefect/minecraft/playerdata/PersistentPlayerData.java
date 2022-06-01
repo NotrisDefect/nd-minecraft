@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 public class PersistentPlayerData implements Serializable {
 
-    private boolean transparent = false;
     private boolean custom = false;
     private Skin skin;
 
@@ -20,15 +19,7 @@ public class PersistentPlayerData implements Serializable {
         return custom;
     }
 
-    public boolean isTransparent() {
-        return transparent;
-    }
-
     public void swapCustom() {
         custom ^= true;
-    }
-
-    public void swapTransparent() {
-        transparent ^= true;
     }
 }

@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public class ProtocolLibYes implements ProtocolLib {
 
     private final ProtocolManager pm = ProtocolLibrary.getProtocolManager();
@@ -69,9 +70,9 @@ public class ProtocolLibYes implements ProtocolLib {
 
         ItemStack block;
         if (Main.gs.getData(player).isCustom()) {
-            block = Main.gs.getSkin(player).get(color);
+            block = Main.gs.getSkin(player).get(color).parseItem();
         } else {
-            block = Blocks.defaultBlocks.get(color);
+            block = Blocks.defaultBlocks.get(color).parseItem();
         }
 
         PacketContainer spawn = new PacketContainer(PacketType.Play.Server.SPAWN_ENTITY);

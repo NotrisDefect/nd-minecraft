@@ -6,7 +6,7 @@
 
     <groupId>cabbageroll.notrisdefect</groupId>
     <artifactId>nd-minecraft</artifactId>
-    <version>1.6</version>
+    <version>1.6.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -25,6 +25,10 @@
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>codemc-snapshots</id>
+            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
         </repository>
     </repositories>
 
@@ -70,7 +74,11 @@
             <artifactId>nd-core</artifactId>
             <version>1.6</version>
         </dependency>
-
+        <dependency>
+            <groupId>net.wesjd</groupId>
+            <artifactId>anvilgui</artifactId>
+            <version>1.5.3-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -86,6 +94,7 @@
                         <includes>
                             <include>com.github.cryptomorin:XSeries</include>
                             <include>cabbageroll.notrisdefect:nd-core</include>
+                            <include>net.wesjd:anvilgui</include>
                         </includes>
                     </artifactSet>
                     <filters>

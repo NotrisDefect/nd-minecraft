@@ -33,49 +33,49 @@ public class MainCommand implements CommandExecutor, Listener {
     private MainCommand() {
         commands.put(Strings.help, (sender, cmd, label, args) -> {
             StringBuilder sb = new StringBuilder();
+            StringBuilder prefix = new StringBuilder().append('\n').append(color).append('/').append(label).append(' ');
 
             sb.append(color).append(Strings.pluginName).append(' ').append(Strings.help);
 
             sb.append('\n').append(color).append("Aliases: notrisdefect, notris, nd");
 
             if (sender instanceof Player) {
-                sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.gui + " - open game window");
+                sb.append(prefix).append(Strings.gui).append(" - open game window");
             }
 
             if (sender.hasPermission(Strings.permManage)) {
-                sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.disable).append(" - permanently disable the plugin");
-                sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.flush).append(" - flush all current session data");
+                sb.append(prefix).append(Strings.disable).append(" - permanently disable the plugin");
+                sb.append(prefix).append(Strings.flush).append(" - flush all current session data");
             }
 
-            sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.help).append(" - shows this help page");
-            sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.controls).append(" - shows guide on how to set the controls");
-            sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.tetrachannel).append(" <nickname> - get stats of a player from ch.tetr.io");
-            sb.append('\n').append(color).append('/').append(label).append(' ').append(Strings.sfx).append(" - show sounds");
+            sb.append(prefix).append(Strings.help).append(" - shows this help page");
+            sb.append(prefix).append(Strings.controls).append(" - shows guide on how to set the controls");
+            sb.append(prefix).append(Strings.tetrachannel).append(" <nickname> - get stats of a player from ch.tetr.io");
+            sb.append(prefix).append(Strings.sfx).append(" - show sounds");
+            sb.append(prefix).append(Strings.materials).append(" - link to XMaterial class");
 
             sender.sendMessage(sb.toString());
             return true;
         });
+        commands.put(Strings.materials, (sender, cmd, label, args) -> {
+            sender.sendMessage("https://github.com/CryptoMorin/XSeries/blob/master/src/main/java/com/cryptomorin/xseries/XMaterial.java");
+            return true;
+        });
         commands.put(Strings.controls, (sender, cmd, label, args) -> {
-            String[] stuff = {
-                "Move left (once): Hotbar Slot 1",
-                "\nMove left (repeat): Strafe Left",
-                "\nMove right (once): Hotbar Slot 2",
-                "\nMove right (repeat): Strafe Right",
-                "\nInstant soft drop: Hotbar Slot 3",
-                "\nSoft drop: Walk Backwards",
-                "\nHard drop: Hotbar Slot 4",
-                "\nRotate counterclockwise: Hotbar Slot 5",
-                "\nRotate clockwise: Hotbar Slot 6",
-                "\nRotate 180: Hotbar Slot 7",
-                "\nHold: Hotbar Slot 8",
-                "\nZone: Sneak",
-            };
+            String stuff =
+                "Move left (once): Hotbar Slot 1" +
+                    "\nMove right (once): Hotbar Slot 2" +
+                    "\nZone: Hotbar Slot 3" +
+                    "\nMove left: Strafe Left" +
+                    "\nMove right: Strafe Right" +
+                    "\nSoft drop: Walk Backwards" +
+                    "\nHard drop: Hotbar Slot 4" +
+                    "\nRotate counterclockwise: Hotbar Slot 5" +
+                    "\nRotate clockwise: Hotbar Slot 6" +
+                    "\nRotate 180: Hotbar Slot 7" +
+                    "\nHold: Hotbar Slot 8";
 
-            StringBuilder sb = new StringBuilder();
-            for (String s : stuff) {
-                sb.append(s);
-            }
-            sender.sendMessage(sb.toString());
+            sender.sendMessage(stuff);
             return true;
         });
         commands.put(Strings.sfx, (sender, cmd, label, args) -> {

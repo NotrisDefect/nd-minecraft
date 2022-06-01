@@ -58,7 +58,7 @@ public abstract class Menu implements InventoryHolder {
         inventory = Bukkit.createInventory(holder, size, name);
     }
 
-    public ItemStack createItem(XMaterial material, String name, String... lore) {
+    public static ItemStack createItem(XMaterial material, String name, String... lore) {
         ItemStack item = material.parseItem();
         ItemMeta meta;
         meta = item.getItemMeta();

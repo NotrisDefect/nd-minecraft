@@ -8,6 +8,7 @@ public class Strings {
     public static final String sfx = "sfx";
     public static final String disable = "disable";
     public static final String gui = "gui";
+    public static final String materials = "xmaterial";
     public static final String tetrachannel = "tetrachannel";
     public static final String mainCommand = "notrisdefect";
     public static final String permUnsafe = "notrisdefect.use.experimental";

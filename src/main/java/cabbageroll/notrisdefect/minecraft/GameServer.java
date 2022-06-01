@@ -3,7 +3,6 @@ package cabbageroll.notrisdefect.minecraft;
 import cabbageroll.notrisdefect.minecraft.menus.HomeMenu;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
 import cabbageroll.notrisdefect.minecraft.menus.RoomMenu;
-import cabbageroll.notrisdefect.minecraft.menus.SkinMenu;
 import cabbageroll.notrisdefect.minecraft.playerdata.Blocks;
 import cabbageroll.notrisdefect.minecraft.playerdata.PersistentPlayerData;
 import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
@@ -62,13 +61,6 @@ public class GameServer {
     public void deinitialize(Player player) {
         if (getRoom(player) != null) {
             getRoom(player).removePlayer(player);
-        }
-
-        if (getMenu(player).getInventory().getHolder() instanceof SkinMenu) {
-            if (getData(player).isCustom()) {
-                Inventory inv = getMenu(player).getInventory();
-                setSkin(player, SkinMenu.toSkin(inv));
-            }
         }
 
         tableMap.remove(player);

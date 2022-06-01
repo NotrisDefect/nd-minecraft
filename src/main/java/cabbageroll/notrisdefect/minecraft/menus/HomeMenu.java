@@ -41,7 +41,7 @@ public class HomeMenu extends Menu {
             addButton(SINGLEPLAYER_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permSP)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }
         if (player.hasPermission(Strings.permSkinEditor)) {
-            addButton(SKINEDITOR_LOCATION, event -> new SkinMenu(player), XMaterial.SHEARS, ChatColor.WHITE + "Skin editor");
+            addButton(SKINEDITOR_LOCATION, event -> new NewSkinMenu(player), XMaterial.DAMAGED_ANVIL, ChatColor.WHITE + "Skin editor");
         } else {
             addButton(SKINEDITOR_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permSkinEditor)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }

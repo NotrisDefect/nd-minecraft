@@ -1,7 +1,7 @@
 name: NotrisDefect
 main: cabbageroll.notrisdefect.minecraft.Main
-version: 1.6
-api-version: 1.13
+version: 1.6.1
+api-version: 1.18
 softdepend: [ NoteBlockAPI, Netherboard, ProtocolLib ]
 commands:
   notrisdefect:
@@ -19,7 +19,7 @@ permissions:
   notrisdefect.use.multiplayer:
     default: true
   notrisdefect.use.skineditor:
-    default: false
+    default: true
   notrisdefect.use.experimental:
     default: false
   notrisdefect.admin.*:

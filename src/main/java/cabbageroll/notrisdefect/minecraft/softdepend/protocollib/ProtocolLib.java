@@ -11,9 +11,9 @@ public interface ProtocolLib {
 
     static ItemStack colorToBlock(Player player, int color) {
         if (Main.gs.getData(player).isCustom()) {
-            return Main.gs.getSkin(player).get(color);
+            return Main.gs.getSkin(player).get(color).parseItem();
         } else {
-            return Blocks.defaultBlocks.get(color);
+            return Blocks.defaultBlocks.get(color).parseItem();
         }
     }
 

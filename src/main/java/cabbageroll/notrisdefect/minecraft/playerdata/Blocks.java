@@ -1,48 +1,47 @@
 package cabbageroll.notrisdefect.minecraft.playerdata;
 
 import com.cryptomorin.xseries.XMaterial;
-import org.bukkit.inventory.ItemStack;
 
 public class Blocks {
     public static final Skin defaultBlocks = new Skin(
-        XMaterial.BLACK_WOOL.parseItem(),
-        XMaterial.RED_WOOL.parseItem(),
-        XMaterial.ORANGE_WOOL.parseItem(),
-        XMaterial.YELLOW_WOOL.parseItem(),
-        XMaterial.LIME_WOOL.parseItem(),
-        XMaterial.LIGHT_BLUE_WOOL.parseItem(),
-        XMaterial.BLUE_WOOL.parseItem(),
-        XMaterial.PURPLE_WOOL.parseItem(),
-        XMaterial.LIGHT_GRAY_WOOL.parseItem(),
-        XMaterial.WHITE_WOOL.parseItem(),
-        XMaterial.TNT.parseItem(),
-        XMaterial.RED_STAINED_GLASS.parseItem(),
-        XMaterial.ORANGE_STAINED_GLASS.parseItem(),
-        XMaterial.YELLOW_STAINED_GLASS.parseItem(),
-        XMaterial.LIME_STAINED_GLASS.parseItem(),
-        XMaterial.LIGHT_BLUE_STAINED_GLASS.parseItem(),
-        XMaterial.BLUE_STAINED_GLASS.parseItem(),
-        XMaterial.PURPLE_STAINED_GLASS.parseItem()
+        XMaterial.BLACK_WOOL,
+        XMaterial.RED_WOOL,
+        XMaterial.ORANGE_WOOL,
+        XMaterial.YELLOW_WOOL,
+        XMaterial.LIME_WOOL,
+        XMaterial.LIGHT_BLUE_WOOL,
+        XMaterial.BLUE_WOOL,
+        XMaterial.PURPLE_WOOL,
+        XMaterial.LIGHT_GRAY_WOOL,
+        XMaterial.WHITE_WOOL,
+        XMaterial.TNT,
+        XMaterial.RED_STAINED_GLASS,
+        XMaterial.ORANGE_STAINED_GLASS,
+        XMaterial.YELLOW_STAINED_GLASS,
+        XMaterial.LIME_STAINED_GLASS,
+        XMaterial.LIGHT_BLUE_STAINED_GLASS,
+        XMaterial.BLUE_STAINED_GLASS,
+        XMaterial.PURPLE_STAINED_GLASS
     );
 
-    public static final ItemStack[] empty = new ItemStack[]{
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem(),
-        XMaterial.AIR.parseItem()
+    public static final XMaterial[] empty = new XMaterial[]{
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR,
+        XMaterial.AIR
     };
 }

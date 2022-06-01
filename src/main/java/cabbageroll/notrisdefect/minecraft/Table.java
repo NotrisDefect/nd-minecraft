@@ -5,6 +5,7 @@ import cabbageroll.notrisdefect.core.Piece;
 import cabbageroll.notrisdefect.core.Point;
 import cabbageroll.notrisdefect.minecraft.initialization.Sounds;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
+import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import com.cryptomorin.xseries.messages.ActionBar;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 public class Table extends GameLogic {
 
-    public static final int GHOST_OFFSET = 11;
+    public static final int GHOST_OFFSET = 10;
     private static final int BOX = 4;
     private static final int FRONTROWS = 30;
     private static final int BACKROWS = 20;
@@ -124,7 +125,50 @@ public class Table extends GameLogic {
         return deathAnim;
     }
 
-    private static char intToPieceName(int p) {
+    public static String intToPieceName(int p) {
+        switch (p) {
+            case PIECE_Z:
+                return "Z piece";
+            case PIECE_L:
+                return "L piece";
+            case PIECE_O:
+                return "O piece";
+            case PIECE_S:
+                return "S piece";
+            case PIECE_I:
+                return "I piece";
+            case PIECE_J:
+                return "J piece";
+            case PIECE_T:
+                return "T piece";
+            case PIECE_NONE:
+                return "Background";
+            case PIECE_GARBAGE:
+                return "Garbage";
+            case PIECE_ZONE:
+                return "Zone";
+            case PIECE_NUKE:
+                return "Nuke";
+            case PIECE_Z + GHOST_OFFSET:
+                return "Z ghost";
+            case PIECE_L + GHOST_OFFSET:
+                return "L ghost";
+            case PIECE_O + GHOST_OFFSET:
+                return "O ghost";
+            case PIECE_S + GHOST_OFFSET:
+                return "S ghost";
+            case PIECE_I + GHOST_OFFSET:
+                return "I ghost";
+            case PIECE_J + GHOST_OFFSET:
+                return "J ghost";
+            case PIECE_T + GHOST_OFFSET:
+                return "T ghost";
+            default:
+                return "Unknown";
+        }
+    }
+
+    private static char intToPieceChar(int p) {
         switch (p) {
             case PIECE_Z:
                 return 'Z';
@@ -581,7 +625,7 @@ public class Table extends GameLogic {
             sb.append("B2B ");
         }
 
-        sb.append(intToPieceName(piece.getColor()));
+        sb.append(intToPieceChar(piece.getColor()));
 
         switch (spinState) {
             case SPIN_MINI:
@@ -922,7 +966,7 @@ public class Table extends GameLogic {
     }
 
     private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
-        if (color == PIECE_NONE && Main.gs.getData(player).isTransparent()) {
+        if (Main.gs.getData(player).getSkin().get(color) == Skin.EXISTING) {
             Block b = location.getWorld().getBlockAt(x, y, z);
             Main.protocollib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
         } else {
@@ -950,7 +994,7 @@ public class Table extends GameLogic {
         }
 
         for (Point point : getPoints(piece, rot)) {
-            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = GHOST_OFFSET + piece - 1;
+            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = GHOST_OFFSET + piece;
         }
 
         for (Point point : getPoints(piece, rot)) {
