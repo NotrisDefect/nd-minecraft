@@ -3,19 +3,18 @@ package cabbageroll.notrisdefect.minecraft;
 import cabbageroll.notrisdefect.minecraft.menus.HomeMenu;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
 import cabbageroll.notrisdefect.minecraft.menus.RoomMenu;
-import cabbageroll.notrisdefect.minecraft.playerdata.Blocks;
-import cabbageroll.notrisdefect.minecraft.playerdata.PersistentPlayerData;
+import cabbageroll.notrisdefect.minecraft.playerdata.Settings;
 import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ public class GameServer {
     private final Map<String, Room> roomMap = new LinkedHashMap<>();
     private final List<Room> roomList = new LinkedList<>();
     private final Map<Player, Table> tableMap = new HashMap<>();
-    private final Map<Player, PersistentPlayerData> offlineData = new HashMap<>();
+    private final Map<Player, Settings> offlineData = new HashMap<>();
 
     public GameServer() {
 
@@ -74,7 +73,7 @@ public class GameServer {
                 file.createNewFile();
             }
             FileOutputStream fos = new FileOutputStream(file);
-            BukkitObjectOutputStream oos = new BukkitObjectOutputStream(fos);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(offlineData.get(player));
             oos.close();
             fos.close();
@@ -95,7 +94,7 @@ public class GameServer {
 
     }
 
-    public PersistentPlayerData getData(Player player) {
+    public Settings getData(Player player) {
         return offlineData.get(player);
     }
 
@@ -122,23 +121,26 @@ public class GameServer {
     }
 
     public void initialize(Player player) {
-        Table table = new Table(player);
-        tableMap.put(player, table);
-        PersistentPlayerData pd;
+        Settings data;
 
         try {
             FileInputStream fis = new FileInputStream(Main.plugin.getDataFolder() + "/userdata/" + player.getName() + "_" + player.getUniqueId() + ".dat");
             BukkitObjectInputStream ois = new BukkitObjectInputStream(fis);
-            pd = (PersistentPlayerData) ois.readObject();
+            data = (Settings) ois.readObject();
             ois.close();
             fis.close();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            pd = new PersistentPlayerData();
-            pd.setSkin(new Skin(Blocks.empty));
+            Main.plugin.getLogger().warning(e.getMessage());
+            data = new Settings();
+            data.setSkin(new Skin(Skin.empty));
+            data.setARR(100);
+            data.setDAS(400);
+            data.setSDF(8);
         }
 
-        offlineData.put(player, pd);
+        offlineData.put(player, data);
+        Table table = new Table(player);
+        tableMap.put(player, table);
     }
 
     public boolean isPlayerUsingThePlugin(Player player) {

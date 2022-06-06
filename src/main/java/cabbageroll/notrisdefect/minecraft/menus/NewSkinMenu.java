@@ -1,7 +1,6 @@
 package cabbageroll.notrisdefect.minecraft.menus;
 
 import cabbageroll.notrisdefect.minecraft.Main;
-import cabbageroll.notrisdefect.minecraft.playerdata.Blocks;
 import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import com.cryptomorin.xseries.XMaterial;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -32,7 +31,7 @@ public class NewSkinMenu extends Menu {
             addButton(i, empty);
         }
 
-        boolean isCustom = Main.gs.getData(player).isCustom();
+        boolean isCustom = Main.gs.getData(player).isCustomSkinActive();
         Skin skin;
         if (isCustom) {
             skin = Main.gs.getSkin(player);
@@ -44,7 +43,7 @@ public class NewSkinMenu extends Menu {
                         XMaterial xm = XMaterial.matchXMaterial(text).get();
                         Material m = xm.parseMaterial();
                         if (m == null) {
-                            return AnvilGUI.Response.text("Unavailable XMaterial");
+                            return AnvilGUI.Response.text("Not available");
                         } else if (m.isBlock()) {
                             skin.set(index, xm);
                             new NewSkinMenu(player);
@@ -62,7 +61,7 @@ public class NewSkinMenu extends Menu {
                 }).plugin(Main.plugin).open(player), item);
             }
         } else {
-            skin = Blocks.defaultBlocks;
+            skin = Skin.defaultSkin;
             for (int i = 0; i < Skin.SIZE; i++) {
                 addButton(BLOCK_LOCATIONS[i], event -> {
                 }, skin.getFancy(i));
@@ -72,7 +71,7 @@ public class NewSkinMenu extends Menu {
         addButton(BACK_LOCATION, event -> new HomeMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
         addButton(TORCH_LOCATION, event -> {
-            Main.gs.getData(player).swapCustom();
+            Main.gs.getData(player).toggleCustom();
             new NewSkinMenu(player);
         }, XMaterial.TORCH, ChatColor.WHITE + "Skin slot", (isCustom ? "custom" : "default"));
 

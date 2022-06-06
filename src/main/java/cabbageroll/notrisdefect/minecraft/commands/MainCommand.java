@@ -28,16 +28,16 @@ public class MainCommand implements CommandExecutor, Listener {
 
     private static final MainCommand instance = new MainCommand();
     private final Map<String, SubCommand> commands = new HashMap<>();
-    private final ChatColor color = ChatColor.BLUE;
+    private final ChatColor color = ChatColor.GRAY;
 
     private MainCommand() {
         commands.put(Strings.help, (sender, cmd, label, args) -> {
             StringBuilder sb = new StringBuilder();
             StringBuilder prefix = new StringBuilder().append('\n').append(color).append('/').append(label).append(' ');
 
-            sb.append(color).append(Strings.pluginName).append(' ').append(Strings.help);
-
+            sb.append(color).append(Strings.pluginName).append(' ').append(Main.plugin.getDescription().getVersion()).append(' ').append(Strings.help);
             sb.append('\n').append(color).append("Aliases: notrisdefect, notris, nd");
+            sb.append('\n').append(color).append("==================================================");
 
             if (sender instanceof Player) {
                 sb.append(prefix).append(Strings.gui).append(" - open game window");
@@ -58,47 +58,39 @@ public class MainCommand implements CommandExecutor, Listener {
             return true;
         });
         commands.put(Strings.materials, (sender, cmd, label, args) -> {
-            sender.sendMessage("https://github.com/CryptoMorin/XSeries/blob/master/src/main/java/com/cryptomorin/xseries/XMaterial.java");
+            String message = color + "XMaterial:" +
+                "\n==================================================" +
+                "\nhttps://github.com/CryptoMorin/XSeries/blob/master/src/main/java/com/cryptomorin/xseries/XMaterial.java#L70";
+
+            sender.sendMessage(message);
             return true;
         });
         commands.put(Strings.controls, (sender, cmd, label, args) -> {
-            String stuff =
-                "Move left (once): Hotbar Slot 1" +
-                    "\nMove right (once): Hotbar Slot 2" +
-                    "\nZone: Hotbar Slot 3" +
-                    "\nMove left: Strafe Left" +
-                    "\nMove right: Strafe Right" +
-                    "\nSoft drop: Walk Backwards" +
-                    "\nHard drop: Hotbar Slot 4" +
-                    "\nRotate counterclockwise: Hotbar Slot 5" +
-                    "\nRotate clockwise: Hotbar Slot 6" +
-                    "\nRotate 180: Hotbar Slot 7" +
-                    "\nHold: Hotbar Slot 8";
+            String stuff = color + "Controls:" +
+                "\n==================================================" +
+                "\nMove left (once): Hotbar Slot 1" +
+                "\nMove right (once): Hotbar Slot 2" +
+                "\nZone: Hotbar Slot 3" +
+                "\nMove left: Strafe Left" +
+                "\nMove right: Strafe Right" +
+                "\nSoft drop: Walk Backwards" +
+                "\nHard drop: Hotbar Slot 4" +
+                "\nRotate counterclockwise: Hotbar Slot 5" +
+                "\nRotate clockwise: Hotbar Slot 6" +
+                "\nRotate 180: Hotbar Slot 7" +
+                "\nHold: Hotbar Slot 8";
 
             sender.sendMessage(stuff);
             return true;
         });
         commands.put(Strings.sfx, (sender, cmd, label, args) -> {
-            String[] descriptions = {
-                "spin: ",
-                "\nclearSpin: ",
-                "\nclear: ",
-            };
+            String stuff = color + "Sounds:" +
+                "\n==================================================" +
+                "\nspin: " + (Sounds.spin != null ? Sounds.spin.name() : "none") +
+                "\nline clear with spin: " + (Sounds.lineClearSpin != null ? Sounds.lineClearSpin.name() : "none") +
+                "\nline clear: " + (Sounds.lineClear != null ? Sounds.lineClear.name() : "none");
 
-            String[] sounds = {
-                (Sounds.spin != null ? Sounds.spin.name() : "null"),
-                (Sounds.lineClearSpin != null ? Sounds.lineClearSpin.name() : "null"),
-                (Sounds.lineClear != null ? Sounds.lineClear.name() : "null")
-            };
-
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < descriptions.length; i++) {
-                sb.append(descriptions[i]);
-                sb.append(sounds[i]);
-            }
-
-            sender.sendMessage(sb.toString());
+            sender.sendMessage(stuff);
             return true;
         });
         commands.put(Strings.gui, (sender, cmd, label, args) -> {
@@ -164,11 +156,20 @@ public class MainCommand implements CommandExecutor, Listener {
                 Map<?, ?> data = (Map<?, ?>) map.get("data");
                 Map<?, ?> user = (Map<?, ?>) data.get("user");
                 Map<?, ?> league = (Map<?, ?>) user.get("league");
-                sender.sendMessage("nickname: " + user.get("username"));
-                sender.sendMessage("country: " + user.get("country"));
-                sender.sendMessage("rank: " + league.get("rank") + ", " + league.get("rating") + "TR");
-                sender.sendMessage("glicko: " + league.get("glicko") + "±" + league.get("rd"));
-                sender.sendMessage(league.get("apm") + "APM " + league.get("pps") + "PPS " + league.get("vs") + "VS");
+
+                String stuff = ChatColor.GREEN + "TETRA CHANNEL" +
+                    "\n==================================================" +
+                    "\n" + user.get("username").toString().toUpperCase() + " (" + user.get("country") +
+                    ")\nRank: " + league.get("rank") + " - " +
+                    decimals(league.get("rating").toString(), 2) + "TR" +
+                    "\nGlicko: " + decimals(league.get("glicko").toString(), 2) +
+                    " +/- " + decimals(league.get("rd").toString(), 2) +
+                    "\n" + decimals(league.get("apm").toString(), 2) + "APM " +
+                    decimals(league.get("pps").toString(), 2) + "PPS " +
+                    decimals(league.get("vs").toString(), 2) + "VS" +
+                    "\nhttps://ch.tetr.io/u/" + nickname.toLowerCase();
+
+                sender.sendMessage(stuff);
             }).start();
             return true;
         });
@@ -177,6 +178,10 @@ public class MainCommand implements CommandExecutor, Listener {
 
     public static MainCommand getInstance() {
         return instance;
+    }
+
+    public static String decimals(String s, int decimals) {
+        return String.format("%." + decimals + "f", Double.parseDouble(s));
     }
 
     @Override

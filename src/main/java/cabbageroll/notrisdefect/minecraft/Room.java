@@ -162,7 +162,7 @@ public class Room {
 
         for (Player player : alivePlayers) {
             getTable(player).doAbort();
-            getTable(player).drawLogo(Table.PIECE_NONE, Table.PIECE_ZONE);
+            getTable(player).drawLogo();
         }
     }
 

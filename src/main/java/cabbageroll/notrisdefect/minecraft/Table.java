@@ -5,6 +5,7 @@ import cabbageroll.notrisdefect.core.Piece;
 import cabbageroll.notrisdefect.core.Point;
 import cabbageroll.notrisdefect.minecraft.initialization.Sounds;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
+import cabbageroll.notrisdefect.minecraft.playerdata.Settings;
 import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import com.cryptomorin.xseries.messages.ActionBar;
 import org.bukkit.Location;
@@ -30,47 +31,58 @@ public class Table extends GameLogic {
     private final int SIDEMOVE = (getSTAGESIZEX() >> 1);
     private final Player player;
     // stupid
-    private final int[][] logo = {
-        {0, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 0, 1, 1, 1, 1, 0, 0, 0},
-        {0, 0, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 1, 1, 0, 1, 1, 1, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 0, 0, 0, 1, 1, 1, 1, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 1, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 1, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-        {0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 1, 0, 0, 0, 0},
-        {1, 1, 0, 0, 1, 1, 1, 0, 0, 0},
-        {1, 1, 0, 1, 1, 1, 1, 0, 0, 0},
-        {1, 1, 0, 1, 1, 0, 1, 1, 0, 0},
-        {1, 1, 1, 1, 1, 0, 1, 1, 0, 0},
-        {0, 1, 1, 1, 0, 0, 1, 1, 0, 0},
-        {0, 0, 1, 1, 0, 0, 0, 0, 0, 0}
+    private final char[][] logo = {
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
+        {'_', '_', '_', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', '_', 'N', 'N', 'N', 'N', '_', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', '_', '_', '_', '_', '_', '_', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', '_', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', 'N', 'N', '_', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', '_', '_', '_', '_'},
+        {'_', '_', 'N', 'N', 'N', 'N', '_', '_', '_', '_'},
+        {'_', '_', '_', '_', '_', 'N', '_', '_', '_', '_'},
+        {'_', '_', '_', '_', '_', 'N', '_', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', '_', '_', '_', '_', 'N', 'N', '_', '_', '_'},
+        {'_', '_', '_', '_', '_', 'N', 'N', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', '_', '_', '_', 'N', 'N', 'N', 'N', '_', '_'},
+        {'_', '_', '_', '_', '_', '_', 'N', 'N', '_', '_'},
+        {'_', '_', '_', '_', '_', '_', 'N', 'N', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', 'N'},
+        {'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', 'N'},
+        {'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', 'N'},
+        {'_', 'N', '_', '_', '_', '_', '_', '_', '_', '_'},
+        {'_', '_', '_', '_', 'N', 'N', '_', '_', '_', '_'},
+        {'N', 'N', '_', '_', 'N', 'N', 'N', '_', '_', '_'},
+        {'N', 'N', '_', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'N', 'N', '_', 'N', 'N', '_', 'N', 'N', '_', '_'},
+        {'N', 'N', 'N', 'N', 'N', '_', 'N', 'N', '_', '_'},
+        {'_', 'N', 'N', 'N', '_', '_', 'N', 'N', '_', '_'},
+        {'_', '_', 'N', 'N', '_', '_', '_', '_', '_', '_'}
+    };
+
+    private final char[][] logoNext = {
+        {'J', 'J', 'L', 'L'},
+        {'J', 'O', 'O', 'L'},
+        {'J', 'O', 'O', 'L'},
+        {'I', 'I', 'I', 'I'},
+        {'T', 'T', 'T', 'Z'},
+        {'S', 'T', 'Z', 'Z'},
+        {'S', 'S', 'Z', '_'},
+        {'_', 'S', '_', '_'},
     };
     public boolean enableAnimations = true;
     private boolean ZONEENABLED = false;
@@ -119,6 +131,9 @@ public class Table extends GameLogic {
     public Table(Player player) {
         super();
         this.player = player;
+        setARR(Main.gs.getData(player).getARR());
+        setDAS(Main.gs.getData(player).getDAS());
+        setSDF(Main.gs.getData(player).getSDF());
     }
 
     public static DeathAnimation getDeathAnim() {
@@ -168,6 +183,18 @@ public class Table extends GameLogic {
         }
     }
 
+    private static int[][] decode(char[][] matrix) {
+        int[][] decoded = new int[matrix.length][];
+        for (int i = 0; i < matrix.length; i++) {
+            int[] row = new int[matrix[i].length];
+            for (int j = 0; j < matrix[i].length; j++) {
+                row[j] = pieceCharToInt(matrix[i][j]);
+            }
+            decoded[i] = row;
+        }
+        return decoded;
+    }
+
     private static char intToPieceChar(int p) {
         switch (p) {
             case PIECE_Z:
@@ -194,6 +221,33 @@ public class Table extends GameLogic {
                 return 'U';
             default:
                 return '?';
+        }
+    }
+
+    private static int pieceCharToInt(char c) {
+        switch (Character.toUpperCase(c)) {
+            case 'Z':
+                return PIECE_Z;
+            case 'L':
+                return PIECE_L;
+            case 'O':
+                return PIECE_O;
+            case 'S':
+                return PIECE_S;
+            case 'I':
+                return PIECE_I;
+            case 'J':
+                return PIECE_J;
+            case 'T':
+                return PIECE_T;
+            case '#':
+                return PIECE_GARBAGE;
+            case 'N':
+                return PIECE_ZONE;
+            case 'U':
+                return PIECE_NUKE;
+            default:
+                return PIECE_NONE;
         }
     }
 
@@ -307,40 +361,46 @@ public class Table extends GameLogic {
         Main.netherboard.removeBoard(player);
     }
 
-    public void drawLogo(int color0, int color1) {
+    public void drawLogo() {
         // temp fix
-        if (getSTAGESIZEY() != 40 || getSTAGESIZEX() != 10) {
-            drawAll(color1);
+        if (getSTAGESIZEY() != 40 || getSTAGESIZEX() != 10 || getNEXTPIECES() != 5) {
+            drawAll(PIECE_NONE);
             return;
         }
 
+        int[][] logo2 = decode(logo);
+        int[][] next2 = decode(logoNext);
+
         for (int i = 0; i < getSTAGESIZEY() - BACKROWS; i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
-                if (logo[i][j] == 1) {
-                    colPrintNewRender(j, i, color1);
-                } else {
+                if (logo2[i][j] == PIECE_NONE) {
                     colPrintNewForce(j, i);
+                } else {
+                    colPrintNewRender(j, i, logo2[i][j]);
                 }
             }
         }
 
         for (int i = getSTAGESIZEY() - BACKROWS; i < getSTAGESIZEY(); i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
-                colPrintNewRender(j, i, logo[i][j] == 0 ? color0 : color1);
+                colPrintNewRender(j, i, logo2[i][j]);
             }
         }
 
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            colPrintNewRender(garbBLCX, garbBLCY - i, color0);
+            colPrintNewRender(garbBLCX, garbBLCY - i, PIECE_NONE);
         }
+
+        //bandaid
         for (int i = 0; i < BOX * NEXTVERTICAL; i++) {
             for (int j = 0; j < BOX * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
-                colPrintNewRender(nextTLCX + j, nextTLCY + i, color0);
+                colPrintNewRender(nextTLCX + j, nextTLCY + i, i < 8 ? next2[i][j] : PIECE_NONE);
             }
         }
+
         for (int i = 0; i < BOX; i++) {
             for (int j = 0; j < BOX; j++) {
-                colPrintNewRender(holdTLCX + j, holdTLCY + i, color0);
+                colPrintNewRender(holdTLCX + j, holdTLCY + i, PIECE_NONE);
             }
         }
     }
@@ -388,7 +448,7 @@ public class Table extends GameLogic {
     public void setNEXTVERTICAL(int NEXTVERTICAL) {
         cleanAll();
         this.NEXTVERTICAL = NEXTVERTICAL;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public int getNextTLCX() {
@@ -449,7 +509,7 @@ public class Table extends GameLogic {
     public void joinRoom(Room r) {
         room = r;
         position();
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void leaveRoom() {
@@ -459,37 +519,37 @@ public class Table extends GameLogic {
     public void moveGarbBLCXRelative(int n) {
         cleanAll();
         garbBLCX += n;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void moveGarbBLCYRelative(int n) {
         cleanAll();
         garbBLCY += n;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void moveHoldTLCXRelative(int n) {
         cleanAll();
         holdTLCX += n;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void moveHoldTLCYRelative(int n) {
         cleanAll();
         holdTLCY += n;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void moveNextTLCXRelative(int n) {
         cleanAll();
         nextTLCX += n;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void moveNextTLCYRelative(int n) {
         cleanAll();
         nextTLCY += n;
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void moveTable(int x, int y, int z) {
@@ -497,7 +557,7 @@ public class Table extends GameLogic {
         location.setX(x);
         location.setY(y);
         location.setZ(z);
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void moveTableRelative(int x, int y, int z) {
@@ -507,56 +567,74 @@ public class Table extends GameLogic {
     public void reposition() {
         cleanAll();
         position();
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     public void rotateX() {
         cleanAll();
         setWidthMultiplier(WMX, -WMZ, WMY);
         setHeightMultiplier(HMX, -HMZ, HMY);
-        drawLogo(PIECE_NONE, PIECE_Z);
+        drawLogo();
     }
 
     public void rotateY() {
         cleanAll();
         setWidthMultiplier(WMZ, WMY, -WMX);
         setHeightMultiplier(HMZ, HMY, -HMX);
-        drawLogo(PIECE_NONE, PIECE_S);
+        drawLogo();
     }
 
     public void rotateZ() {
         cleanAll();
         setWidthMultiplier(-WMY, WMX, WMZ);
         setHeightMultiplier(-HMY, HMX, HMZ);
-        drawLogo(PIECE_NONE, PIECE_J);
+        drawLogo();
+    }
+
+    @Override
+    public void setARR(int n) {
+        super.setARR(n);
+        Main.gs.getData(player).setARR(n);
+    }
+
+    @Override
+    public void setDAS(int n) {
+        super.setDAS(n);
+        Main.gs.getData(player).setDAS(n);
     }
 
     @Override
     public void setNEXTPIECES(int n) {
         cleanAll();
         super.setNEXTPIECES(n);
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     @Override
     public void setPLAYABLEROWS(int n) {
         cleanAll();
         super.setPLAYABLEROWS(n);
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
+    }
+
+    @Override
+    public void setSDF(int n) {
+        super.setSDF(n);
+        Main.gs.getData(player).setSDF(n);
     }
 
     @Override
     public void setSTAGESIZEX(int n) {
         cleanAll();
         super.setSTAGESIZEX(n);
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     @Override
     public void setSTAGESIZEY(int n) {
         cleanAll();
         super.setSTAGESIZEY(n);
-        drawLogo(PIECE_NONE, PIECE_ZONE);
+        drawLogo();
     }
 
     @Override
@@ -621,7 +699,7 @@ public class Table extends GameLogic {
     protected void evtLockPiece(Piece piece, int linesCleared, int spinState, int combo, int backToBack, boolean nuke) {
         StringBuilder sb = new StringBuilder();
 
-        if (backToBack > 0) {
+        if (backToBack > 0 && linesCleared > 0) {
             sb.append("B2B ");
         }
 
@@ -680,37 +758,37 @@ public class Table extends GameLogic {
     public void skewHX(int n) {
         cleanAll();
         HMX += n;
-        drawLogo(PIECE_NONE, PIECE_Z);
+        drawLogo();
     }
 
     public void skewHY(int n) {
         cleanAll();
         HMY += n;
-        drawLogo(PIECE_NONE, PIECE_S);
+        drawLogo();
     }
 
     public void skewHZ(int n) {
         cleanAll();
         HMZ += n;
-        drawLogo(PIECE_NONE, PIECE_J);
+        drawLogo();
     }
 
     public void skewWX(int n) {
         cleanAll();
         WMX += n;
-        drawLogo(PIECE_NONE, PIECE_Z);
+        drawLogo();
     }
 
     public void skewWY(int n) {
         cleanAll();
         WMY += n;
-        drawLogo(PIECE_NONE, PIECE_S);
+        drawLogo();
     }
 
     public void skewWZ(int n) {
         cleanAll();
         WMZ += n;
-        drawLogo(PIECE_NONE, PIECE_J);
+        drawLogo();
     }
 
     public void switchDeathAnim() {
@@ -851,39 +929,39 @@ public class Table extends GameLogic {
             if (45 <= yaw && yaw < 135) {
                 setWidthMultiplier(0, 0, -1);
                 setHeightMultiplier(-1, 0, 0);
-                location.add(DOWNMOVE, 0, SIDEMOVE);
+                location.add(DOWNMOVE - (90 + pitch) / 2, 0, SIDEMOVE);
             } else if (135 <= yaw && yaw < 225) {
                 setWidthMultiplier(1, 0, 0);
                 setHeightMultiplier(0, 0, -1);
-                location.add(-SIDEMOVE, 0, DOWNMOVE);
+                location.add(-SIDEMOVE, 0, DOWNMOVE - (90 + pitch) / 2);
             } else if (225 <= yaw && yaw < 315) {
                 setWidthMultiplier(0, 0, 1);
                 setHeightMultiplier(1, 0, 0);
-                location.add(-DOWNMOVE, 0, -SIDEMOVE);
+                location.add(-DOWNMOVE + (90 + pitch) / 2, 0, -SIDEMOVE);
             } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
                 setWidthMultiplier(-1, 0, 0);
                 setHeightMultiplier(0, 0, 1);
-                location.add(SIDEMOVE, 0, -DOWNMOVE);
+                location.add(SIDEMOVE, 0, -DOWNMOVE + (90 + pitch) / 2);
             }
         } else if (-45 <= pitch && pitch < 45) {
-            location.add(0, DOWNMOVE, 0);
+            location.add(0, DOWNMOVE - pitch / 2, 0);
             flipupdown = false;
             if (45 <= yaw && yaw < 135) {
                 setWidthMultiplier(0, 0, -1);
                 setHeightMultiplier(0, -1, 0);
-                location.add(-AWAYMOVE, 0, SIDEMOVE);
+                location.add(-AWAYMOVE, 0, SIDEMOVE + (90 - yaw) / 2);
             } else if (135 <= yaw && yaw < 225) {
                 setWidthMultiplier(1, 0, 0);
                 setHeightMultiplier(0, -1, 0);
-                location.add(-SIDEMOVE, 0, -AWAYMOVE);
+                location.add(-SIDEMOVE - (180 - yaw) / 2, 0, -AWAYMOVE);
             } else if (225 <= yaw && yaw < 315) {
                 setWidthMultiplier(0, 0, 1);
                 setHeightMultiplier(0, -1, 0);
-                location.add(AWAYMOVE, 0, -SIDEMOVE);
+                location.add(AWAYMOVE, 0, -SIDEMOVE - (270 - yaw) / 2);
             } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
                 setWidthMultiplier(-1, 0, 0);
                 setHeightMultiplier(0, -1, 0);
-                location.add(SIDEMOVE, 0, AWAYMOVE);
+                location.add(SIDEMOVE + (yaw > 45 ? 360 - yaw : -yaw) / 2, 0, AWAYMOVE);
             }
         } else if (45 <= pitch) {
             location.add(0, -AWAYMOVE, 0);
@@ -891,19 +969,19 @@ public class Table extends GameLogic {
             if (45 <= yaw && yaw < 135) {
                 setWidthMultiplier(0, 0, -1);
                 setHeightMultiplier(1, 0, 0);
-                location.add(-DOWNMOVE, 0, SIDEMOVE);
+                location.add(-DOWNMOVE - (90 - pitch) / 2, 0, SIDEMOVE);
             } else if (135 <= yaw && yaw < 225) {
                 setWidthMultiplier(1, 0, 0);
                 setHeightMultiplier(0, 0, 1);
-                location.add(-SIDEMOVE, 0, -DOWNMOVE);
+                location.add(-SIDEMOVE, 0, -DOWNMOVE - (90 - pitch) / 2);
             } else if (225 <= yaw && yaw < 315) {
                 setWidthMultiplier(0, 0, 1);
                 setHeightMultiplier(-1, 0, 0);
-                location.add(DOWNMOVE, 0, -SIDEMOVE);
+                location.add(DOWNMOVE + (90 - pitch) / 2, 0, -SIDEMOVE);
             } else if ((315 <= yaw && yaw < 360) || (0 <= yaw && yaw < 45)) {
                 setWidthMultiplier(-1, 0, 0);
                 setHeightMultiplier(0, 0, -1);
-                location.add(SIDEMOVE, 0, DOWNMOVE);
+                location.add(SIDEMOVE, 0, DOWNMOVE + (90 - pitch) / 2);
             }
         }
     }
@@ -966,7 +1044,8 @@ public class Table extends GameLogic {
     }
 
     private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
-        if (Main.gs.getData(player).getSkin().get(color) == Skin.EXISTING) {
+        Settings set = Main.gs.getData(player);
+        if (set.isCustomSkinActive() && set.getSkin().get(color) == Skin.EXISTING) {
             Block b = location.getWorld().getBlockAt(x, y, z);
             Main.protocollib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
         } else {
