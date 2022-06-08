@@ -1,8 +1,6 @@
 package cabbageroll.notrisdefect.minecraft;
 
 import cabbageroll.notrisdefect.minecraft.commands.MainCommand;
-import cabbageroll.notrisdefect.minecraft.listeners.Listeners;
-import cabbageroll.notrisdefect.minecraft.listeners.TableListeners;
 import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.Netherboard;
 import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.NetherboardNo;
 import cabbageroll.notrisdefect.minecraft.softdepend.netherboard.NetherboardYes;
@@ -59,11 +57,10 @@ public class Main extends JavaPlugin implements Listener {
         plugin = this;
 
         getServer().getPluginManager().registerEvents(Listeners.getInstance(), this);
-        getServer().getPluginManager().registerEvents(TableListeners.getInstance(), this);
         getServer().getPluginManager().registerEvents(MainCommand.getInstance(), this);
 
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
-            getLogger().severe("NoteBlockAPI is missing.");
+            getLogger().warning("NoteBlockAPI is missing.");
             noteBlockAPI = new NoteBlockAPINo();
         } else {
             getLogger().info("NoteBlockAPI OK.");
@@ -72,7 +69,7 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         if (getServer().getPluginManager().getPlugin("Netherboard") == null) {
-            getLogger().severe("Netherboard is missing.");
+            getLogger().warning("Netherboard is missing.");
             netherboard = new NetherboardNo();
         } else {
             if (numericalVersion > 16) {
@@ -83,7 +80,7 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
-            getLogger().severe("ProtocolLib is missing.");
+            getLogger().warning("ProtocolLib is missing.");
             protocollib = new ProtocolLibNo();
         } else {
             if (numericalVersion > 16) {

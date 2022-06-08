@@ -68,7 +68,7 @@ public class Skin implements Serializable {
 
     public ItemStack getFancy(int i) {
         XMaterial mat = blocks[i];
-        return Menu.createItem(mat == XMaterial.AIR ? XMaterial.STICK : mat, ChatColor.WHITE + Table.intToPieceName(i), mat == EXISTING ? "EXISTING" : mat.name());
+        return Menu.createItem(mat == XMaterial.AIR ? XMaterial.STICK : mat, ChatColor.WHITE + Table.pieceIntToString(i), mat == EXISTING ? "EXISTING" : mat.name());
     }
 
     public void set(int index, XMaterial is) {

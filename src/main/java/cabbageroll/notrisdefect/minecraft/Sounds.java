@@ -1,22 +1,17 @@
-package cabbageroll.notrisdefect.minecraft.initialization;
+package cabbageroll.notrisdefect.minecraft;
 
 import com.cryptomorin.xseries.XSound;
 import org.bukkit.Sound;
 
 public class Sounds {
-    public static final Sound spin;
-    public static final Sound lineClearSpin;
-    public static final Sound lineClear;
-
-    static {
-        spin = genSpinSound();
-        lineClearSpin = genClearSpinSound();
-        lineClear = genClearSound();
-    }
+    public static final Sound spin = genSpinSound();
+    public static final Sound lineClearBig = genClearSpinSound();
+    public static final Sound lineClear = genClearSound();
+    public static final Sound nuke = genNukeSound();
+    public static final Sound pc = genPcSound();
 
     private static Sound genClearSound() {
         XSound[] xSounds = new XSound[]{
-            XSound.ENTITY_FIREWORK_ROCKET_BLAST,
             XSound.BLOCK_NOTE_BLOCK_HARP
         };
         return parse(xSounds);
@@ -24,7 +19,6 @@ public class Sounds {
 
     private static Sound genClearSpinSound() {
         XSound[] xSounds = new XSound[]{
-            XSound.BLOCK_END_PORTAL_SPAWN,
             XSound.BLOCK_NOTE_BLOCK_PLING
         };
         return parse(xSounds);
@@ -33,8 +27,21 @@ public class Sounds {
     private static Sound genSpinSound() {
         XSound[] xSounds = new XSound[]{
             XSound.BLOCK_END_PORTAL_FRAME_FILL,
-            XSound.ENTITY_GENERIC_EXTINGUISH_FIRE,
             XSound.UI_BUTTON_CLICK
+        };
+        return parse(xSounds);
+    }
+
+    private static Sound genNukeSound() {
+        XSound[] xSounds = new XSound[]{
+            XSound.ENTITY_GENERIC_EXPLODE
+        };
+        return parse(xSounds);
+    }
+
+    private static Sound genPcSound() {
+        XSound[] xSounds = new XSound[]{
+            XSound.BLOCK_ANVIL_LAND
         };
         return parse(xSounds);
     }

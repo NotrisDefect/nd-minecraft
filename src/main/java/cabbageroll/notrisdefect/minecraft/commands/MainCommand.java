@@ -2,7 +2,7 @@ package cabbageroll.notrisdefect.minecraft.commands;
 
 import cabbageroll.notrisdefect.minecraft.Main;
 import cabbageroll.notrisdefect.minecraft.Strings;
-import cabbageroll.notrisdefect.minecraft.initialization.Sounds;
+import cabbageroll.notrisdefect.minecraft.Sounds;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -87,8 +87,10 @@ public class MainCommand implements CommandExecutor, Listener {
             String stuff = color + "Sounds:" +
                 "\n==================================================" +
                 "\nspin: " + (Sounds.spin != null ? Sounds.spin.name() : "none") +
-                "\nline clear with spin: " + (Sounds.lineClearSpin != null ? Sounds.lineClearSpin.name() : "none") +
-                "\nline clear: " + (Sounds.lineClear != null ? Sounds.lineClear.name() : "none");
+                "\nlineClearBig: " + (Sounds.lineClearBig != null ? Sounds.lineClearBig.name() : "none") +
+                "\nlineClear: " + (Sounds.lineClear != null ? Sounds.lineClear.name() : "none") +
+                "\nnuke: " + (Sounds.nuke != null ? Sounds.nuke.name() : "none") +
+                "\npc: " + (Sounds.pc != null ? Sounds.pc.name() : "none");
 
             sender.sendMessage(stuff);
             return true;

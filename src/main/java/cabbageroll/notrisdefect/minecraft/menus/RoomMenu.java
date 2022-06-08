@@ -3,6 +3,7 @@ package cabbageroll.notrisdefect.minecraft.menus;
 import cabbageroll.notrisdefect.minecraft.Main;
 import cabbageroll.notrisdefect.minecraft.Room;
 import cabbageroll.notrisdefect.minecraft.Strings;
+import cabbageroll.notrisdefect.minecraft.softdepend.noteblockapi.NoteBlockAPIYes;
 import com.cryptomorin.xseries.XMaterial;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
@@ -56,7 +57,9 @@ public class RoomMenu extends Menu {
                 } else {
                     addButton(GAME_LOCATION, event -> room.startRoom(), XMaterial.DIAMOND_SWORD, ChatColor.DARK_GREEN + "START");
                 }
-                addButton(SONG_LOCATION, event -> new RoomSongMenu(player), XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song");
+                if (Main.noteBlockAPI instanceof NoteBlockAPIYes) {
+                    addButton(SONG_LOCATION, event -> new RoomSongMenu(player), XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song");
+                }
                 addButton(SETTINGS_LOCATION, event -> new RoomSettingsMenu(player), XMaterial.BLAZE_ROD, ChatColor.WHITE + "Room settings");
             }
         }

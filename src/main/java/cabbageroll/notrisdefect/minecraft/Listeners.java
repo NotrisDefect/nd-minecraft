@@ -1,18 +1,25 @@
-package cabbageroll.notrisdefect.minecraft.listeners;
+package cabbageroll.notrisdefect.minecraft;
 
-import cabbageroll.notrisdefect.minecraft.Main;
-import cabbageroll.notrisdefect.minecraft.Table;
+import cabbageroll.notrisdefect.minecraft.menus.Menu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
-public class TableListeners implements Listener {
+public class Listeners implements Listener {
 
-    private static final TableListeners instance = new TableListeners();
+    private static final Listeners instance = new Listeners();
 
-    public static TableListeners getInstance() {
+    public static Listeners getInstance() {
         return instance;
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Menu) {
+            Main.gs.getTable((Player) event.getWhoClicked()).getLastMenuOpened().onInventoryClick(event);
+        }
     }
 
     @EventHandler
@@ -60,4 +67,5 @@ public class TableListeners implements Listener {
             }
         }
     }
+
 }
