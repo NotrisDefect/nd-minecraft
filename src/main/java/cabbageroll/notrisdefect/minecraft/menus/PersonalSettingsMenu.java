@@ -47,13 +47,14 @@ public class PersonalSettingsMenu extends Menu {
         addButton(grid(5, 2), event -> table.skewHY(howMuch(event.getClick())), XMaterial.GREEN_BANNER, ChatColor.WHITE + "Height Y multiplier", "" + table.getHMY());
         addButton(grid(5, 3), event -> table.skewHZ(howMuch(event.getClick())), XMaterial.BLUE_BANNER, ChatColor.WHITE + "Height Z multiplier", "" + table.getHMZ());
 
-        addButton(grid(2, 4), event -> table.reposition(), XMaterial.COMPASS, ChatColor.WHITE + "Reposition");
-        addButton(grid(2, 5), event -> table.switchDeathAnim(), XMaterial.COMPASS, ChatColor.WHITE + "Game over animation", "" + Table.getDeathAnim());
+        addButton(grid(2, 4), event -> table.automaticReposition(), XMaterial.COMPASS, ChatColor.WHITE + "Reposition (automatic)");
+        addButton(grid(2, 5), event -> table.switchDeathAnim(), XMaterial.REDSTONE, ChatColor.WHITE + "Game over animation", "" + Table.getDeathAnim());
+        addButton(grid(2, 6), event -> table.manualReposition(), XMaterial.GLOWSTONE_DUST, ChatColor.WHITE + "[EXPERIMENTAL] Reposition (manual)");
 
         addButton(grid(2, 7), event -> table.setARR(table.getARR() + 5 * howMuch(event.getClick())), XMaterial.SPONGE, ChatColor.WHITE + "ARR", table.getARR() + "ms");
         addButton(grid(2, 8), event -> table.setDAS(table.getDAS() + 5 * howMuch(event.getClick())), XMaterial.SPONGE, ChatColor.WHITE + "DAS", table.getDAS() + "ms");
         addButton(grid(2, 9), event -> table.setSDF(table.getSDF() + howMuch(event.getClick())), XMaterial.SPONGE, ChatColor.WHITE + "SDF", table.getSDF() + "X gravity");
 
-        addButton(grid(3, 9), event -> table.setGAP(table.getGAP() + howMuch(event.getClick())), XMaterial.GLOWSTONE_DUST, ChatColor.WHITE + "[EXPERIMENTAL] GAP", "If your inputs get dropped", "due to lag, increase gap.", "If you press buttons too", "quickly, decrease gap.","Doesn't get saved", "GAP=" + table.getGAP());
+        addButton(grid(3, 9), event -> table.setGAP(table.getGAP() + howMuch(event.getClick())), XMaterial.GLOWSTONE_DUST, ChatColor.WHITE + "[EXPERIMENTAL] GAP", "If your inputs get dropped", "due to lag, increase gap.", "If you press buttons too", "quickly, decrease gap.","Doesn't get saved", "" + table.getGAP());
     }
 }

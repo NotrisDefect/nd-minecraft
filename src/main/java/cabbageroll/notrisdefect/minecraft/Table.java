@@ -1,7 +1,6 @@
 package cabbageroll.notrisdefect.minecraft;
 
 import cabbageroll.notrisdefect.core.GameLogic;
-import cabbageroll.notrisdefect.core.Piece;
 import cabbageroll.notrisdefect.core.Point;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
 import cabbageroll.notrisdefect.minecraft.playerdata.Settings;
@@ -19,17 +18,17 @@ import java.util.Map;
 public class Table extends GameLogic {
 
     public static final int GHOST_OFFSET = 10;
-    private static final int FRONTROWS = 30;
-    private static final int BACKROWS = 20;
+    private static int FRONTROWS = 30;
+    private static int BACKROWS = 20;
     private static final int THICKNESS = 1;
     public static DeathAnimation deathAnim = DeathAnimation.GRAYSCALE;
-    private final int AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
-    private final int DOWNMOVE = getSTAGESIZEY() - (getPLAYABLEROWS() >> 1);
-    private final int SIDEMOVE = (getSTAGESIZEX() >> 1);
+    private int AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
+    private int DOWNMOVE = getSTAGESIZEY() - (getPLAYABLEROWS() >> 1);
+    private int SIDEMOVE = (getSTAGESIZEX() >> 1);
     private final Player player;
     // stupid
     private final char[][] logo = {
-        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
+        {'_', 'Z', 'L', 'O', 'S', 'I', 'J', 'T', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
         {'_', '_', '_', 'N', 'N', 'N', 'N', '_', '_', '_'},
@@ -70,30 +69,19 @@ public class Table extends GameLogic {
         {'_', 'N', 'N', 'N', '_', '_', 'N', 'N', '_', '_'},
         {'_', '_', 'N', 'N', '_', '_', '_', '_', '_', '_'}
     };
-    private final char[][] logoNext = {
-        {'J', 'J', 'L', 'L'},
-        {'J', 'O', 'O', 'L'},
-        {'J', 'O', 'O', 'L'},
-        {'I', 'I', 'I', 'I'},
-        {'T', 'T', 'T', 'Z'},
-        {'S', 'T', 'Z', 'Z'},
-        {'S', 'S', 'Z', '_'},
-        {'_', 'S', '_', '_'},
-    };
     public boolean enableAnimations = true;
+    public boolean readyForClick;
     private int GAP = 2;
     private boolean ZONEENABLED = false;
+    private final boolean HOLDENABLED = true;
     private Room room;
     private Menu lastMenuOpened;
-    private Location location;
     // board elements
-    private int NEXTVERTICAL = 5;
-    private int holdTLCX = -3 - PIECEPOINTS;
-    private int holdTLCY = getSTAGESIZEY() / 2;
-    private int nextTLCX = getSTAGESIZEX() + 3;
-    private int nextTLCY = getSTAGESIZEY() / 2;
-    private int garbBLCX = -2;
-    private int garbBLCY = getSTAGESIZEY() - 1;
+    private Location location;
+    private Point[] nextLocation;
+    private Point holdLocation;
+    private Point garbageBarLocation;
+    private Point scoreBarLocation;
     // multipliers
     private int WMX;
     private int WMY;
@@ -124,6 +112,7 @@ public class Table extends GameLogic {
     private int movRight = 0;
     private int movSoft = 0;
     private int movCW = 0;
+
     public Table(Player player) {
         super(Main.gs.getData(player).getARR(), Main.gs.getData(player).getDAS(), Main.gs.getData(player).getSDF());
         this.player = player;
@@ -174,6 +163,17 @@ public class Table extends GameLogic {
             default:
                 return "Unknown";
         }
+    }
+
+    @Override
+    public void lumines() {
+        super.lumines();
+        FRONTROWS = 10;
+        BACKROWS = 8;
+        AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
+        DOWNMOVE = getSTAGESIZEY() - (getPLAYABLEROWS() >> 1);
+        SIDEMOVE = (getSTAGESIZEX() >> 1);
+        automaticReposition();
     }
 
     private static int[][] decode(char[][] matrix) {
@@ -242,6 +242,13 @@ public class Table extends GameLogic {
             default:
                 return '?';
         }
+    }
+
+    public void automaticReposition() {
+        cleanAll();
+        centerTable();
+        automaticElements();
+        drawLogo();
     }
 
     public void checkMovement() {
@@ -354,6 +361,10 @@ public class Table extends GameLogic {
         }
     }
 
+    public void confirmPosition() {
+        readyForClick = false;
+    }
+
     public void destroyTable() {
         cleanAll();
         Main.netherboard.removeBoard(player);
@@ -367,7 +378,6 @@ public class Table extends GameLogic {
         }
 
         int[][] logo2 = decode(logo);
-        int[][] next2 = decode(logoNext);
 
         for (int i = 0; i < getSTAGESIZEY() - BACKROWS; i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
@@ -386,19 +396,22 @@ public class Table extends GameLogic {
         }
 
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            colPrintNewRender(garbBLCX, garbBLCY - i, PIECE_NONE);
+            colPrintNewRender(garbageBarLocation.x, garbageBarLocation.y + i, PIECE_NONE);
         }
 
         //bandaid
-        for (int i = 0; i < PIECEPOINTS * NEXTVERTICAL; i++) {
-            for (int j = 0; j < PIECEPOINTS * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
-                colPrintNewRender(nextTLCX + j, nextTLCY + i, i < 8 ? next2[i][j] : PIECE_NONE);
+        for (int i = 0; i < getNEXTPIECES(); i++) {
+            for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
+                    colPrintNewRender(nextLocation[i].x + k, nextLocation[i].y + j, PIECE_NONE);
+                }
             }
         }
 
-        for (int i = 0; i < PIECEPOINTS; i++) {
-            for (int j = 0; j < PIECEPOINTS; j++) {
-                colPrintNewRender(holdTLCX + j, holdTLCY + i, PIECE_NONE);
+
+        for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
+            for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                colPrintNewRender(holdLocation.x + j, holdLocation.y + i, PIECE_NONE);
             }
         }
     }
@@ -408,18 +421,17 @@ public class Table extends GameLogic {
     }
 
     public void setGAP(int GAP) {
-        if (GAP>0) {
+        if (GAP > 0) {
             this.GAP = GAP;
-        }
-        else this.GAP = 1;
+        } else this.GAP = 1;
     }
 
     public int getGarbBLCX() {
-        return garbBLCX;
+        return garbageBarLocation.x;
     }
 
     public int getGarbBLCY() {
-        return garbBLCY;
+        return garbageBarLocation.y;
     }
 
     public int getHMX() {
@@ -435,11 +447,11 @@ public class Table extends GameLogic {
     }
 
     public int getHoldTLCX() {
-        return holdTLCX;
+        return holdLocation.x;
     }
 
     public int getHoldTLCY() {
-        return holdTLCY;
+        return holdLocation.y;
     }
 
     public Menu getLastMenuOpened() {
@@ -448,24 +460,6 @@ public class Table extends GameLogic {
 
     public void setLastMenuOpened(Menu lastMenuOpened) {
         this.lastMenuOpened = lastMenuOpened;
-    }
-
-    public int getNEXTVERTICAL() {
-        return NEXTVERTICAL;
-    }
-
-    public void setNEXTVERTICAL(int NEXTVERTICAL) {
-        cleanAll();
-        this.NEXTVERTICAL = NEXTVERTICAL;
-        drawLogo();
-    }
-
-    public int getNextTLCX() {
-        return nextTLCX;
-    }
-
-    public int getNextTLCY() {
-        return nextTLCY;
     }
 
     public Player getPlayer() {
@@ -517,7 +511,8 @@ public class Table extends GameLogic {
 
     public void joinRoom(Room r) {
         room = r;
-        position();
+        centerTable();
+        automaticElements();
         drawLogo();
     }
 
@@ -525,40 +520,73 @@ public class Table extends GameLogic {
         room = null;
     }
 
-    public void moveGarbBLCXRelative(int n) {
+    //todo
+    public void manualReposition() {
         cleanAll();
-        garbBLCX += n;
-        drawLogo();
-    }
+        readyForClick = true;
+        new BukkitRunnable() {
+            int operation = 0;
+            int i = 0;
+            Point temp;
 
-    public void moveGarbBLCYRelative(int n) {
-        cleanAll();
-        garbBLCY += n;
-        drawLogo();
-    }
+            @Override
+            public void run() {
+                if (readyForClick) {
+                    switch (operation) {
+                        case 0:
+                            player.sendMessage("test0");
+                            centerTable();
+                            ActionBar.sendActionBar(player, "Click to confirm table location");
+                            break;
+                        case 1:
+                            player.sendMessage("test1");
+                            ActionBar.sendActionBar(player, "Click to confirm next " + i + " location");
+                            break;
+                        case 2:
+                            player.sendMessage("test2");
+                            ActionBar.sendActionBar(player, "Click to confirm hold location");
+                            break;
+                        case 3:
+                            player.sendMessage("test3");
+                            ActionBar.sendActionBar(player, "Click to confirm garbage bar location");
+                            break;
+                        case 4:
+                            player.sendMessage("test4");
+                            ActionBar.sendActionBar(player, "Click to confirm score bar location");
+                            break;
+                    }
+                } else {
+                    switch (operation) {
+                        case 0:
+                            operation++;
+                            readyForClick = true;
+                            break;
+                        case 1:
+                            nextLocation[i] = temp;
+                            i++;
+                            if(i==getNEXTPIECES()) {
+                                operation++;
+                                readyForClick = true;
+                            }
+                            break;
+                        case 2:
+                            operation++;
+                            readyForClick = true;
+                            break;
+                        case 3:
+                            operation++;
+                            readyForClick = true;
+                            break;
+                        case 4:
+                            this.cancel();
+                            ActionBar.sendActionBar(player, "Ready!");
+                            drawLogo();
+                            break;
+                    }
+                }
+            }
+        }.runTaskTimer(Main.plugin, 0, 10);
 
-    public void moveHoldTLCXRelative(int n) {
-        cleanAll();
-        holdTLCX += n;
-        drawLogo();
-    }
-
-    public void moveHoldTLCYRelative(int n) {
-        cleanAll();
-        holdTLCY += n;
-        drawLogo();
-    }
-
-    public void moveNextTLCXRelative(int n) {
-        cleanAll();
-        nextTLCX += n;
-        drawLogo();
-    }
-
-    public void moveNextTLCYRelative(int n) {
-        cleanAll();
-        nextTLCY += n;
-        drawLogo();
     }
 
     public void moveTable(int x, int y, int z) {
@@ -571,12 +599,6 @@ public class Table extends GameLogic {
 
     public void moveTableRelative(int x, int y, int z) {
         moveTable(location.getBlockX() + x, location.getBlockY() + y, location.getBlockZ() + z);
-    }
-
-    public void reposition() {
-        cleanAll();
-        position();
-        drawLogo();
     }
 
     public void rotateX() {
@@ -703,7 +725,7 @@ public class Table extends GameLogic {
     }
 
     @Override
-    protected void evtLockPiece(Piece piece, int linesCleared, int spinState, int combo, int backToBack, boolean nuke) {
+    protected void evtLockPiece(UsablePiece piece, int linesCleared, int spinState, int combo, int backToBack, boolean nuke) {
         StringBuilder sb = new StringBuilder();
 
         Sound sound = Sounds.lineClear;
@@ -712,7 +734,7 @@ public class Table extends GameLogic {
             sb.append("B2B ");
         }
 
-        sb.append(pieceIntToChar(piece.getColor()));
+        sb.append(pieceIntToChar(piece.getColors()[0]));
 
         switch (spinState) {
             case SPIN_MINI:
@@ -817,130 +839,20 @@ public class Table extends GameLogic {
 
     }
 
-    private void cleanAll() {
-        for (int i = 0; i < getSTAGESIZEY(); i++) {
-            for (int j = 0; j < getSTAGESIZEX(); j++) {
-                colPrintNewForce(j, i);
-            }
-        }
-        for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            colPrintNewForce(garbBLCX, garbBLCY - i);
-        }
-        for (int i = 0; i < PIECEPOINTS * NEXTVERTICAL; i++) {
-            for (int j = 0; j < PIECEPOINTS * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
-                colPrintNewForce(nextTLCX + j, nextTLCY + i);
-            }
-        }
-        for (int i = 0; i < PIECEPOINTS; i++) {
-            for (int j = 0; j < PIECEPOINTS; j++) {
-                colPrintNewForce(holdTLCX + j, holdTLCY + i);
-            }
-        }
+    private void automaticElements() {
+        nextLocation = new Point[5];
+        nextLocation[0] = new Point(getSTAGESIZEX() + 3, getPLAYABLEROWS());
+        nextLocation[1] = new Point(getSTAGESIZEX() + 3, getPLAYABLEROWS() + getPieceTable().mostPiecePoints());
+        nextLocation[2] = new Point(getSTAGESIZEX() + 3, getPLAYABLEROWS() + 2 * getPieceTable().mostPiecePoints());
+        nextLocation[3] = new Point(getSTAGESIZEX() + 3, getPLAYABLEROWS() + 3 * getPieceTable().mostPiecePoints());
+        nextLocation[4] = new Point(getSTAGESIZEX() + 3, getPLAYABLEROWS() + 4 * getPieceTable().mostPiecePoints());
+
+        holdLocation = new Point(-3 - getPieceTable().mostPiecePoints(), getPLAYABLEROWS());
+        garbageBarLocation = new Point(-2, getPLAYABLEROWS());
+        scoreBarLocation = new Point(getSTAGESIZEX() + 1, getPLAYABLEROWS());
     }
 
-    private void colPrintNewForce(float x, float y) {
-        int blockX, blockY, blockZ;
-
-        for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
-            blockX = location.getBlockX() + (int) Math.floor(x * WMX) + (int) Math.floor(y * HMX) + i;
-            for (int j = 0; j < (imj != 0 ? imj : THICKNESS); j++) {
-                blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
-                for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
-                    blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
-                    Block b = location.getWorld().getBlockAt(blockX, blockY, blockZ);
-                    for (Player player : room.players) {
-                        Main.protocollib.sendBlockChangeCustom(player,
-                            new Location(location.getWorld(), blockX, blockY, blockZ), b);
-                    }
-                }
-            }
-        }
-    }
-
-    private void colPrintNewRender(float x, float y, int color) {
-        int blockX, blockY, blockZ;
-
-        for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
-            blockX = location.getBlockX() + (int) Math.floor(x * WMX) + (int) Math.floor(y * HMX) + i;
-            for (int j = 0; j < (imj != 0 ? imj : THICKNESS); j++) {
-                blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
-                for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
-                    blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
-                    printSingleBlockToAll(blockX, blockY, blockZ, color);
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    private void debug(String s) {
-        System.out.println(s);
-    }
-
-    private void drawAll(int color) {
-        for (int i = getSTAGESIZEY() - BACKROWS; i < getSTAGESIZEY(); i++) {
-            for (int j = 0; j < getSTAGESIZEX(); j++) {
-                colPrintNewRender(j, i, color);
-            }
-        }
-        for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            colPrintNewRender(garbBLCX, garbBLCY - i, color);
-        }
-        for (int i = 0; i < PIECEPOINTS * NEXTVERTICAL; i++) {
-            for (int j = 0; j < PIECEPOINTS * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
-                colPrintNewRender(nextTLCX + j, nextTLCY + i, color);
-            }
-        }
-        for (int i = 0; i < PIECEPOINTS; i++) {
-            for (int j = 0; j < PIECEPOINTS; j++) {
-                colPrintNewRender(holdTLCX + j, holdTLCY + i, color);
-            }
-        }
-    }
-
-    private void gameLoop() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (getGameState() == STATE_DEAD) {
-                    if (player.isOnline()) {
-                        sendScoreboard();
-                    }
-                    this.cancel();
-                } else {
-                    render();
-                }
-            }
-        }.runTaskTimer(Main.plugin, 0, 1);
-    }
-
-    private boolean isTableValid() {
-        boolean bwx = WMX != 0;
-        boolean bwy = WMY != 0;
-        boolean bwz = WMZ != 0;
-        boolean bhx = HMX != 0;
-        boolean bhy = HMY != 0;
-        boolean bhz = HMZ != 0;
-
-        return (bwx || bwy || bwz) && (bhx || bhy || bhz) && (bwx != bhx || bwy != bhy || bwz != bhz);
-    }
-
-    private void playSound(Sound sound, float volume, float pitch) {
-        if (volume == 0) {
-            return;
-        }
-
-        if (volume < 1) {
-            player.playSound(player.getEyeLocation(), sound, volume, pitch);
-            return;
-        }
-
-        for (int i = 0; i < volume; i++) {
-            player.playSound(player.getEyeLocation(), sound, 1f, pitch);
-        }
-    }
-
-    private void position() {
+    private void centerTable() {
         Location playerLocation = player.getLocation();
         location = new Location(playerLocation.getWorld(), playerLocation.getBlockX(), playerLocation.getBlockY(), playerLocation.getBlockZ());
         float yaw = player.getLocation().getYaw();
@@ -1009,6 +921,133 @@ public class Table extends GameLogic {
         }
     }
 
+    private void cleanAll() {
+        for (int i = 0; i < getSTAGESIZEY(); i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
+                colPrintNewForce(j, i);
+            }
+        }
+        for (int i = 0; i < getPLAYABLEROWS(); i++) {
+            colPrintNewForce(garbageBarLocation.x, garbageBarLocation.y + i);
+        }
+        for (int i = 0; i < getNEXTPIECES(); i++) {
+            for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
+                    colPrintNewForce(nextLocation[i].x + k, nextLocation[i].y + j);
+                }
+            }
+        }
+        for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
+            for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                colPrintNewForce(holdLocation.x + j, holdLocation.y + i);
+            }
+        }
+    }
+
+    private void colPrintNewForce(float x, float y) {
+        int blockX, blockY, blockZ;
+
+        for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
+            blockX = location.getBlockX() + (int) Math.floor(x * WMX) + (int) Math.floor(y * HMX) + i;
+            for (int j = 0; j < (imj != 0 ? imj : THICKNESS); j++) {
+                blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
+                for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
+                    blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
+                    Block b = location.getWorld().getBlockAt(blockX, blockY, blockZ);
+                    for (Player player : room.players) {
+                        Main.protocollib.sendBlockChangeCustom(player,
+                            new Location(location.getWorld(), blockX, blockY, blockZ), b);
+                    }
+                }
+            }
+        }
+    }
+
+    private void colPrintNewRender(float x, float y, int color) {
+        int blockX, blockY, blockZ;
+
+        for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
+            blockX = location.getBlockX() + (int) Math.floor(x * WMX) + (int) Math.floor(y * HMX) + i;
+            for (int j = 0; j < (imj != 0 ? imj : THICKNESS); j++) {
+                blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
+                for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
+                    blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
+                    printSingleBlockToAll(blockX, blockY, blockZ, color);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void debug(String s) {
+        System.out.println(s);
+    }
+
+    private void drawAll(int color) {
+        for (int i = getSTAGESIZEY() - BACKROWS; i < getSTAGESIZEY(); i++) {
+            for (int j = 0; j < getSTAGESIZEX(); j++) {
+                colPrintNewRender(j, i, color);
+            }
+        }
+        for (int i = 0; i < getPLAYABLEROWS(); i++) {
+            colPrintNewRender(garbageBarLocation.x, garbageBarLocation.y + i, color);
+        }
+        for (int i = 0; i < getNEXTPIECES(); i++) {
+            for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
+                    colPrintNewRender(nextLocation[i].x + k, nextLocation[i].y + j, color);
+                }
+            }
+        }
+        for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
+            for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                colPrintNewRender(holdLocation.x + j, holdLocation.y + i, color);
+            }
+        }
+    }
+
+    private void gameLoop() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (getGameState() == STATE_DEAD) {
+                    if (player.isOnline()) {
+                        sendScoreboard();
+                    }
+                    this.cancel();
+                } else {
+                    render();
+                }
+            }
+        }.runTaskTimer(Main.plugin, 0, 1);
+    }
+
+    private boolean isTableValid() {
+        boolean bwx = WMX != 0;
+        boolean bwy = WMY != 0;
+        boolean bwz = WMZ != 0;
+        boolean bhx = HMX != 0;
+        boolean bhy = HMY != 0;
+        boolean bhz = HMZ != 0;
+
+        return (bwx || bwy || bwz) && (bhx || bhy || bhz) && (bwx != bhx || bwy != bhy || bwz != bhz);
+    }
+
+    private void playSound(Sound sound, float volume, float pitch) {
+        if (volume == 0) {
+            return;
+        }
+
+        if (volume < 1) {
+            player.playSound(player.getEyeLocation(), sound, volume, pitch);
+            return;
+        }
+
+        for (int i = 0; i < volume; i++) {
+            player.playSound(player.getEyeLocation(), sound, 1f, pitch);
+        }
+    }
+
     private void prepare() {
         if (!isTableValid()) {
             player.sendMessage("Invalid table multipliers");
@@ -1023,8 +1062,8 @@ public class Table extends GameLogic {
         cleanAll();
 
         oldGQDisplay = new int[getPLAYABLEROWS()];
-        oldNextDisplay = new int[PIECEPOINTS * NEXTVERTICAL][PIECEPOINTS * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL)];
-        oldHoldDisplay = new int[PIECEPOINTS][PIECEPOINTS];
+        oldNextDisplay = new int[getPieceTable().mostPiecePoints() * getNEXTPIECES()][getPieceTable().mostPiecePoints()];
+        oldHoldDisplay = new int[getPieceTable().mostPiecePoints()][getPieceTable().mostPiecePoints()];
         oldStageDisplay = new int[getSTAGESIZEY()][getSTAGESIZEX()];
         linesPrinted = 0;
         //to print on first tick
@@ -1050,18 +1089,20 @@ public class Table extends GameLogic {
 
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
             oldGQDisplay[i] = PIECE_NONE;
-            colPrintNewRender(garbBLCX, garbBLCY - i, PIECE_NONE);
+            colPrintNewRender(garbageBarLocation.x, garbageBarLocation.y + i, PIECE_NONE);
         }
-        for (int i = 0; i < PIECEPOINTS * NEXTVERTICAL; i++) {
-            for (int j = 0; j < PIECEPOINTS * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
-                oldNextDisplay[i][j] = PIECE_NONE;
-                colPrintNewRender(nextTLCX + j, nextTLCY + i, PIECE_NONE);
+        for (int i = 0; i < getNEXTPIECES(); i++) {
+            for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
+                    oldNextDisplay[i * getPieceTable().mostPiecePoints() + j][k] = PIECE_NONE;
+                    colPrintNewRender(nextLocation[i].x + k, nextLocation[i].y + j, PIECE_NONE);
+                }
             }
         }
-        for (int i = 0; i < PIECEPOINTS; i++) {
-            for (int j = 0; j < PIECEPOINTS; j++) {
+        for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
+            for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
                 oldHoldDisplay[i][j] = PIECE_NONE;
-                colPrintNewRender(holdTLCX + j, holdTLCY + i, PIECE_NONE);
+                colPrintNewRender(holdLocation.x + j, holdLocation.y + i, PIECE_NONE);
             }
         }
     }
@@ -1083,10 +1124,7 @@ public class Table extends GameLogic {
     }
 
     private void render() {
-        final Piece pieceFull = getCurrentPiece();
-        final Point cpp = new Point(pieceFull.getX(), pieceFull.getY());
-        final int rot = pieceFull.getRotation();
-        final int piece = getCurrentPiece().getColor();
+        final UsablePiece piece = getCurrentPiece();
         final int[][] stage = getStage();
 
         int[][] newStageDisplay = new int[getSTAGESIZEY()][getSTAGESIZEX()];
@@ -1095,12 +1133,14 @@ public class Table extends GameLogic {
             System.arraycopy(stage[i], 0, newStageDisplay[i], 0, getSTAGESIZEX());
         }
 
-        for (Point point : getPoints(piece, rot)) {
-            newStageDisplay[point.y + getLowestPossiblePosition()][point.x + cpp.x] = GHOST_OFFSET + piece;
+        Point[] points = piece.getPoints();
+
+        for (int i = 0; i < points.length; i++) {
+            newStageDisplay[points[i].y + getLowestPossiblePosition()][points[i].x + piece.getX()] = GHOST_OFFSET + piece.getColors()[i];
         }
 
-        for (Point point : getPoints(piece, rot)) {
-            newStageDisplay[point.y + cpp.y][point.x + cpp.x] = piece;
+        for (int i = 0; i < points.length; i++) {
+            newStageDisplay[points[i].y + piece.getY()][points[i].x + piece.getX()] = piece.getColors()[i];
         }
 
         // print stage
@@ -1123,53 +1163,56 @@ public class Table extends GameLogic {
 
         int[] newGQDisplay = new int[getPLAYABLEROWS()];
         // update garbage meter
-        int total = 0;
-        int color;
+        int currentGarbage = 0;
 
         for (Object o : getGarbageQueue()) {
             Integer num = (Integer) o;
-            total += num;
+            currentGarbage += num;
         }
 
-        color = (total / getPLAYABLEROWS()) % 7 + 1;
-        total = total % getPLAYABLEROWS();
+        int color = (currentGarbage / getPLAYABLEROWS()) % 7 + 1;
+        currentGarbage = currentGarbage % getPLAYABLEROWS();
 
-        for (int i = 0; i < total; i++) {
+        for (int i = getPLAYABLEROWS() - 1; i >= getPLAYABLEROWS() - currentGarbage; i--) {
             newGQDisplay[i] = color;
         }
 
-        for (int i = total; i < getPLAYABLEROWS(); i++) {
-            newGQDisplay[i] = PIECE_NONE;
+        for (int i = getPLAYABLEROWS() - currentGarbage - 1; i >= 0; i--) {
+            newGQDisplay[i] = color - 1;
         }
 
         // print garbage meter
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
             if (newGQDisplay[i] != oldGQDisplay[i]) {
-                colPrintNewRender(garbBLCX, garbBLCY - i, newGQDisplay[i]);
+                colPrintNewRender(garbageBarLocation.x, garbageBarLocation.y + i, newGQDisplay[i]);
             }
         }
         oldGQDisplay = newGQDisplay;
 
         if (piecesPrinted < getTotalPiecesPlaced() || (!everHeld && getHeldPiece() != null && !wasHeld && getHeld())) {
-            int[][] newNextDisplay = new int[PIECEPOINTS * NEXTVERTICAL][PIECEPOINTS * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL)];
+            int[][] newNextDisplay = new int[getPieceTable().mostPiecePoints() * getNEXTPIECES()][getPieceTable().mostPiecePoints()];
             // update next queue
-            for (int i = 0; i < PIECEPOINTS * NEXTVERTICAL; i++) {
-                for (int j = 0; j < PIECEPOINTS * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
-                    newNextDisplay[i][j] = PIECE_NONE;
+            for (int i = 0; i < getNEXTPIECES(); i++) {
+                for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                    for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
+                        newNextDisplay[i * getPieceTable().mostPiecePoints() + j][k] = PIECE_NONE;
+                    }
                 }
             }
 
             for (int i = 0; i < getNEXTPIECES(); i++) {
-                for (Point point : getPoints(getNextPieces()[i].getColor(), 0)) {
-                    newNextDisplay[point.y + i % NEXTVERTICAL * PIECEPOINTS][point.x + PIECEPOINTS * (i / NEXTVERTICAL)] = getNextPieces()[i].getColor();
+                    points = getNextPieces()[i].getPoints(0);
+
+                    for (int j = 0; j < points.length; j++) {
+                    newNextDisplay[i * getPieceTable().mostPiecePoints() + points[j].y][points[j].x] = getNextPieces()[i].getColors()[j];
                 }
             }
 
             // print next queue
-            for (int i = 0; i < PIECEPOINTS * NEXTVERTICAL; i++) {
-                for (int j = 0; j < PIECEPOINTS * (int) Math.ceil(getNEXTPIECES() / (double) NEXTVERTICAL); j++) {
-                    if (newNextDisplay[i][j] != oldNextDisplay[i][j]) {
-                        colPrintNewRender(nextTLCX + j, nextTLCY + i, newNextDisplay[i][j]);
+            for (int i = 0; i < getNEXTPIECES(); i++) {
+                for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
+                    for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
+                        colPrintNewRender(nextLocation[i].x + k, nextLocation[i].y + j, newNextDisplay[i * getPieceTable().mostPiecePoints() + j][k]);
                     }
                 }
             }
@@ -1180,24 +1223,26 @@ public class Table extends GameLogic {
         }
 
         if (wasHeld != getHeld()) {
-            int[][] newHoldDisplay = new int[PIECEPOINTS][PIECEPOINTS];
+            int[][] newHoldDisplay = new int[getPieceTable().mostPiecePoints()][getPieceTable().mostPiecePoints()];
             // update hold
-            for (int i = 0; i < PIECEPOINTS; i++) {
-                for (int j = 0; j < PIECEPOINTS; j++) {
+            for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
+                for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
                     newHoldDisplay[i][j] = PIECE_NONE;
                 }
             }
             if (getHeldPiece() != null) {
-                for (Point point : getPoints(getHeldPiece().getColor(), 0)) {
-                    newHoldDisplay[point.y][point.x] = getHeldPiece().getColor();
+                points = getHeldPiece().getPoints(0);
+
+                for (int i = 0; i < points.length; i++) {
+                    newHoldDisplay[points[i].y][points[i].x] = getHeldPiece().getColors()[i];
                 }
             }
 
             // print hold
-            for (int i = 0; i < PIECEPOINTS; i++) {
-                for (int j = 0; j < PIECEPOINTS; j++) {
+            for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
+                for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
                     if (newHoldDisplay[i][j] != oldHoldDisplay[i][j]) {
-                        colPrintNewRender(holdTLCX + j, holdTLCY + i, newHoldDisplay[i][j]);
+                        colPrintNewRender(holdLocation.x + j, holdLocation.y + i, newHoldDisplay[i][j]);
                     }
                 }
             }
@@ -1263,5 +1308,6 @@ public class Table extends GameLogic {
             return vals[(this.ordinal() + 1) % vals.length];
         }
     }
+
 }
 

@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
 public class Listeners implements Listener {
@@ -19,6 +20,19 @@ public class Listeners implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Menu) {
             Main.gs.getTable((Player) event.getWhoClicked()).getLastMenuOpened().onInventoryClick(event);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (Main.gs.isPlayerUsingThePlugin(player)) {
+            if (Main.gs.getRoom(player) != null) {
+                Table table = Main.gs.getTable(player);
+                if (table != null && table.readyForClick) {
+                    table.confirmPosition();
+                }
+            }
         }
     }
 
