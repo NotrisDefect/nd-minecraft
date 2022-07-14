@@ -132,10 +132,10 @@ public class GameServer {
         } catch (IOException | ClassNotFoundException e) {
             Main.plugin.getLogger().warning(e.getMessage());
             data = new Settings();
-            data.setSkin(new Skin(Skin.empty));
-            data.setARR(100);
-            data.setDAS(400);
-            data.setSDF(8);
+            data.setSkin(new Skin(Skin.EMPTY));
+            data.setARR(50);
+            data.setDAS(300);
+            data.setSDF(10);
         }
 
         offlineData.put(player, data);

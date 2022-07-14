@@ -18,17 +18,14 @@ import java.util.Map;
 public class Table extends GameLogic {
 
     public static final int GHOST_OFFSET = 10;
-    private static int FRONTROWS = 30;
-    private static int BACKROWS = 20;
     private static final int THICKNESS = 1;
     public static DeathAnimation deathAnim = DeathAnimation.GRAYSCALE;
-    private int AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
-    private int DOWNMOVE = getSTAGESIZEY() - (getPLAYABLEROWS() >> 1);
-    private int SIDEMOVE = (getSTAGESIZEX() >> 1);
+    private static int FRONTROWS = 30;
+    private static int BACKROWS = 20;
     private final Player player;
     // stupid
     private final char[][] logo = {
-        {'_', 'Z', 'L', 'O', 'S', 'I', 'J', 'T', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_'},
         {'_', '_', '_', 'N', 'N', 'N', 'N', '_', '_', '_'},
@@ -41,16 +38,16 @@ public class Table extends GameLogic {
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', '_', 'N', 'N', 'N', '_', '_', '_'},
-        {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
-        {'_', 'N', 'N', 'N', 'N', 'N', '_', '_', '_', '_'},
-        {'_', '_', 'N', 'N', 'N', 'N', '_', '_', '_', '_'},
+        {'_', 'N', 'T', 'N', 'N', 'J', 'J', '_', '_', '_'},
+        {'_', 'N', 'T', 'T', 'N', 'J', '_', '_', '_', '_'},
+        {'_', '_', 'T', 'N', 'N', 'J', '_', '_', '_', '_'},
         {'_', '_', '_', '_', '_', 'N', '_', '_', '_', '_'},
         {'_', '_', '_', '_', '_', 'N', '_', '_', '_', '_'},
-        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
-        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
-        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
-        {'_', '_', '_', '_', '_', 'N', 'N', '_', '_', '_'},
-        {'_', '_', '_', '_', '_', 'N', 'N', '_', '_', '_'},
+        {'_', 'L', 'N', 'N', 'S', 'S', 'N', 'Z', 'N', '_'},
+        {'_', 'L', 'N', 'N', 'N', 'S', 'S', 'Z', 'Z', '_'},
+        {'_', 'L', 'L', 'N', 'I', 'I', 'I', 'I', 'Z', '_'},
+        {'_', '_', '_', '_', '_', 'O', 'O', '_', '_', '_'},
+        {'_', '_', '_', '_', '_', 'O', 'O', '_', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
@@ -69,11 +66,14 @@ public class Table extends GameLogic {
         {'_', 'N', 'N', 'N', '_', '_', 'N', 'N', '_', '_'},
         {'_', '_', 'N', 'N', '_', '_', '_', '_', '_', '_'}
     };
+    private final boolean HOLDENABLED = true;
     public boolean enableAnimations = true;
     public boolean readyForClick;
+    private int AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
+    private int DOWNMOVE = getSTAGESIZEY() - (getPLAYABLEROWS() >> 1);
+    private int SIDEMOVE = (getSTAGESIZEX() >> 1);
     private int GAP = 2;
     private boolean ZONEENABLED = false;
-    private final boolean HOLDENABLED = true;
     private Room room;
     private Menu lastMenuOpened;
     // board elements
@@ -124,56 +124,45 @@ public class Table extends GameLogic {
 
     public static String pieceIntToString(int p) {
         switch (p) {
-            case PIECE_Z:
+            case BLOCK_RED:
                 return "Z piece";
-            case PIECE_L:
+            case BLOCK_ORANGE:
                 return "L piece";
-            case PIECE_O:
+            case BLOCK_YELLOW:
                 return "O piece";
-            case PIECE_S:
+            case BLOCK_GREEN:
                 return "S piece";
-            case PIECE_I:
+            case BLOCK_LIGHTBLUE:
                 return "I piece";
-            case PIECE_J:
+            case BLOCK_BLUE:
                 return "J piece";
-            case PIECE_T:
+            case BLOCK_PURPLE:
                 return "T piece";
-            case PIECE_NONE:
+            case BLOCK_NONE:
                 return "Background";
-            case PIECE_GARBAGE:
+            case BLOCK_GRAY:
                 return "Garbage";
-            case PIECE_ZONE:
+            case BLOCK_WHITE:
                 return "Zone";
-            case PIECE_NUKE:
+            case BLOCK_NUKE:
                 return "Nuke";
-            case PIECE_Z + GHOST_OFFSET:
+            case BLOCK_RED + GHOST_OFFSET:
                 return "Z ghost";
-            case PIECE_L + GHOST_OFFSET:
+            case BLOCK_ORANGE + GHOST_OFFSET:
                 return "L ghost";
-            case PIECE_O + GHOST_OFFSET:
+            case BLOCK_YELLOW + GHOST_OFFSET:
                 return "O ghost";
-            case PIECE_S + GHOST_OFFSET:
+            case BLOCK_GREEN + GHOST_OFFSET:
                 return "S ghost";
-            case PIECE_I + GHOST_OFFSET:
+            case BLOCK_LIGHTBLUE + GHOST_OFFSET:
                 return "I ghost";
-            case PIECE_J + GHOST_OFFSET:
+            case BLOCK_BLUE + GHOST_OFFSET:
                 return "J ghost";
-            case PIECE_T + GHOST_OFFSET:
+            case BLOCK_PURPLE + GHOST_OFFSET:
                 return "T ghost";
             default:
                 return "Unknown";
         }
-    }
-
-    @Override
-    public void lumines() {
-        super.lumines();
-        FRONTROWS = 10;
-        BACKROWS = 8;
-        AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
-        DOWNMOVE = getSTAGESIZEY() - (getPLAYABLEROWS() >> 1);
-        SIDEMOVE = (getSTAGESIZEX() >> 1);
-        automaticReposition();
     }
 
     private static int[][] decode(char[][] matrix) {
@@ -191,53 +180,53 @@ public class Table extends GameLogic {
     private static int pieceCharToInt(char c) {
         switch (Character.toUpperCase(c)) {
             case 'Z':
-                return PIECE_Z;
+                return BLOCK_RED;
             case 'L':
-                return PIECE_L;
+                return BLOCK_ORANGE;
             case 'O':
-                return PIECE_O;
+                return BLOCK_YELLOW;
             case 'S':
-                return PIECE_S;
+                return BLOCK_GREEN;
             case 'I':
-                return PIECE_I;
+                return BLOCK_LIGHTBLUE;
             case 'J':
-                return PIECE_J;
+                return BLOCK_BLUE;
             case 'T':
-                return PIECE_T;
+                return BLOCK_PURPLE;
             case '#':
-                return PIECE_GARBAGE;
+                return BLOCK_GRAY;
             case 'N':
-                return PIECE_ZONE;
+                return BLOCK_WHITE;
             case 'U':
-                return PIECE_NUKE;
+                return BLOCK_NUKE;
             default:
-                return PIECE_NONE;
+                return BLOCK_NONE;
         }
     }
 
     private static char pieceIntToChar(int p) {
         switch (p) {
-            case PIECE_Z:
+            case BLOCK_RED:
                 return 'Z';
-            case PIECE_L:
+            case BLOCK_ORANGE:
                 return 'L';
-            case PIECE_O:
+            case BLOCK_YELLOW:
                 return 'O';
-            case PIECE_S:
+            case BLOCK_GREEN:
                 return 'S';
-            case PIECE_I:
+            case BLOCK_LIGHTBLUE:
                 return 'I';
-            case PIECE_J:
+            case BLOCK_BLUE:
                 return 'J';
-            case PIECE_T:
+            case BLOCK_PURPLE:
                 return 'T';
-            case PIECE_NONE:
+            case BLOCK_NONE:
                 return '_';
-            case PIECE_GARBAGE:
+            case BLOCK_GRAY:
                 return '#';
-            case PIECE_ZONE:
+            case BLOCK_WHITE:
                 return 'N';
-            case PIECE_NUKE:
+            case BLOCK_NUKE:
                 return 'U';
             default:
                 return '?';
@@ -371,9 +360,9 @@ public class Table extends GameLogic {
     }
 
     public void drawLogo() {
-        // temp fix
+        // bandaid
         if (getSTAGESIZEY() != 40 || getSTAGESIZEX() != 10 || getNEXTPIECES() != 5) {
-            drawAll(PIECE_NONE);
+            drawAll(BLOCK_NONE);
             return;
         }
 
@@ -381,7 +370,7 @@ public class Table extends GameLogic {
 
         for (int i = 0; i < getSTAGESIZEY() - BACKROWS; i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
-                if (logo2[i][j] == PIECE_NONE) {
+                if (logo2[i][j] == BLOCK_NONE) {
                     colPrintNewForce(j, i);
                 } else {
                     colPrintNewRender(j, i, logo2[i][j]);
@@ -396,14 +385,14 @@ public class Table extends GameLogic {
         }
 
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            colPrintNewRender(garbageBarLocation.x, garbageBarLocation.y + i, PIECE_NONE);
+            colPrintNewRender(garbageBarLocation.x, garbageBarLocation.y + i, BLOCK_NONE);
         }
 
         //bandaid
         for (int i = 0; i < getNEXTPIECES(); i++) {
             for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
                 for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
-                    colPrintNewRender(nextLocation[i].x + k, nextLocation[i].y + j, PIECE_NONE);
+                    colPrintNewRender(nextLocation[i].x + k, nextLocation[i].y + j, BLOCK_NONE);
                 }
             }
         }
@@ -411,7 +400,7 @@ public class Table extends GameLogic {
 
         for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
             for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
-                colPrintNewRender(holdLocation.x + j, holdLocation.y + i, PIECE_NONE);
+                colPrintNewRender(holdLocation.x + j, holdLocation.y + i, BLOCK_NONE);
             }
         }
     }
@@ -496,9 +485,14 @@ public class Table extends GameLogic {
 
     public void initTable(long seed) {
         prepare();
-        doStart(seed);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                doStart(seed);
+            }
+        }.runTaskLater(Main.plugin, 80);
         Main.netherboard.createBoard(player, "Stats");
-        gameLoop();
+        startGame();
     }
 
     public boolean isZONEENABLED() {
@@ -564,7 +558,7 @@ public class Table extends GameLogic {
                         case 1:
                             nextLocation[i] = temp;
                             i++;
-                            if(i==getNEXTPIECES()) {
+                            if (i == getNEXTPIECES()) {
                                 operation++;
                                 readyForClick = true;
                             }
@@ -669,6 +663,17 @@ public class Table extends GameLogic {
     }
 
     @Override
+    public void lumines() {
+        super.lumines();
+        FRONTROWS = 10;
+        BACKROWS = 8;
+        AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
+        DOWNMOVE = getSTAGESIZEY() - (getPLAYABLEROWS() >> 1);
+        SIDEMOVE = (getSTAGESIZEX() >> 1);
+        automaticReposition();
+    }
+
+    @Override
     protected void evtGameover() {
         switch (deathAnim) {
             case EXPLOSION:
@@ -687,16 +692,16 @@ public class Table extends GameLogic {
             case GRAYSCALE:
                 for (int i = 0; i < getSTAGESIZEY(); i++) {
                     for (int j = 0; j < getSTAGESIZEX(); j++) {
-                        if (getStage()[i][j] != PIECE_NONE)
-                            colPrintNewRender(j, i, PIECE_GARBAGE);
+                        if (getStage()[i][j] != BLOCK_NONE)
+                            colPrintNewRender(j, i, BLOCK_GRAY);
                     }
                 }
                 break;
             case CLEAR:
                 for (int i = 0; i < getSTAGESIZEY(); i++) {
                     for (int j = 0; j < getSTAGESIZEX(); j++) {
-                        if (getStage()[i][j] != PIECE_NONE) {
-                            colPrintNewRender(j, i, PIECE_NONE);
+                        if (getStage()[i][j] != BLOCK_NONE) {
+                            colPrintNewRender(j, i, BLOCK_NONE);
                         }
                     }
                 }
@@ -1006,22 +1011,6 @@ public class Table extends GameLogic {
         }
     }
 
-    private void gameLoop() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (getGameState() == STATE_DEAD) {
-                    if (player.isOnline()) {
-                        sendScoreboard();
-                    }
-                    this.cancel();
-                } else {
-                    render();
-                }
-            }
-        }.runTaskTimer(Main.plugin, 0, 1);
-    }
-
     private boolean isTableValid() {
         boolean bwx = WMX != 0;
         boolean bwy = WMY != 0;
@@ -1050,7 +1039,7 @@ public class Table extends GameLogic {
 
     private void prepare() {
         if (!isTableValid()) {
-            player.sendMessage("Invalid table multipliers");
+            player.sendMessage("Invalid table multipliers!");
         }
 
         imi = Math.max(Math.abs(WMX), Math.abs(HMX));
@@ -1076,40 +1065,32 @@ public class Table extends GameLogic {
         rightEmptyFor = GAP;
         downEmptyFor = GAP;
 
-        for (int i = 0; i < getSTAGESIZEY(); i++) {
-            for (int j = 0; j < getSTAGESIZEX(); j++) {
-                oldStageDisplay[i][j] = PIECE_NONE;
-            }
-        }
         for (int i = getSTAGESIZEY() - BACKROWS; i < getSTAGESIZEY(); i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
-                colPrintNewRender(j, i, PIECE_NONE);
+                colPrintNewRender(j, i, BLOCK_NONE);
             }
         }
 
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            oldGQDisplay[i] = PIECE_NONE;
-            colPrintNewRender(garbageBarLocation.x, garbageBarLocation.y + i, PIECE_NONE);
+            colPrintNewRender(garbageBarLocation.x, garbageBarLocation.y + i, BLOCK_NONE);
         }
         for (int i = 0; i < getNEXTPIECES(); i++) {
             for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
                 for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
-                    oldNextDisplay[i * getPieceTable().mostPiecePoints() + j][k] = PIECE_NONE;
-                    colPrintNewRender(nextLocation[i].x + k, nextLocation[i].y + j, PIECE_NONE);
+                    colPrintNewRender(nextLocation[i].x + k, nextLocation[i].y + j, BLOCK_NONE);
                 }
             }
         }
         for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
             for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
-                oldHoldDisplay[i][j] = PIECE_NONE;
-                colPrintNewRender(holdLocation.x + j, holdLocation.y + i, PIECE_NONE);
+                colPrintNewRender(holdLocation.x + j, holdLocation.y + i, BLOCK_NONE);
             }
         }
     }
 
     private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
-        Settings set = Main.gs.getData(player);
-        if (set.isCustomSkinActive() && set.getSkin().get(color) == Skin.EXISTING) {
+        Settings settings = Main.gs.getData(player);
+        if (settings.isCustomSkinActive() && settings.getSkin().get(color) == Skin.EXISTING) {
             Block b = location.getWorld().getBlockAt(x, y, z);
             Main.protocollib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
         } else {
@@ -1123,7 +1104,7 @@ public class Table extends GameLogic {
         }
     }
 
-    private void render() {
+    private void renderStage() {
         final UsablePiece piece = getCurrentPiece();
         final int[][] stage = getStage();
 
@@ -1135,22 +1116,24 @@ public class Table extends GameLogic {
 
         Point[] points = piece.getPoints();
 
-        for (int i = 0; i < points.length; i++) {
-            newStageDisplay[points[i].y + getLowestPossiblePosition()][points[i].x + piece.getX()] = GHOST_OFFSET + piece.getColors()[i];
-        }
+        if (getGameState() < STATE_DELAY) {
+            for (int i = 0; i < points.length; i++) {
+                newStageDisplay[points[i].y + getLowestPossiblePosition()][points[i].x + piece.getX()] = GHOST_OFFSET + piece.getColors()[i];
+            }
 
-        for (int i = 0; i < points.length; i++) {
-            newStageDisplay[points[i].y + piece.getY()][points[i].x + piece.getX()] = piece.getColors()[i];
+            for (int i = 0; i < points.length; i++) {
+                newStageDisplay[points[i].y + piece.getY()][points[i].x + piece.getX()] = piece.getColors()[i];
+            }
         }
 
         // print stage
         for (int i = 0; i < getSTAGESIZEY(); i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
                 if (newStageDisplay[i][j] != oldStageDisplay[i][j]) {
-                    if (newStageDisplay[i][j] == PIECE_NONE && i >= getSTAGESIZEY() - BACKROWS) {
+                    if (newStageDisplay[i][j] == BLOCK_NONE && i >= getSTAGESIZEY() - BACKROWS) {
                         colPrintNewRender(j, i, newStageDisplay[i][j]);
                     } else if (i >= getSTAGESIZEY() - FRONTROWS) {
-                        if (newStageDisplay[i][j] != PIECE_NONE) {
+                        if (newStageDisplay[i][j] != BLOCK_NONE) {
                             colPrintNewRender(j, i, newStageDisplay[i][j]);
                         } else {
                             colPrintNewForce(j, i);
@@ -1160,25 +1143,20 @@ public class Table extends GameLogic {
             }
         }
         oldStageDisplay = newStageDisplay;
+    }
 
+    private void renderGarbage() {
         int[] newGQDisplay = new int[getPLAYABLEROWS()];
         // update garbage meter
-        int currentGarbage = 0;
+        int totalGarbage = 0;
 
         for (Object o : getGarbageQueue()) {
             Integer num = (Integer) o;
-            currentGarbage += num;
+            totalGarbage += num;
         }
 
-        int color = (currentGarbage / getPLAYABLEROWS()) % 7 + 1;
-        currentGarbage = currentGarbage % getPLAYABLEROWS();
-
-        for (int i = getPLAYABLEROWS() - 1; i >= getPLAYABLEROWS() - currentGarbage; i--) {
-            newGQDisplay[i] = color;
-        }
-
-        for (int i = getPLAYABLEROWS() - currentGarbage - 1; i >= 0; i--) {
-            newGQDisplay[i] = color - 1;
+        for (int i = getPLAYABLEROWS() - 1; i >= Math.max(getPLAYABLEROWS() - totalGarbage, 0); i--) {
+            newGQDisplay[i] = 18;
         }
 
         // print garbage meter
@@ -1188,22 +1166,16 @@ public class Table extends GameLogic {
             }
         }
         oldGQDisplay = newGQDisplay;
+    }
 
+    private void renderNext() {
         if (piecesPrinted < getTotalPiecesPlaced() || (!everHeld && getHeldPiece() != null && !wasHeld && getHeld())) {
             int[][] newNextDisplay = new int[getPieceTable().mostPiecePoints() * getNEXTPIECES()][getPieceTable().mostPiecePoints()];
             // update next queue
             for (int i = 0; i < getNEXTPIECES(); i++) {
-                for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
-                    for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
-                        newNextDisplay[i * getPieceTable().mostPiecePoints() + j][k] = PIECE_NONE;
-                    }
-                }
-            }
+                Point[] points = getNextPieces()[i].getPoints(0);
 
-            for (int i = 0; i < getNEXTPIECES(); i++) {
-                    points = getNextPieces()[i].getPoints(0);
-
-                    for (int j = 0; j < points.length; j++) {
+                for (int j = 0; j < points.length; j++) {
                     newNextDisplay[i * getPieceTable().mostPiecePoints() + points[j].y][points[j].x] = getNextPieces()[i].getColors()[j];
                 }
             }
@@ -1221,17 +1193,14 @@ public class Table extends GameLogic {
 
             oldNextDisplay = newNextDisplay;
         }
+    }
 
+    private void renderHold() {
         if (wasHeld != getHeld()) {
             int[][] newHoldDisplay = new int[getPieceTable().mostPiecePoints()][getPieceTable().mostPiecePoints()];
             // update hold
-            for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
-                for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
-                    newHoldDisplay[i][j] = PIECE_NONE;
-                }
-            }
             if (getHeldPiece() != null) {
-                points = getHeldPiece().getPoints(0);
+                Point[] points = getHeldPiece().getPoints(0);
 
                 for (int i = 0; i < points.length; i++) {
                     newHoldDisplay[points[i].y][points[i].x] = getHeldPiece().getColors()[i];
@@ -1250,13 +1219,43 @@ public class Table extends GameLogic {
             everHeld = true;
             oldHoldDisplay = newHoldDisplay;
         }
+    }
 
+    private void render() {
+        renderStage();
+        renderGarbage();
+        renderNext();
+        renderHold();
         sendScoreboard();
     }
 
     private void sendScoreboard() {
         Map<Integer, String> text = new HashMap<>();
 
+        if (isZONEENABLED()) {
+            String charge;
+            switch (getZoneCharge()) {
+                case 0:
+                    charge = "0%";
+                    break;
+                case 1:
+                    charge = "25%";
+                    break;
+                case 2:
+                    charge = "50%";
+                    break;
+                case 3:
+                    charge = "75%";
+                    break;
+                case 4:
+                    charge = "MAX";
+                    break;
+                default:
+                    charge = "";
+                    break;
+            }
+            text.put(7, "Zone: " + charge);
+        }
         text.put(6, "Garbage sent: " + getTotalGarbageSent());
         text.put(5, "Garbage received: " + getTotalGarbageReceived());
         text.put(4, "Lines: " + getTotalLinesCleared());
@@ -1264,7 +1263,7 @@ public class Table extends GameLogic {
         text.put(2, "Score: " + getTotalScore());
         text.put(1, "Tick: " + getTicksPassed());
         text.put(0, "Counter: " + getCounter() + "/" + getCounterEnd());
-        text.put(-1, "Debug: " + getGameState() + getSpinState() + leftEmptyFor + rightEmptyFor + downEmptyFor + movLeft + movRight + movSoft + movCW);
+        text.put(-1, "Debug: " + getGameState() + " " + leftEmptyFor + rightEmptyFor + downEmptyFor + " " + movLeft + movRight + movSoft + movCW);
 
         Main.netherboard.sendScoreboard(player, text);
     }
@@ -1279,6 +1278,44 @@ public class Table extends GameLogic {
         WMX = x;
         WMY = y;
         WMZ = z;
+    }
+
+    private void startGame() {
+        player.closeInventory();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Main.protocollib.sendTitleCustom(player, "3", "", 4, 16, 0);
+            }
+        }.runTaskLater(Main.plugin, 20);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Main.protocollib.sendTitleCustom(player, "2", "", 4, 16, 0);
+            }
+        }.runTaskLater(Main.plugin, 40);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Main.protocollib.sendTitleCustom(player, "1", "", 4, 16, 0);
+            }
+        }.runTaskLater(Main.plugin, 60);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (getGameState() == STATE_DEAD) {
+                    if (player.isOnline()) {
+                        sendScoreboard();
+                    }
+                    this.cancel();
+                } else {
+                    render();
+                }
+            }
+            // bandaid
+        }.runTaskTimer(Main.plugin, 85, 1);
     }
 
     private void turnToFallingBlock(int x, int y, double d, int color) {

@@ -72,7 +72,7 @@ public class ProtocolLibYes implements ProtocolLib {
         if (Main.gs.getData(player).isCustomSkinActive()) {
             block = Main.gs.getSkin(player).get(color).parseItem();
         } else {
-            block = Skin.defaultSkin.get(color).parseItem();
+            block = Skin.DEFAULTSKIN.get(color).parseItem();
         }
 
         PacketContainer spawn = new PacketContainer(PacketType.Play.Server.SPAWN_ENTITY);

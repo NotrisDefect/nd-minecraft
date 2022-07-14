@@ -49,4 +49,8 @@ public class Settings implements Serializable {
     public void toggleCustom() {
         usesCustom ^= true;
     }
+
+    public void setCustom(boolean value) {
+        usesCustom = value;
+    }
 }

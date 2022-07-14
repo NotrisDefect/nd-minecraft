@@ -130,31 +130,34 @@ public class Room {
     }
 
     private void roomLoop() {
-        new Thread(() -> {
-            final double expectedTickTime = 1e9 / Table.TPS;
-            long timeLast = System.nanoTime();
-            long timeNow;
-            double delta = 0;
-            while (isRunning) {
-                timeNow = System.nanoTime();
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException ignored) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                final double expectedTickTime = 1e9 / Table.TPS;
+                long timeLast = System.nanoTime();
+                long timeNow;
+                double delta = 0;
+                while (isRunning) {
+                    timeNow = System.nanoTime();
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException ignored) {
+                    }
+                    delta += (timeNow - timeLast) / expectedTickTime;
+                    timeLast = timeNow;
+                    while (delta >= 1) {
+                        tick();
+                        delta--;
+                    }
                 }
-                delta += (timeNow - timeLast) / expectedTickTime;
-                timeLast = timeNow;
-                while (delta >= 1) {
-                    tick();
-                    delta--;
-                }
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        afterLoopStopped();
+                    }
+                }.runTask(Main.plugin);
             }
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    afterLoopStopped();
-                }
-            }.runTask(Main.plugin);
-        }).start();
+        }.runTaskLaterAsynchronously(Main.plugin, 80);
     }
 
     private void afterLoopStopped() {

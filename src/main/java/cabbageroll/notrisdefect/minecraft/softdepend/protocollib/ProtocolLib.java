@@ -13,7 +13,7 @@ public interface ProtocolLib {
         if (Main.gs.getData(player).isCustomSkinActive()) {
             return Main.gs.getSkin(player).get(color).parseItem();
         } else {
-            return Skin.defaultSkin.get(color).parseItem();
+            return Skin.DEFAULTSKIN.get(color).parseItem();
         }
     }
 

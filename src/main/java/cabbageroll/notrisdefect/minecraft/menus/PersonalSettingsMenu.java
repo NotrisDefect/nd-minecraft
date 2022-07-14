@@ -49,12 +49,11 @@ public class PersonalSettingsMenu extends Menu {
 
         addButton(grid(2, 4), event -> table.automaticReposition(), XMaterial.COMPASS, ChatColor.WHITE + "Reposition (automatic)");
         addButton(grid(2, 5), event -> table.switchDeathAnim(), XMaterial.REDSTONE, ChatColor.WHITE + "Game over animation", "" + Table.getDeathAnim());
-        addButton(grid(2, 6), event -> table.manualReposition(), XMaterial.GLOWSTONE_DUST, ChatColor.WHITE + "[EXPERIMENTAL] Reposition (manual)");
 
         addButton(grid(2, 7), event -> table.setARR(table.getARR() + 5 * howMuch(event.getClick())), XMaterial.SPONGE, ChatColor.WHITE + "ARR", table.getARR() + "ms");
         addButton(grid(2, 8), event -> table.setDAS(table.getDAS() + 5 * howMuch(event.getClick())), XMaterial.SPONGE, ChatColor.WHITE + "DAS", table.getDAS() + "ms");
         addButton(grid(2, 9), event -> table.setSDF(table.getSDF() + howMuch(event.getClick())), XMaterial.SPONGE, ChatColor.WHITE + "SDF", table.getSDF() + "X gravity");
 
-        addButton(grid(3, 9), event -> table.setGAP(table.getGAP() + howMuch(event.getClick())), XMaterial.GLOWSTONE_DUST, ChatColor.WHITE + "[EXPERIMENTAL] GAP", "If your inputs get dropped", "due to lag, increase gap.", "If you press buttons too", "quickly, decrease gap.","Doesn't get saved", "" + table.getGAP());
+        addButton(grid(3, 9), event -> table.setGAP(table.getGAP() + howMuch(event.getClick())), XMaterial.GLOWSTONE_DUST, ChatColor.WHITE + "[EXPERIMENTAL] GAP", "If your inputs get dropped", "due to lag, increase gap.", "If you press buttons too", "quickly, decrease gap.", "Doesn't get saved", "" + table.getGAP());
     }
 }

@@ -35,7 +35,7 @@ public class NewSkinMenu extends Menu {
         Skin skin;
         if (isCustom) {
             skin = Main.gs.getSkin(player);
-            for (int i = 0; i < Skin.SIZE; i++) {
+            for (int i = 0; i < 18; i++) {
                 ItemStack item = skin.getFancy(i);
                 int index = i;
                 addButton(BLOCK_LOCATIONS[i], event -> new AnvilGUI.Builder().itemLeft(item).text("Enter new XMaterial").onLeftInputClick(Main.gs::openLastMenu).onComplete((player, text) -> {
@@ -61,8 +61,8 @@ public class NewSkinMenu extends Menu {
                 }).plugin(Main.plugin).open(player), item);
             }
         } else {
-            skin = Skin.defaultSkin;
-            for (int i = 0; i < Skin.SIZE; i++) {
+            skin = Skin.DEFAULTSKIN;
+            for (int i = 0; i < 18; i++) {
                 addButton(BLOCK_LOCATIONS[i], event -> {
                 }, skin.getFancy(i));
             }

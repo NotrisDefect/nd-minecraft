@@ -1,8 +1,8 @@
 package cabbageroll.notrisdefect.minecraft.commands;
 
 import cabbageroll.notrisdefect.minecraft.Main;
-import cabbageroll.notrisdefect.minecraft.Strings;
 import cabbageroll.notrisdefect.minecraft.Sounds;
+import cabbageroll.notrisdefect.minecraft.Strings;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

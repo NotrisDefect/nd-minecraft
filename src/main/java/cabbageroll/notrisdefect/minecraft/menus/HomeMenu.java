@@ -11,7 +11,6 @@ public class HomeMenu extends Menu {
 
     public final static int MULTIPLAYER_LOCATION = grid(3, 4);
     public final static int SINGLEPLAYER_LOCATION = grid(3, 5);
-    public final static int SINGLEPLAYER2_LOCATION = grid(4, 5);
     public final static int SKINEDITOR_LOCATION = grid(3, 6);
 
     public HomeMenu(Player player) {
@@ -29,7 +28,7 @@ public class HomeMenu extends Menu {
         addBorder();
 
         if (player.hasPermission(Strings.permMP)) {
-            addButton(MULTIPLAYER_LOCATION, event -> new ListMenu(player), XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Tetris Multiplayer");
+            addButton(MULTIPLAYER_LOCATION, event -> new ListMenu(player), XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Multiplayer");
         } else {
             addButton(MULTIPLAYER_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permMP)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }
@@ -37,13 +36,9 @@ public class HomeMenu extends Menu {
             addButton(SINGLEPLAYER_LOCATION, event -> {
                 Main.gs.createSPRoom(player);
                 new RoomMenu(player);
-            }, XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Tetris Singleplayer");
-            addButton(SINGLEPLAYER2_LOCATION, event -> {
-                player.sendMessage("soon");
-            }, XMaterial.ORANGE_WOOL, ChatColor.WHITE + "Lumines Singleplayer");
+            }, XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer");
         } else {
             addButton(SINGLEPLAYER_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permSP)), XMaterial.BARRIER, ChatColor.RED + "No permission");
-            addButton(SINGLEPLAYER2_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permSP)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }
         if (player.hasPermission(Strings.permSkinEditor)) {
             addButton(SKINEDITOR_LOCATION, event -> new NewSkinMenu(player), XMaterial.DAMAGED_ANVIL, ChatColor.WHITE + "Skin editor");

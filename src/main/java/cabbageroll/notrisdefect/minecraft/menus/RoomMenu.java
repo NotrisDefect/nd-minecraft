@@ -37,7 +37,7 @@ public class RoomMenu extends Menu {
             clearContent();
             updateContent();
             placeAll();
-        } else if (event.getSlot() != BACK_LOCATION && event.getSlot() != SONG_LOCATION && event.getSlot() != SETTINGS_LOCATION && event.getSlot() != EXTRA_SETTINGS_LOCATION && event.getSlot() != MY_SETTINGS_LOCATION) {
+        } else if (event.getSlot() != BACK_LOCATION && event.getSlot() != SONG_LOCATION && event.getSlot() != SETTINGS_LOCATION && event.getSlot() != EXTRA_SETTINGS_LOCATION && event.getSlot() != MY_SETTINGS_LOCATION && event.getSlot() != GAME_LOCATION) {
             new RoomMenu((Player) event.getWhoClicked());
         }
     }
@@ -50,7 +50,10 @@ public class RoomMenu extends Menu {
 
         if (room.getOwner().equals(player)) {
             if (room.isRunning()) {
-                addButton(GAME_LOCATION, event -> room.stopRoom(), XMaterial.ANVIL, ChatColor.YELLOW + "ABORT");
+                addButton(GAME_LOCATION, event -> {
+                    room.stopRoom();
+                    new RoomMenu((Player) event.getWhoClicked());
+                }, XMaterial.ANVIL, ChatColor.YELLOW + "ABORT");
             } else {
                 if (!room.isSingleplayer() && room.players.size() == 1) {
                     addButton(GAME_LOCATION, event -> player.sendMessage(Strings.notEnoughPlayers), XMaterial.BARRIER, ChatColor.DARK_RED + "2 PLAYERS NEEDED");
