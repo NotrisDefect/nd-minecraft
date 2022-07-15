@@ -3,8 +3,8 @@ package cabbageroll.notrisdefect.minecraft;
 import cabbageroll.notrisdefect.core.GameLogic;
 import cabbageroll.notrisdefect.core.Point;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
+import cabbageroll.notrisdefect.minecraft.menus.SkinMenu;
 import cabbageroll.notrisdefect.minecraft.playerdata.Settings;
-import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
 import com.cryptomorin.xseries.messages.ActionBar;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -572,7 +572,7 @@ public class Table extends GameLogic {
                             readyForClick = true;
                             break;
                         case 4:
-                            this.cancel();
+                            cancel();
                             ActionBar.sendActionBar(player, "Ready!");
                             drawLogo();
                             break;
@@ -1090,7 +1090,7 @@ public class Table extends GameLogic {
 
     private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
         Settings settings = Main.gs.getData(player);
-        if (settings.isCustomSkinActive() && settings.getSkin().get(color) == Skin.EXISTING) {
+        if (settings.isCustomSkinActive() && settings.getSkin().get(color) == SkinMenu.EXISTING_MATERIAL) {
             Block b = location.getWorld().getBlockAt(x, y, z);
             Main.protocollib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
         } else {
@@ -1105,8 +1105,8 @@ public class Table extends GameLogic {
     }
 
     private void renderStage() {
-        final UsablePiece piece = getCurrentPiece();
-        final int[][] stage = getStage();
+        UsablePiece piece = getCurrentPiece();
+        int[][] stage = getStage();
 
         int[][] newStageDisplay = new int[getSTAGESIZEY()][getSTAGESIZEX()];
         // update stage
@@ -1309,7 +1309,7 @@ public class Table extends GameLogic {
                     if (player.isOnline()) {
                         sendScoreboard();
                     }
-                    this.cancel();
+                    cancel();
                 } else {
                     render();
                 }
@@ -1342,7 +1342,7 @@ public class Table extends GameLogic {
         private static final DeathAnimation[] vals = values();
 
         public DeathAnimation next() {
-            return vals[(this.ordinal() + 1) % vals.length];
+            return vals[(ordinal() + 1) % vals.length];
         }
     }
 

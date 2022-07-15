@@ -1,14 +1,23 @@
 package cabbageroll.notrisdefect.minecraft.playerdata;
 
+import com.cryptomorin.xseries.XMaterial;
+
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class Settings implements Serializable {
 
-    private boolean usesCustom = false;
-    private Skin customSkin;
+    private static final long serialVersionUID = 132378826677569901L;
+
+    private boolean custom = false;
+    private HashMap<Integer, XMaterial> skin;
     private int ARR;
     private int DAS;
     private int SDF;
+
+    public XMaterial get(int i) {
+        return skin.get(i);
+    }
 
     public int getARR() {
         return ARR;
@@ -34,23 +43,23 @@ public class Settings implements Serializable {
         this.SDF = SDF;
     }
 
-    public Skin getSkin() {
-        return customSkin;
+    public HashMap<Integer, XMaterial> getSkin() {
+        return skin;
     }
 
-    public void setSkin(Skin skin) {
-        this.customSkin = skin;
+    public void setSkin(HashMap<Integer, XMaterial> skin) {
+        this.skin = skin;
     }
 
     public boolean isCustomSkinActive() {
-        return usesCustom;
-    }
-
-    public void toggleCustom() {
-        usesCustom ^= true;
+        return custom;
     }
 
     public void setCustom(boolean value) {
-        usesCustom = value;
+        custom = value;
+    }
+
+    public void toggleCustom() {
+        custom ^= true;
     }
 }

@@ -1,7 +1,7 @@
 package cabbageroll.notrisdefect.minecraft.softdepend.protocollib;
 
 import cabbageroll.notrisdefect.minecraft.Main;
-import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
+import cabbageroll.notrisdefect.minecraft.playerdata.BuiltInSkins;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -72,7 +72,7 @@ public class ProtocolLibYes implements ProtocolLib {
         if (Main.gs.getData(player).isCustomSkinActive()) {
             block = Main.gs.getSkin(player).get(color).parseItem();
         } else {
-            block = Skin.DEFAULTSKIN.get(color).parseItem();
+            block = BuiltInSkins.DEFAULTSKIN.get(color).parseItem();
         }
 
         PacketContainer spawn = new PacketContainer(PacketType.Play.Server.SPAWN_ENTITY);

@@ -3,8 +3,9 @@ package cabbageroll.notrisdefect.minecraft;
 import cabbageroll.notrisdefect.minecraft.menus.HomeMenu;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
 import cabbageroll.notrisdefect.minecraft.menus.RoomMenu;
+import cabbageroll.notrisdefect.minecraft.playerdata.BuiltInSkins;
 import cabbageroll.notrisdefect.minecraft.playerdata.Settings;
-import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -34,10 +35,6 @@ public class GameServer {
     private final List<Room> roomList = new LinkedList<>();
     private final Map<Player, Table> tableMap = new HashMap<>();
     private final Map<Player, Settings> offlineData = new HashMap<>();
-
-    public GameServer() {
-
-    }
 
     public List<Room> cloneRoomList() {
         List<Room> mpRooms = new LinkedList<>();
@@ -106,7 +103,7 @@ public class GameServer {
         return tableMap.get(player).getRoom();
     }
 
-    public Skin getSkin(Player player) {
+    public HashMap<Integer, XMaterial> getSkin(Player player) {
         return offlineData.get(player).getSkin();
     }
 
@@ -132,7 +129,7 @@ public class GameServer {
         } catch (IOException | ClassNotFoundException e) {
             Main.plugin.getLogger().warning(e.getMessage());
             data = new Settings();
-            data.setSkin(new Skin(Skin.EMPTY));
+            data.setSkin(new HashMap<>(BuiltInSkins.DEFAULTSKIN));
             data.setARR(50);
             data.setDAS(300);
             data.setSDF(10);
@@ -174,7 +171,7 @@ public class GameServer {
         return roomList.contains(room);
     }
 
-    public void setSkin(Player player, Skin skin) {
+    public void setSkin(Player player, HashMap<Integer, XMaterial> skin) {
         offlineData.get(player).setSkin(skin);
     }
 

@@ -34,7 +34,7 @@ public class Room {
         players.add(player);
         Main.gs.getTable(player).joinRoom(this);
         Main.noteBlockAPI.addPlayer(this, player);
-        if (this.isRunning) {
+        if (isRunning) {
             player.sendMessage(Strings.gameInProgress);
         }
         for (Player p : players) {

@@ -20,14 +20,14 @@ public class Strings {
     public static final String pluginName2 = "[" + pluginName + "]";
     public static final String ownerChange = pluginName2 + " You are now owner of this room.";
     public static final String gameInProgress = pluginName2 + " Game is in progress, wait for the round to finish.";
-    public static final String notEnoughPlayers = Strings.pluginName2 + " 2 players are needed.";
-    public static final String doesntExist = Strings.pluginName2 + " This room no longer exists.";
+    public static final String notEnoughPlayers = pluginName2 + " 2 players are needed.";
+    public static final String doesntExist = pluginName2 + " This room no longer exists.";
 
     public static String noPermission(String perm) {
-        return Strings.pluginName2 + " Missing permission " + perm;
+        return pluginName2 + " Missing permission " + perm;
     }
 
     public static String nowPlaying(String song) {
-        return Strings.pluginName2 + " Playing: " + song;
+        return pluginName2 + " Playing: " + song;
     }
 }

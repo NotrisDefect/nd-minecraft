@@ -9,9 +9,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class HomeMenu extends Menu {
 
-    public final static int MULTIPLAYER_LOCATION = grid(3, 4);
-    public final static int SINGLEPLAYER_LOCATION = grid(3, 5);
-    public final static int SKINEDITOR_LOCATION = grid(3, 6);
+    public final static int MULTIPLAYER_LOCATION = grid(4, 3);
+    public final static int SINGLEPLAYER_LOCATION = grid(5, 3);
+    public final static int SKINEDITOR_LOCATION = grid(6, 3);
 
     public HomeMenu(Player player) {
         super(player);
@@ -41,7 +41,7 @@ public class HomeMenu extends Menu {
             addButton(SINGLEPLAYER_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permSP)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }
         if (player.hasPermission(Strings.permSkinEditor)) {
-            addButton(SKINEDITOR_LOCATION, event -> new NewSkinMenu(player), XMaterial.DAMAGED_ANVIL, ChatColor.WHITE + "Skin editor");
+            addButton(SKINEDITOR_LOCATION, event -> new SkinMenu(player), XMaterial.DAMAGED_ANVIL, ChatColor.WHITE + "Skin editor");
         } else {
             addButton(SKINEDITOR_LOCATION, event -> player.sendMessage(Strings.noPermission(Strings.permSkinEditor)), XMaterial.BARRIER, ChatColor.RED + "No permission");
         }

@@ -1,4 +1,4 @@
-package cabbageroll.notrisdefect.minecraft.util;
+package cabbageroll.notrisdefect.minecraft;
 
 public class Version implements Comparable<Version> {
     private final int[] values;

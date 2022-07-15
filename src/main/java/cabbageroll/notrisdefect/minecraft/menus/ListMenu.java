@@ -37,7 +37,7 @@ public class ListMenu extends Menu {
 
         addButton(BACK_LOCATION, event -> new HomeMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
-        addButton(grid(1, 2), event -> {
+        addButton(grid(2, 1), event -> {
             Main.gs.createMPRoom(player);
             new RoomMenu(player);
         }, XMaterial.COAL_ORE, ChatColor.WHITE + "Create new room");

@@ -20,9 +20,9 @@ import java.util.Map;
 public abstract class Menu implements InventoryHolder {
 
     public static final int BACK_LOCATION = grid(1, 1);
-    public static final int PREV_PAGE_LOCATION = grid(6, 4);
+    public static final int PREV_PAGE_LOCATION = grid(4, 6);
     public static final int NEXT_PAGE_LOCATION = grid(6, 6);
-    public static final int CONTENT_BEGINNING = grid(2, 1);
+    public static final int CONTENT_BEGINNING = grid(1, 2);
     public static final int PAGE_SIZE = 36;
 
     protected final Player player;
@@ -36,8 +36,8 @@ public abstract class Menu implements InventoryHolder {
         open();
     }
 
-    public static int grid(int column, int row) {
-        return (column - 1) * 9 + row - 1;
+    public static int grid(int x, int y) {
+        return (y - 1) * 9 + x - 1;
     }
 
     protected static int howMuch(ClickType ct) {
@@ -85,9 +85,9 @@ public abstract class Menu implements InventoryHolder {
     }
 
     protected void addBorder() {
-        for (int i = 0; i < 9; i++) {
-            addButton(grid(1, i + 1), empty);
-            addButton(grid(6, i + 1), empty);
+        for (int i = 1; i <= 9; i++) {
+            addButton(grid(i, 1), empty);
+            addButton(grid(i, 6), empty);
         }
     }
 

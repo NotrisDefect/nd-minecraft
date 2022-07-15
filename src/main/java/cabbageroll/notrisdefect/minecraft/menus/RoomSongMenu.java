@@ -38,8 +38,8 @@ public class RoomSongMenu extends Menu {
         addBorder();
 
         addButton(BACK_LOCATION, (event) -> new RoomMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
-        addButton(grid(1, 2), (event) -> room.songIndex = -2, XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "None");
-        addButton(grid(1, 3), (event) -> room.songIndex = -1, XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "Random");
+        addButton(grid(2, 1), (event) -> room.songIndex = -2, XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "None");
+        addButton(grid(3, 1), (event) -> room.songIndex = -1, XMaterial.NOTE_BLOCK, ChatColor.YELLOW + "Random");
 
         updateContent();
     }

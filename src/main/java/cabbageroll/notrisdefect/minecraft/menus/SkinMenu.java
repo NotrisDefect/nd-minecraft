@@ -1,7 +1,8 @@
 package cabbageroll.notrisdefect.minecraft.menus;
 
 import cabbageroll.notrisdefect.minecraft.Main;
-import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
+import cabbageroll.notrisdefect.minecraft.Table;
+import cabbageroll.notrisdefect.minecraft.playerdata.BuiltInSkins;
 import com.cryptomorin.xseries.XMaterial;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.ChatColor;
@@ -10,12 +11,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class NewSkinMenu extends Menu {
+import java.util.HashMap;
 
+public class SkinMenu extends Menu {
+
+    public static final XMaterial EXISTING_MATERIAL = XMaterial.STICK;
+    public static final String EXISTING_STRING = "EXISTING";
     public static final int TORCH_LOCATION = 8;
     public static final int[] BLOCK_LOCATIONS = {10, 28, 29, 30, 31, 32, 33, 34, 12, 14, 16, 37, 38, 39, 40, 41, 42, 43};
 
-    public NewSkinMenu(Player player) {
+    public SkinMenu(Player player) {
         super(player);
     }
 
@@ -32,11 +37,11 @@ public class NewSkinMenu extends Menu {
         }
 
         boolean isCustom = Main.gs.getData(player).isCustomSkinActive();
-        Skin skin;
+        HashMap<Integer, XMaterial> skin;
         if (isCustom) {
             skin = Main.gs.getSkin(player);
             for (int i = 0; i < 18; i++) {
-                ItemStack item = skin.getFancy(i);
+                ItemStack item = getFancy(skin, i);
                 int index = i;
                 addButton(BLOCK_LOCATIONS[i], event -> new AnvilGUI.Builder().itemLeft(item).text("Enter new XMaterial").onLeftInputClick(Main.gs::openLastMenu).onComplete((player, text) -> {
                     if (text != null && XMaterial.matchXMaterial(text).isPresent()) {
@@ -45,15 +50,15 @@ public class NewSkinMenu extends Menu {
                         if (m == null) {
                             return AnvilGUI.Response.text("Not available");
                         } else if (m.isBlock()) {
-                            skin.set(index, xm);
-                            new NewSkinMenu(player);
+                            skin.put(index, xm);
+                            new SkinMenu(player);
                             return AnvilGUI.Response.close();
                         } else {
                             return AnvilGUI.Response.text("Not a block");
                         }
-                    } else if (text != null && text.equalsIgnoreCase("existing")) {
-                        skin.set(index, XMaterial.STICK);
-                        new NewSkinMenu(player);
+                    } else if (EXISTING_STRING.equalsIgnoreCase(text)) {
+                        skin.put(index, EXISTING_MATERIAL);
+                        new SkinMenu(player);
                         return AnvilGUI.Response.close();
                     } else {
                         return AnvilGUI.Response.text("Invalid XMaterial");
@@ -61,10 +66,10 @@ public class NewSkinMenu extends Menu {
                 }).plugin(Main.plugin).open(player), item);
             }
         } else {
-            skin = Skin.DEFAULTSKIN;
+            skin = BuiltInSkins.DEFAULTSKIN;
             for (int i = 0; i < 18; i++) {
                 addButton(BLOCK_LOCATIONS[i], event -> {
-                }, skin.getFancy(i));
+                }, getFancy(skin, i));
             }
         }
 
@@ -72,9 +77,14 @@ public class NewSkinMenu extends Menu {
 
         addButton(TORCH_LOCATION, event -> {
             Main.gs.getData(player).toggleCustom();
-            new NewSkinMenu(player);
+            new SkinMenu(player);
         }, XMaterial.TORCH, ChatColor.WHITE + "Skin slot", (isCustom ? "custom" : "default"));
 
+    }
+
+    private ItemStack getFancy(HashMap<Integer, XMaterial> skin, int i) {
+        XMaterial mat = skin.get(i);
+        return Menu.createItem(mat == XMaterial.AIR ? XMaterial.STICK : mat, ChatColor.WHITE + Table.pieceIntToString(i), mat == EXISTING_MATERIAL ? EXISTING_STRING : mat.name());
     }
 
 }

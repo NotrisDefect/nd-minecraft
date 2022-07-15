@@ -10,7 +10,6 @@ import cabbageroll.notrisdefect.minecraft.softdepend.noteblockapi.NoteBlockAPIYe
 import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLib;
 import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLibNo;
 import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLibYes;
-import cabbageroll.notrisdefect.minecraft.util.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -102,7 +101,7 @@ public class Main extends JavaPlugin implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         if (gs.isPlayerUsingThePlugin(player)) {
-            Main.gs.deinitialize(player);
+            gs.deinitialize(player);
         }
     }
 
@@ -111,7 +110,7 @@ public class Main extends JavaPlugin implements Listener {
             try (
                 InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=84269").openStream();
                 Scanner scanner = new Scanner(inputStream)) {
-                String currentVersion = this.getDescription().getVersion();
+                String currentVersion = getDescription().getVersion();
                 String versionOnSpigot = scanner.next();
                 Version current = new Version(currentVersion);
                 Version onSpigot = new Version(versionOnSpigot);

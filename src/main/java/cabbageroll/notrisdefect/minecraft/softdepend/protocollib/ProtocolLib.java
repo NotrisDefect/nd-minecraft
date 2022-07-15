@@ -1,7 +1,7 @@
 package cabbageroll.notrisdefect.minecraft.softdepend.protocollib;
 
 import cabbageroll.notrisdefect.minecraft.Main;
-import cabbageroll.notrisdefect.minecraft.playerdata.Skin;
+import cabbageroll.notrisdefect.minecraft.playerdata.BuiltInSkins;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ public interface ProtocolLib {
         if (Main.gs.getData(player).isCustomSkinActive()) {
             return Main.gs.getSkin(player).get(color).parseItem();
         } else {
-            return Skin.DEFAULTSKIN.get(color).parseItem();
+            return BuiltInSkins.DEFAULTSKIN.get(color).parseItem();
         }
     }
 

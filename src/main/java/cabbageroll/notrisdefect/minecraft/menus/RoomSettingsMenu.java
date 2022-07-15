@@ -27,19 +27,19 @@ public class RoomSettingsMenu extends Menu {
         Room room = Main.gs.getRoom(player);
 
         for (int i = 0; i < 9; i++) {
-            addButton(grid(1, i + 1), empty);
-            addButton(grid(6, i + 1), empty);
+            addButton(grid(i + 1, 1), empty);
+            addButton(grid(i + 1, 6), empty);
         }
 
         addButton(BACK_LOCATION, event -> new RoomMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
-        addButton(grid(2, 1), event -> room.players.forEach(player -> {
+        addButton(grid(1, 2), event -> room.players.forEach(player -> {
             getTable(player).setPIECESPAWNDELAY(getTable(player).getPIECESPAWNDELAY() == 0 ? 100 : 0);
             getTable(player).setLINECLEARDELAY(getTable(player).getLINECLEARDELAY() == 0 ? 500 : 0);
         }), XMaterial.GOLD_BLOCK, ChatColor.WHITE + "Delays", "Piece spawn delay: " + getTable(player).getPIECESPAWNDELAY() + "ms", "Line clear delay: " + getTable(player).getLINECLEARDELAY() + "ms");
         addButton(grid(2, 2), event -> room.players.forEach(player -> getTable(player).setENABLENUKES(!getTable(player).isENABLENUKES())), XMaterial.TNT, ChatColor.WHITE + "Garbage type", getTable(player).isENABLENUKES() ? "Nukes" : "Holes");
-        addButton(grid(2, 3), event -> room.players.forEach(player -> getTable(player).setENABLEALWAYSGARBAGE(!getTable(player).isENABLEALWAYSGARBAGE())), XMaterial.TNT, ChatColor.WHITE + "Garbage entry", getTable(player).isENABLEALWAYSGARBAGE() ? "Always" : "No lines cleared");
-        addButton(grid(2, 4), event -> room.players.forEach(player -> getTable(player).setENABLEALLSPIN(!getTable(player).isENABLEALLSPIN())), XMaterial.TNT, ChatColor.WHITE + "Spin type", getTable(player).isENABLEALLSPIN() ? "Z, L, S, J, T spins" : "T spins");
+        addButton(grid(3, 2), event -> room.players.forEach(player -> getTable(player).setENABLEALWAYSGARBAGE(!getTable(player).isENABLEALWAYSGARBAGE())), XMaterial.TNT, ChatColor.WHITE + "Garbage entry", getTable(player).isENABLEALWAYSGARBAGE() ? "Always" : "No lines cleared");
+        addButton(grid(4, 2), event -> room.players.forEach(player -> getTable(player).setENABLEALLSPIN(!getTable(player).isENABLEALLSPIN())), XMaterial.TNT, ChatColor.WHITE + "Spin type", getTable(player).isENABLEALLSPIN() ? "Z, L, S, J, T spins" : "T spins");
     }
 
     private Table getTable(Player player) {

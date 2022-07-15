@@ -15,13 +15,13 @@ import java.util.Collections;
 
 public class RoomMenu extends Menu {
 
-    public final static int GAME_LOCATION = grid(6, 5);
+    public final static int GAME_LOCATION = grid(5, 6);
 
-    public final static int MY_SETTINGS_LOCATION = grid(6, 1);
-    public final static int EXTRA_SETTINGS_LOCATION = grid(6, 2);
+    public final static int MY_SETTINGS_LOCATION = grid(1, 6);
+    public final static int EXTRA_SETTINGS_LOCATION = grid(2, 6);
 
-    public final static int SONG_LOCATION = grid(6, 8);
-    public final static int SETTINGS_LOCATION = grid(6, 9);
+    public final static int SONG_LOCATION = grid(8, 6);
+    public final static int SETTINGS_LOCATION = grid(9, 6);
 
     private Room room;
 
