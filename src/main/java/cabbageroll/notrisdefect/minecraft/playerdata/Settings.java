@@ -7,17 +7,13 @@ import java.util.HashMap;
 
 public class Settings implements Serializable {
 
-    private static final long serialVersionUID = 132378826677569901L;
+    private static final long serialVersionUID = -4471180206058806334L;
 
     private boolean custom = false;
     private HashMap<Integer, XMaterial> skin;
     private int ARR;
     private int DAS;
     private int SDF;
-
-    public XMaterial get(int i) {
-        return skin.get(i);
-    }
 
     public int getARR() {
         return ARR;
@@ -51,7 +47,7 @@ public class Settings implements Serializable {
         this.skin = skin;
     }
 
-    public boolean isCustomSkinActive() {
+    public boolean isCustom() {
         return custom;
     }
 

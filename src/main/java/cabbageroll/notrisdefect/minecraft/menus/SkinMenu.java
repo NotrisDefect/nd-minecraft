@@ -17,8 +17,27 @@ public class SkinMenu extends Menu {
 
     public static final XMaterial EXISTING_MATERIAL = XMaterial.STICK;
     public static final String EXISTING_STRING = "EXISTING";
-    public static final int TORCH_LOCATION = 8;
-    public static final int[] BLOCK_LOCATIONS = {10, 28, 29, 30, 31, 32, 33, 34, 12, 14, 16, 37, 38, 39, 40, 41, 42, 43};
+    public static final int TORCH_LOCATION = grid(9, 1);
+    public static final int[] BLOCK_LOCATIONS = {
+        grid(2, 2),
+        grid(2, 4),
+        grid(3, 4),
+        grid(4, 4),
+        grid(5, 4),
+        grid(6, 4),
+        grid(7, 4),
+        grid(8, 4),
+        grid(4, 2),
+        grid(6, 2),
+        grid(8, 2),
+        grid(2, 5),
+        grid(3, 5),
+        grid(4, 5),
+        grid(5, 5),
+        grid(6, 5),
+        grid(7, 5),
+        grid(8, 5),
+    };
 
     public SkinMenu(Player player) {
         super(player);
@@ -36,7 +55,7 @@ public class SkinMenu extends Menu {
             addButton(i, empty);
         }
 
-        boolean isCustom = Main.gs.getData(player).isCustomSkinActive();
+        boolean isCustom = Main.gs.getData(player).isCustom();
         HashMap<Integer, XMaterial> skin;
         if (isCustom) {
             skin = Main.gs.getSkin(player);

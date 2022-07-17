@@ -37,24 +37,4 @@ public class Version implements Comparable<Version> {
         }
         throw new InternalError();
     }
-
-    public int get(int i) {
-        return values.length > i ? values[i] : 0;
-    }
-
-    public int getHotfix() {
-        return get(3);
-    }
-
-    public int getMajor() {
-        return get(1);
-    }
-
-    public int getMilestone() {
-        return get(0);
-    }
-
-    public int getMinor() {
-        return get(2);
-    }
 }

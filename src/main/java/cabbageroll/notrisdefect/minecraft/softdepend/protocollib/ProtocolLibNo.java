@@ -4,7 +4,6 @@ import cabbageroll.notrisdefect.minecraft.Main;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public class ProtocolLibNo implements ProtocolLib {
@@ -15,24 +14,6 @@ public class ProtocolLibNo implements ProtocolLib {
     public void sendActionBarCustom(Player player, String message) {
         if (version > 11) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
-        }
-    }
-
-    @Override
-    public void sendBlockChangeCustom(Player player, Location loc, Block block) {
-        if (version < 13) {
-            ProtocolLib.sendBlockChangeLegacy(player, loc, block);
-        } else {
-            ProtocolLib.sendBlockChange(player, loc, block);
-        }
-    }
-
-    @Override
-    public void sendBlockChangeCustom(Player player, Location loc, int color) {
-        if (version < 13) {
-            ProtocolLib.sendBlockChangeLegacy(player, loc, color);
-        } else {
-            ProtocolLib.sendBlockChange(player, loc, color);
         }
     }
 

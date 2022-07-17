@@ -3,12 +3,10 @@ package cabbageroll.notrisdefect.minecraft;
 import cabbageroll.notrisdefect.core.GameLogic;
 import cabbageroll.notrisdefect.core.Point;
 import cabbageroll.notrisdefect.minecraft.menus.Menu;
-import cabbageroll.notrisdefect.minecraft.menus.SkinMenu;
-import cabbageroll.notrisdefect.minecraft.playerdata.Settings;
+import cabbageroll.notrisdefect.minecraft.softdepend.protocollib.ProtocolLib;
 import com.cryptomorin.xseries.messages.ActionBar;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -371,7 +369,7 @@ public class Table extends GameLogic {
         for (int i = 0; i < getSTAGESIZEY() - BACKROWS; i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
                 if (logo2[i][j] == BLOCK_NONE) {
-                    colPrintNewForce(j, i);
+                    printExistingBlock(j, i);
                 } else {
                     colPrintNewRender(j, i, logo2[i][j]);
                 }
@@ -410,9 +408,7 @@ public class Table extends GameLogic {
     }
 
     public void setGAP(int GAP) {
-        if (GAP > 0) {
-            this.GAP = GAP;
-        } else this.GAP = 1;
+        this.GAP = Math.max(GAP, 1);
     }
 
     public int getGarbBLCX() {
@@ -679,7 +675,7 @@ public class Table extends GameLogic {
             case EXPLOSION:
                 for (int i = 0; i < getSTAGESIZEY(); i++) {
                     for (int j = 0; j < getSTAGESIZEX(); j++) {
-                        colPrintNewForce(j, i);
+                        printExistingBlock(j, i);
                     }
                 }
 
@@ -708,7 +704,7 @@ public class Table extends GameLogic {
             case DISAPPEAR:
                 for (int i = 0; i < getSTAGESIZEY(); i++) {
                     for (int j = 0; j < getSTAGESIZEX(); j++) {
-                        colPrintNewForce(j, i);
+                        printExistingBlock(j, i);
                     }
                 }
 
@@ -929,27 +925,27 @@ public class Table extends GameLogic {
     private void cleanAll() {
         for (int i = 0; i < getSTAGESIZEY(); i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
-                colPrintNewForce(j, i);
+                printExistingBlock(j, i);
             }
         }
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            colPrintNewForce(garbageBarLocation.x, garbageBarLocation.y + i);
+            printExistingBlock(garbageBarLocation.x, garbageBarLocation.y + i);
         }
         for (int i = 0; i < getNEXTPIECES(); i++) {
             for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
                 for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
-                    colPrintNewForce(nextLocation[i].x + k, nextLocation[i].y + j);
+                    printExistingBlock(nextLocation[i].x + k, nextLocation[i].y + j);
                 }
             }
         }
         for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
             for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
-                colPrintNewForce(holdLocation.x + j, holdLocation.y + i);
+                printExistingBlock(holdLocation.x + j, holdLocation.y + i);
             }
         }
     }
 
-    private void colPrintNewForce(float x, float y) {
+    private void printExistingBlock(float x, float y) {
         int blockX, blockY, blockZ;
 
         for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
@@ -958,10 +954,8 @@ public class Table extends GameLogic {
                 blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
                 for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                     blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
-                    Block b = location.getWorld().getBlockAt(blockX, blockY, blockZ);
                     for (Player player : room.players) {
-                        Main.protocollib.sendBlockChangeCustom(player,
-                            new Location(location.getWorld(), blockX, blockY, blockZ), b);
+                        ProtocolLib.resendBlock(player, new Location(location.getWorld(), blockX, blockY, blockZ));
                     }
                 }
             }
@@ -1089,13 +1083,7 @@ public class Table extends GameLogic {
     }
 
     private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
-        Settings settings = Main.gs.getData(player);
-        if (settings.isCustomSkinActive() && settings.getSkin().get(color) == SkinMenu.EXISTING_MATERIAL) {
-            Block b = location.getWorld().getBlockAt(x, y, z);
-            Main.protocollib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), b);
-        } else {
-            Main.protocollib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), color);
-        }
+        ProtocolLib.sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), color);
     }
 
     private void printSingleBlockToAll(int x, int y, int z, int color) {
@@ -1136,7 +1124,7 @@ public class Table extends GameLogic {
                         if (newStageDisplay[i][j] != BLOCK_NONE) {
                             colPrintNewRender(j, i, newStageDisplay[i][j]);
                         } else {
-                            colPrintNewForce(j, i);
+                            printExistingBlock(j, i);
                         }
                     }
                 }

@@ -11,7 +11,6 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -45,31 +44,13 @@ public class ProtocolLibYes implements ProtocolLib {
     }
 
     @Override
-    public void sendBlockChangeCustom(Player player, Location loc, Block block) {
-        if (version < 13) {
-            ProtocolLib.sendBlockChangeLegacy(player, loc, block);
-        } else {
-            ProtocolLib.sendBlockChange(player, loc, block);
-        }
-    }
-
-    @Override
-    public void sendBlockChangeCustom(Player player, Location loc, int color) {
-        if (version < 13) {
-            ProtocolLib.sendBlockChangeLegacy(player, loc, color);
-        } else {
-            ProtocolLib.sendBlockChange(player, loc, color);
-        }
-    }
-
-    @Override
     public void sendFallingBlockCustom(Player player, Location loc, int color, double xVel, double yVel, double zVel) {
         if (version > 16) {
             return;
         }
 
         ItemStack block;
-        if (Main.gs.getData(player).isCustomSkinActive()) {
+        if (Main.gs.getData(player).isCustom()) {
             block = Main.gs.getSkin(player).get(color).parseItem();
         } else {
             block = BuiltInSkins.DEFAULTSKIN.get(color).parseItem();
