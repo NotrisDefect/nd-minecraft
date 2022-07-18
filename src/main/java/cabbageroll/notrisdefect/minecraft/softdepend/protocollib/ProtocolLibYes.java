@@ -23,7 +23,7 @@ import java.util.UUID;
 public class ProtocolLibYes implements ProtocolLib {
 
     private final ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-    private final int version = Main.plugin.numericalVersion;
+    private final int version = Main.PLUGIN.VERSION;
 
     @Override
     public void sendFallingBlockCustom(Player player, Location loc, int color, double xVel, double yVel, double zVel) {
@@ -32,8 +32,8 @@ public class ProtocolLibYes implements ProtocolLib {
         }
 
         ItemStack block;
-        if (Main.gs.getData(player).isCustom()) {
-            block = Main.gs.getSkin(player).get(color).parseItem();
+        if (Main.GS.getData(player).isCustom()) {
+            block = Main.GS.getSkin(player).get(color).parseItem();
         } else {
             block = BuiltInSkins.DEFAULTSKIN.get(color).parseItem();
         }
@@ -74,7 +74,7 @@ public class ProtocolLibYes implements ProtocolLib {
 
             try {
                 BlockData blockData = block.getType().createBlockData();
-                String nmsVersion = Main.plugin.nmsVersion;
+                String nmsVersion = Main.PLUGIN.NMSVERSION;
                 Class<?> c_Block = Class.forName("net.minecraft.server." + nmsVersion + ".Block");
                 Class<?> c_IBlockData = Class.forName("net.minecraft.server." + nmsVersion + ".IBlockData");
                 Class<?> c_CraftBlockData = Class.forName("org.bukkit.craftbukkit." + nmsVersion + ".block.data.CraftBlockData");
@@ -96,7 +96,7 @@ public class ProtocolLibYes implements ProtocolLib {
 
             try {
                 BlockData blockData = block.getType().createBlockData();
-                String nmsVersion = Main.plugin.nmsVersion;
+                String nmsVersion = Main.PLUGIN.NMSVERSION;
                 Class<?> c_Block = Class.forName("net.minecraft.server." + nmsVersion + ".Block");
                 Class<?> c_IBlockData = Class.forName("net.minecraft.server." + nmsVersion + ".IBlockData");
                 Class<?> c_CraftBlockData = Class.forName("org.bukkit.craftbukkit." + nmsVersion + ".block.data.CraftBlockData");
@@ -129,7 +129,7 @@ public class ProtocolLibYes implements ProtocolLib {
                         e.printStackTrace();
                     }
                 }
-            }.runTaskLaterAsynchronously(Main.plugin, 40L - (long) (Math.random() * 20));
+            }.runTaskLaterAsynchronously(Main.PLUGIN, 40L - (long) (Math.random() * 20));
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }

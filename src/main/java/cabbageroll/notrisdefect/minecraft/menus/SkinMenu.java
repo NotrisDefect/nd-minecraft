@@ -55,14 +55,14 @@ public class SkinMenu extends Menu {
             addButton(i, empty);
         }
 
-        boolean isCustom = Main.gs.getData(player).isCustom();
+        boolean isCustom = Main.GS.getData(player).isCustom();
         HashMap<Integer, XMaterial> skin;
         if (isCustom) {
-            skin = Main.gs.getSkin(player);
+            skin = Main.GS.getSkin(player);
             for (int i = 0; i < 18; i++) {
                 ItemStack item = getFancy(skin, i);
                 int index = i;
-                addButton(BLOCK_LOCATIONS[i], event -> new AnvilGUI.Builder().itemLeft(item).text("Enter new XMaterial").onLeftInputClick(Main.gs::openLastMenu).onComplete((player, text) -> {
+                addButton(BLOCK_LOCATIONS[i], event -> new AnvilGUI.Builder().itemLeft(item).text("Enter new XMaterial").onLeftInputClick(Main.GS::openLastMenu).onComplete((player, text) -> {
                     if (text != null && XMaterial.matchXMaterial(text).isPresent()) {
                         XMaterial xm = XMaterial.matchXMaterial(text).get();
                         Material m = xm.parseMaterial();
@@ -82,7 +82,7 @@ public class SkinMenu extends Menu {
                     } else {
                         return AnvilGUI.Response.text("Invalid XMaterial");
                     }
-                }).plugin(Main.plugin).open(player), item);
+                }).plugin(Main.PLUGIN).open(player), item);
             }
         } else {
             skin = BuiltInSkins.DEFAULTSKIN;
@@ -95,7 +95,7 @@ public class SkinMenu extends Menu {
         addButton(BACK_LOCATION, event -> new HomeMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
         addButton(TORCH_LOCATION, event -> {
-            Main.gs.getData(player).toggleCustom();
+            Main.GS.getData(player).toggleCustom();
             new SkinMenu(player);
         }, XMaterial.TORCH, ChatColor.WHITE + "Skin slot", (isCustom ? "custom" : "default"));
 

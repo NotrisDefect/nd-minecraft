@@ -44,7 +44,7 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
 
     @Override
     public void loadSongs() {
-        File file = new File(Main.plugin.getDataFolder() + "/songs/");
+        File file = new File(Main.PLUGIN.getDataFolder() + "/songs/");
         Song[] songArray;
 
         file.mkdirs();
@@ -54,17 +54,17 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
             String[] pathNames = file.list();
             songArray = new Song[numberOfSongs];
 
-            Main.plugin.getLogger().info(numberOfSongs + " song" + (numberOfSongs == 1 ? "" : "s") + " in " + Strings.pluginName + "/songs");
+            Main.PLUGIN.getLogger().info(numberOfSongs + " song" + (numberOfSongs == 1 ? "" : "s") + " in " + Strings.pluginName + "/songs");
 
             for (int i = 0; i < numberOfSongs; i++) {
-                String path = Main.plugin.getDataFolder() + "/songs/" + pathNames[i];
+                String path = Main.PLUGIN.getDataFolder() + "/songs/" + pathNames[i];
                 songArray[i] = NBSDecoder.parse(new File(path));
             }
         } else {
             numberOfSongs = classpathSongs.length;
             songArray = new Song[numberOfSongs];
 
-            Main.plugin.getLogger().info("0 songs in " + Strings.pluginName + "/songs, loading from jar instead");
+            Main.PLUGIN.getLogger().info("0 songs in " + Strings.pluginName + "/songs, loading from jar instead");
 
             for (int i = 0; i < numberOfSongs; i++) {
                 loadNext(songArray, i);
@@ -127,7 +127,7 @@ public class NoteBlockAPIYes implements NoteBlockAPI {
         InputStream is = getClass().getClassLoader().getResourceAsStream("music/" + song + ".nbs");
 
         if (is == null) {
-            Main.plugin.getLogger().warning("error loading ");
+            Main.PLUGIN.getLogger().warning("error loading ");
         } else {
             sa[n] = NBSDecoder.parse(is);
         }

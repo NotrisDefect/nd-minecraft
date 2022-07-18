@@ -31,14 +31,14 @@ public class ListMenu extends Menu {
 
     @Override
     protected void prepare() {
-        rooms = Main.gs.cloneRoomList();
+        rooms = Main.GS.getMultiplayerRoomList();
         createInventory(this, 54, "Join room");
         addBorder();
 
         addButton(BACK_LOCATION, event -> new HomeMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
         addButton(grid(2, 1), event -> {
-            Main.gs.createMPRoom(player);
+            Main.GS.createMPRoom(player);
             new RoomMenu(player);
         }, XMaterial.COAL_ORE, ChatColor.WHITE + "Create new room");
 
@@ -65,7 +65,7 @@ public class ListMenu extends Menu {
 
             Room room = rooms.get(page * PAGE_SIZE + i);
             addButton(CONTENT_BEGINNING + i, event -> {
-                if (!Main.gs.roomExists(room)) {
+                if (!Main.GS.roomExists(room)) {
                     player.sendMessage(Strings.doesntExist);
                     return;
                 }

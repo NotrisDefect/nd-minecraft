@@ -20,7 +20,7 @@ public class Room {
     private boolean backfire;
 
     public Room(Player owner, boolean isSingleplayer) {
-        Main.noteBlockAPI.newRSP(this);
+        Main.NOTEBLOCKAPI.newRSP(this);
         roomID = Integer.toHexString(hashCode());
 
         this.owner = owner;
@@ -32,8 +32,8 @@ public class Room {
 
     public void addPlayer(Player player) {
         players.add(player);
-        Main.gs.getTable(player).joinRoom(this);
-        Main.noteBlockAPI.addPlayer(this, player);
+        Main.GS.getTable(player).joinRoom(this);
+        Main.NOTEBLOCKAPI.addPlayer(this, player);
         if (isRunning) {
             player.sendMessage(Strings.gameInProgress);
         }
@@ -85,17 +85,17 @@ public class Room {
     }
 
     public void removePlayer(Player player) {
-        Main.noteBlockAPI.removePlayer(this, player);
+        Main.NOTEBLOCKAPI.removePlayer(this, player);
         Table table = getTable(player);
         if (table.getGameState() != Table.STATE_DEAD) {
             table.doAbort();
         }
         table.destroyTable();
         players.remove(player);
-        Main.gs.getTable(player).leaveRoom();
+        Main.GS.getTable(player).leaveRoom();
         if (player == owner) {
             if (players.size() == 0) {
-                Main.gs.deleteRoom(this);
+                Main.GS.deleteRoom(this);
             } else {
                 owner = players.get(0);
                 owner.sendMessage(Strings.ownerChange);
@@ -109,7 +109,7 @@ public class Room {
 
     public void startRoom() {
         isRunning = true;
-        Main.noteBlockAPI.startPlaying(this, songIndex);
+        Main.NOTEBLOCKAPI.startPlaying(this, songIndex);
 
         long seed = (long) (Math.random() * Long.MAX_VALUE);
 
@@ -155,13 +155,13 @@ public class Room {
                     public void run() {
                         afterLoopStopped();
                     }
-                }.runTask(Main.plugin);
+                }.runTask(Main.PLUGIN);
             }
-        }.runTaskLaterAsynchronously(Main.plugin, 80);
+        }.runTaskLaterAsynchronously(Main.PLUGIN, 80);
     }
 
     private void afterLoopStopped() {
-        Main.noteBlockAPI.setPlaying(this, false);
+        Main.NOTEBLOCKAPI.setPlaying(this, false);
 
         for (Player player : alivePlayers) {
             getTable(player).doAbort();
@@ -170,7 +170,7 @@ public class Room {
     }
 
     private Table getTable(Player player) {
-        return Main.gs.getTable(player);
+        return Main.GS.getTable(player);
     }
 
 

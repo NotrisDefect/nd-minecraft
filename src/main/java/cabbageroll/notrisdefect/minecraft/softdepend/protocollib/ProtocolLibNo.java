@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public class ProtocolLibNo implements ProtocolLib {
 
-    private final int version = Main.plugin.numericalVersion;
+    private final int version = Main.PLUGIN.VERSION;
 
     @Override
     public void sendFallingBlockCustom(Player player, Location loc, int color, double xVel, double yVel, double zVel) {

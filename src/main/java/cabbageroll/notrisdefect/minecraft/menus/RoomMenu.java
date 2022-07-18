@@ -44,7 +44,7 @@ public class RoomMenu extends Menu {
 
     @Override
     protected void prepare() {
-        room = Main.gs.getRoom(player);
+        room = Main.GS.getRoom(player);
         createInventory(this, 54, room.getRoomName());
         addBorder();
 
@@ -60,7 +60,7 @@ public class RoomMenu extends Menu {
                 } else {
                     addButton(GAME_LOCATION, event -> room.startRoom(), XMaterial.DIAMOND_SWORD, ChatColor.DARK_GREEN + "START");
                 }
-                if (Main.noteBlockAPI instanceof NoteBlockAPIYes) {
+                if (Main.NOTEBLOCKAPI instanceof NoteBlockAPIYes) {
                     addButton(SONG_LOCATION, event -> new RoomSongMenu(player), XMaterial.NOTE_BLOCK, ChatColor.WHITE + "Song");
                 }
                 addButton(SETTINGS_LOCATION, event -> new RoomSettingsMenu(player), XMaterial.BLAZE_ROD, ChatColor.WHITE + "Room settings");

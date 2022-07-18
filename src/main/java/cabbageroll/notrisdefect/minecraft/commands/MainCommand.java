@@ -26,18 +26,19 @@ import java.util.Map;
 
 public class MainCommand implements CommandExecutor, Listener {
 
-    private static final MainCommand instance = new MainCommand();
-    private final Map<String, SubCommand> commands = new HashMap<>();
-    private final ChatColor color = ChatColor.GRAY;
+    private static final MainCommand INSTANCE = new MainCommand();
+    private final Map<String, SubCommand> COMMANDS = new HashMap<>();
+    private final ChatColor COLOR = ChatColor.GRAY;
+    private static final String LINE = "==================================================";
 
     private MainCommand() {
-        commands.put(Strings.help, (sender, cmd, label, args) -> {
+        COMMANDS.put(Strings.help, (sender, cmd, label, args) -> {
             StringBuilder sb = new StringBuilder();
-            StringBuilder prefix = new StringBuilder().append('\n').append(color).append('/').append(label).append(' ');
+            StringBuilder prefix = new StringBuilder().append('\n').append(COLOR).append('/').append(label).append(' ');
 
-            sb.append(color).append(Strings.pluginName).append(' ').append(Main.plugin.getDescription().getVersion()).append(' ').append(Strings.help);
-            sb.append('\n').append(color).append("Aliases: notrisdefect, notris, nd");
-            sb.append('\n').append(color).append("==================================================");
+            sb.append(COLOR).append(Strings.pluginName).append(' ').append(Main.PLUGIN.getDescription().getVersion()).append(' ').append(Strings.help);
+            sb.append('\n').append(COLOR).append("Aliases: notrisdefect, notris, nd");
+            sb.append('\n').append(COLOR).append(LINE);
 
             if (sender instanceof Player) {
                 sb.append(prefix).append(Strings.gui).append(" - open game window");
@@ -57,17 +58,17 @@ public class MainCommand implements CommandExecutor, Listener {
             sender.sendMessage(sb.toString());
             return true;
         });
-        commands.put(Strings.materials, (sender, cmd, label, args) -> {
-            String message = color + "XMaterial:" +
-                "\n==================================================" +
-                "\nhttps://github.com/CryptoMorin/XSeries/blob/master/src/main/java/com/cryptomorin/xseries/XMaterial.java#L70";
+        COMMANDS.put(Strings.materials, (sender, cmd, label, args) -> {
+            String message = COLOR + "XMaterial:\n" +
+                LINE +
+                "\nhttps://github.com/CryptoMorin/XSeries/blob/b37cf709c816a6f7699caa750f4cc95e7bce5f0e/src/main/java/com/cryptomorin/xseries/XMaterial.java#L69";
 
             sender.sendMessage(message);
             return true;
         });
-        commands.put(Strings.controls, (sender, cmd, label, args) -> {
-            String stuff = color + "Controls:" +
-                "\n==================================================" +
+        COMMANDS.put(Strings.controls, (sender, cmd, label, args) -> {
+            String stuff = COLOR + "Controls:\n" +
+                LINE +
                 "\nMove left (once): Hotbar Slot 1" +
                 "\nMove right (once): Hotbar Slot 2" +
                 "\nZone: Hotbar Slot 3" +
@@ -83,9 +84,9 @@ public class MainCommand implements CommandExecutor, Listener {
             sender.sendMessage(stuff);
             return true;
         });
-        commands.put(Strings.sfx, (sender, cmd, label, args) -> {
-            String stuff = color + "Sounds:" +
-                "\n==================================================" +
+        COMMANDS.put(Strings.sfx, (sender, cmd, label, args) -> {
+            String stuff = COLOR + "Sounds:\n" +
+                LINE +
                 "\nspin: " + (Sounds.spin != null ? Sounds.spin.name() : "none") +
                 "\nlineClearBig: " + (Sounds.lineClearBig != null ? Sounds.lineClearBig.name() : "none") +
                 "\nlineClear: " + (Sounds.lineClear != null ? Sounds.lineClear.name() : "none") +
@@ -95,28 +96,28 @@ public class MainCommand implements CommandExecutor, Listener {
             sender.sendMessage(stuff);
             return true;
         });
-        commands.put(Strings.gui, (sender, cmd, label, args) -> {
+        COMMANDS.put(Strings.gui, (sender, cmd, label, args) -> {
             if (sender instanceof Player) {
-                Main.gs.openLastMenu((Player) sender);
+                Main.GS.openLastMenu((Player) sender);
                 return true;
             }
             return false;
         });
-        commands.put(Strings.disable, (sender, cmd, label, args) -> {
+        COMMANDS.put(Strings.disable, (sender, cmd, label, args) -> {
             if (sender.hasPermission(Strings.permManage)) {
-                Bukkit.getServer().getPluginManager().disablePlugin(Main.plugin);
+                Bukkit.getServer().getPluginManager().disablePlugin(Main.PLUGIN);
                 return true;
             }
             return false;
         });
-        commands.put(Strings.flush, (sender, cmd, label, args) -> {
+        COMMANDS.put(Strings.flush, (sender, cmd, label, args) -> {
             if (sender.hasPermission(Strings.permManage)) {
-                Main.gs.flush();
+                Main.GS.flush();
                 return true;
             }
             return false;
         });
-        commands.put(Strings.tetrachannel, (sender, cmd, label, args) -> {
+        COMMANDS.put(Strings.tetrachannel, (sender, cmd, label, args) -> {
             String nickname = args[1];
             new Thread(() -> {
                 URLConnection connection;
@@ -126,7 +127,7 @@ public class MainCommand implements CommandExecutor, Listener {
                     e.printStackTrace();
                     return;
                 }
-                connection.setRequestProperty("User-Agent", Bukkit.getServer().toString());
+                connection.setRequestProperty("User-Agent", Main.PLUGIN.getServer().toString());
 
                 try {
                     connection.connect();
@@ -159,8 +160,8 @@ public class MainCommand implements CommandExecutor, Listener {
                 Map<?, ?> user = (Map<?, ?>) data.get("user");
                 Map<?, ?> league = (Map<?, ?>) user.get("league");
 
-                String stuff = ChatColor.GREEN + "TETRA CHANNEL" +
-                    "\n==================================================" +
+                String message = ChatColor.GREEN + "TETRA CHANNEL\n" +
+                    LINE +
                     "\n" + user.get("username").toString().toUpperCase() + " (" + user.get("country") +
                     ")\nRank: " + league.get("rank") + " - " +
                     decimals(league.get("rating").toString(), 2) + "TR" +
@@ -171,7 +172,7 @@ public class MainCommand implements CommandExecutor, Listener {
                     decimals(league.get("vs").toString(), 2) + "VS" +
                     "\nhttps://ch.tetr.io/u/" + nickname.toLowerCase();
 
-                sender.sendMessage(stuff);
+                sender.sendMessage(message);
             }).start();
             return true;
         });
@@ -179,7 +180,7 @@ public class MainCommand implements CommandExecutor, Listener {
     }
 
     public static MainCommand getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public static String decimals(String s, int decimals) {
@@ -196,15 +197,15 @@ public class MainCommand implements CommandExecutor, Listener {
             player = (Player) sender;
         }
 
-        if (player != null && !Main.gs.isPlayerUsingThePlugin(player)) {
-            Main.gs.initialize(player);
+        if (player != null && !Main.GS.isPlayerUsingThePlugin(player)) {
+            Main.GS.initialize(player);
         }
 
         if (command == null) {
             fail = true;
         } else {
-            if (commands.containsKey(command)) {
-                fail = !commands.get(command).process(sender, cmd, label, args);
+            if (COMMANDS.containsKey(command)) {
+                fail = !COMMANDS.get(command).process(sender, cmd, label, args);
             } else {
                 fail = true;
             }
@@ -212,9 +213,9 @@ public class MainCommand implements CommandExecutor, Listener {
 
         if (fail) {
             if (player != null) {
-                commands.get(Strings.gui).process(sender, cmd, label, args);
+                COMMANDS.get(Strings.gui).process(sender, cmd, label, args);
             } else {
-                commands.get(Strings.help).process(sender, cmd, label, args);
+                COMMANDS.get(Strings.help).process(sender, cmd, label, args);
             }
         }
 

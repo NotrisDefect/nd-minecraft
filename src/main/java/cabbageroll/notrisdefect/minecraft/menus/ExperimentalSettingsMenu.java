@@ -24,7 +24,7 @@ public class ExperimentalSettingsMenu extends Menu {
     @Override
     protected void prepare() {
         createInventory(this, 54, "Experimental");
-        Table table = Main.gs.getTable(player);
+        Table table = Main.GS.getTable(player);
 
         for (int i = 0; i < 9; i++) {
             addButton(grid(i + 1, 1), empty);
@@ -37,16 +37,16 @@ public class ExperimentalSettingsMenu extends Menu {
         addButton(grid(9, 3), event -> table.setSTAGESIZEY(table.getSTAGESIZEY() + howMuch(event.getClick())), XMaterial.COAL_BLOCK, ChatColor.WHITE + "STAGESIZEY", "" + table.getSTAGESIZEY());
         addButton(grid(9, 4), event -> table.setNEXTPIECES(table.getNEXTPIECES() + howMuch(event.getClick())), XMaterial.COAL_BLOCK, ChatColor.WHITE + "NEXTPIECESMAX", "" + table.getNEXTPIECES());
 
-        addButton(grid(5, 2), event -> Main.gs.getRoom(player).toggleBackfire(), XMaterial.FLINT_AND_STEEL, "backfire", "" + Main.gs.getRoom(player).getBackfire());
+        addButton(grid(5, 2), event -> Main.GS.getRoom(player).toggleBackfire(), XMaterial.FLINT_AND_STEEL, "backfire", "" + Main.GS.getRoom(player).getBackfire());
         addButton(grid(6, 2), event -> table.enableAnimations ^= true, XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks", "" + table.enableAnimations);
         addButton(grid(7, 2), event -> table.setZONEENABLED(!table.isZONEENABLED()), XMaterial.ENCHANTED_BOOK, ChatColor.WHITE + "Enable zone", "" + table.isZONEENABLED());
         addButton(grid(7, 3), event -> {
-            Main.gs.setSkin(player, BuiltInSkins.ZONE_PLAYER1);
-            Main.gs.getData(player).setCustom(true);
+            Main.GS.setSkin(player, BuiltInSkins.ZONE_PLAYER1);
+            Main.GS.getData(player).setCustom(true);
         }, XMaterial.ENCHANTED_BOOK, ChatColor.WHITE + "P1 skin");
         addButton(grid(7, 4), event -> {
-            Main.gs.setSkin(player, BuiltInSkins.ZONE_PLAYER2);
-            Main.gs.getData(player).setCustom(true);
+            Main.GS.setSkin(player, BuiltInSkins.ZONE_PLAYER2);
+            Main.GS.getData(player).setCustom(true);
         }, XMaterial.ENCHANTED_BOOK, ChatColor.WHITE + "P2 skin");
         addButton(grid(8, 2), event -> table.lumines(), XMaterial.GLOWSTONE_DUST, "LUMINES");
         addButton(grid(8, 3), event -> {

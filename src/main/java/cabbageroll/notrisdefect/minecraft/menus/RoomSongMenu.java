@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 //used only if noteblockapi is present
 public class RoomSongMenu extends Menu {
 
-    private final Room room = Main.gs.getRoom(player);
+    private final Room room = Main.GS.getRoom(player);
     private Playlist playlist;
 
     private int page = 0;
@@ -34,7 +34,7 @@ public class RoomSongMenu extends Menu {
     protected void prepare() {
         playlist = NoteBlockAPIYes.playlist;
         createInventory(this, 54, "Choose song");
-        Room room = Main.gs.getRoom(player);
+        Room room = Main.GS.getRoom(player);
         addBorder();
 
         addButton(BACK_LOCATION, (event) -> new RoomMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");

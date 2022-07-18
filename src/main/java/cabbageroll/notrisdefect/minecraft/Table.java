@@ -123,7 +123,7 @@ public class Table extends GameLogic {
     private int movCW = 0;
 
     public Table(Player player) {
-        super(Main.gs.getData(player).getARR(), Main.gs.getData(player).getDAS(), Main.gs.getData(player).getSDF());
+        super(Main.GS.getData(player).getARR(), Main.GS.getData(player).getDAS(), Main.GS.getData(player).getSDF());
         this.player = player;
     }
 
@@ -244,7 +244,7 @@ public class Table extends GameLogic {
 
     @SuppressWarnings("deprecation")
     private static void resendBlock(Player player, Location loc) {
-        if (Main.plugin.numericalVersion < 13) {
+        if (Main.PLUGIN.VERSION < 13) {
             player.sendBlockChange(loc, loc.getBlock().getType(), loc.getBlock().getData());
         } else {
             player.sendBlockChange(loc, loc.getBlock().getBlockData());
@@ -253,12 +253,12 @@ public class Table extends GameLogic {
 
     @SuppressWarnings("deprecation")
     private static void sendBlockChangeCustom(Player player, Location loc, int color) {
-        XMaterial xm = (Main.gs.getData(player).isCustom() ? Main.gs.getSkin(player) : BuiltInSkins.DEFAULTSKIN).get(color);
+        XMaterial xm = (Main.GS.getData(player).isCustom() ? Main.GS.getSkin(player) : BuiltInSkins.DEFAULTSKIN).get(color);
 
         if (xm == SkinMenu.EXISTING_MATERIAL) {
             resendBlock(player, loc);
         } else {
-            if (Main.plugin.numericalVersion < 13) {
+            if (Main.PLUGIN.VERSION < 13) {
                 player.sendBlockChange(loc, xm.parseItem().getType(), xm.parseItem().getData().getData());
             } else {
                 player.sendBlockChange(loc, xm.parseItem().getType().createBlockData());
@@ -285,7 +285,7 @@ public class Table extends GameLogic {
                 public void run() {
                     player.teleport(from.setDirection(to.getDirection()));
                 }
-            }.runTask(Main.plugin);
+            }.runTask(Main.PLUGIN);
         }
 
         movLeft = 0;
@@ -435,7 +435,7 @@ public class Table extends GameLogic {
 
     public void destroyTable() {
         cleanAll();
-        Main.netherboard.removeBoard(player);
+        Main.NETHERBOARD.removeBoard(player);
     }
 
     public void drawAll(int color) {
@@ -597,8 +597,8 @@ public class Table extends GameLogic {
             public void run() {
                 doStart(seed);
             }
-        }.runTaskLater(Main.plugin, 80);
-        Main.netherboard.createBoard(player, "Stats");
+        }.runTaskLater(Main.PLUGIN, 80);
+        Main.NETHERBOARD.createBoard(player, "Stats");
         startGame();
     }
 
@@ -686,7 +686,7 @@ public class Table extends GameLogic {
                     }
                 }
             }
-        }.runTaskTimer(Main.plugin, 0, 10);
+        }.runTaskTimer(Main.PLUGIN, 0, 10);
 
     }
 
@@ -726,13 +726,13 @@ public class Table extends GameLogic {
     @Override
     public void setARR(int n) {
         super.setARR(n);
-        Main.gs.getData(player).setARR(n);
+        Main.GS.getData(player).setARR(n);
     }
 
     @Override
     public void setDAS(int n) {
         super.setDAS(n);
-        Main.gs.getData(player).setDAS(n);
+        Main.GS.getData(player).setDAS(n);
     }
 
     @Override
@@ -752,7 +752,7 @@ public class Table extends GameLogic {
     @Override
     public void setSDF(int n) {
         super.setSDF(n);
-        Main.gs.getData(player).setSDF(n);
+        Main.GS.getData(player).setSDF(n);
     }
 
     @Override
@@ -818,7 +818,7 @@ public class Table extends GameLogic {
                     turnToFallingBlock(i, height, 0.3, line[i]);
                 }
             }
-        }.runTask(Main.plugin);
+        }.runTask(Main.PLUGIN);
     }
 
     @Override
@@ -878,7 +878,7 @@ public class Table extends GameLogic {
 
     @Override
     protected void evtPerfectClear() {
-        Main.protocollib.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
+        Main.PROTOCOLLIB.sendTitleCustom(player, "", "PERFECT CLEAR", 20, 20, 40);
         playSound(Sounds.pc, 1f, 0.5f);
     }
 
@@ -1270,7 +1270,7 @@ public class Table extends GameLogic {
         text.put(0, "Counter: " + getCounter() + "/" + getCounterEnd());
         text.put(-1, "Debug: " + getGameState() + " " + leftEmptyFor + rightEmptyFor + downEmptyFor + " " + movLeft + movRight + movSoft + movCW);
 
-        Main.netherboard.sendScoreboard(player, text);
+        Main.NETHERBOARD.sendScoreboard(player, text);
     }
 
     private void setHeightMultiplier(int x, int y, int z) {
@@ -1291,21 +1291,21 @@ public class Table extends GameLogic {
         new BukkitRunnable() {
             @Override
             public void run() {
-                Main.protocollib.sendTitleCustom(player, "3", "", 4, 16, 0);
+                Main.PROTOCOLLIB.sendTitleCustom(player, "3", "", 4, 16, 0);
             }
-        }.runTaskLater(Main.plugin, 20);
+        }.runTaskLater(Main.PLUGIN, 20);
         new BukkitRunnable() {
             @Override
             public void run() {
-                Main.protocollib.sendTitleCustom(player, "2", "", 4, 16, 0);
+                Main.PROTOCOLLIB.sendTitleCustom(player, "2", "", 4, 16, 0);
             }
-        }.runTaskLater(Main.plugin, 40);
+        }.runTaskLater(Main.PLUGIN, 40);
         new BukkitRunnable() {
             @Override
             public void run() {
-                Main.protocollib.sendTitleCustom(player, "1", "", 4, 16, 0);
+                Main.PROTOCOLLIB.sendTitleCustom(player, "1", "", 4, 16, 0);
             }
-        }.runTaskLater(Main.plugin, 60);
+        }.runTaskLater(Main.PLUGIN, 60);
 
         new BukkitRunnable() {
             @Override
@@ -1320,7 +1320,7 @@ public class Table extends GameLogic {
                 }
             }
             // bandaid
-        }.runTaskTimer(Main.plugin, 85, 1);
+        }.runTaskTimer(Main.PLUGIN, 85, 1);
     }
 
     private void turnToFallingBlock(int x, int y, double d, int color) {
@@ -1335,7 +1335,7 @@ public class Table extends GameLogic {
                     tey = location.getBlockY() + x * WMY + y * HMY + j;
                     for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                         tez = location.getBlockZ() + x * WMZ + y * HMZ + k;
-                        Main.protocollib.sendFallingBlockCustom(player, new Location(location.getWorld(), tex - WMZ * 2, tey, tez + WMX * 2), color, xv, yv, zv);
+                        Main.PROTOCOLLIB.sendFallingBlockCustom(player, new Location(location.getWorld(), tex - WMZ * 2, tey, tez + WMX * 2), color, xv, yv, zv);
                     }
                 }
             }

@@ -24,7 +24,7 @@ public class RoomSettingsMenu extends Menu {
     @Override
     protected void prepare() {
         createInventory(this, 54, "Room settings");
-        Room room = Main.gs.getRoom(player);
+        Room room = Main.GS.getRoom(player);
 
         for (int i = 0; i < 9; i++) {
             addButton(grid(i + 1, 1), empty);
@@ -43,7 +43,7 @@ public class RoomSettingsMenu extends Menu {
     }
 
     private Table getTable(Player player) {
-        return Main.gs.getTable(player);
+        return Main.GS.getTable(player);
     }
 
 }

@@ -16,7 +16,7 @@ public class Strings {
     public static final String permSkinEditor = "notrisdefect.use.skineditor";
     public static final String permSP = "notrisdefect.use.singleplayer";
     public static final String permManage = "notrisdefect.admin.manage";
-    public static final String pluginName = Main.plugin.getName();
+    public static final String pluginName = Main.PLUGIN.getName();
     public static final String pluginName2 = "[" + pluginName + "]";
     public static final String ownerChange = pluginName2 + " You are now owner of this room.";
     public static final String gameInProgress = pluginName2 + " Game is in progress, wait for the round to finish.";

@@ -34,7 +34,7 @@ public class HomeMenu extends Menu {
         }
         if (player.hasPermission(Strings.permSP)) {
             addButton(SINGLEPLAYER_LOCATION, event -> {
-                Main.gs.createSPRoom(player);
+                Main.GS.createSPRoom(player);
                 new RoomMenu(player);
             }, XMaterial.PLAYER_HEAD, ChatColor.WHITE + "Singleplayer");
         } else {

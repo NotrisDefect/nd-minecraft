@@ -52,7 +52,7 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>8.8.0</version>
+            <version>9.0.0</version>
         </dependency>
         <dependency>
             <groupId>pl.joegreen</groupId>
@@ -90,6 +90,16 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
                 <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.cryptomorin.xseries</pattern>
+                            <shadedPattern>cabbageroll.notrisdefect.minecraft.shaded.xseries</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.wesjd.anvilgui</pattern>
+                            <shadedPattern>cabbageroll.notrisdefect.minecraft.shaded.anvilgui</shadedPattern>
+                        </relocation>
+                    </relocations>
                     <artifactSet>
                         <includes>
                             <include>com.github.cryptomorin:XSeries</include>

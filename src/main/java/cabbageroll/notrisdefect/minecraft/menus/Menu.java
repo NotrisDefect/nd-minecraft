@@ -113,7 +113,7 @@ public abstract class Menu implements InventoryHolder {
 
     protected void open() {
         placeAll();
-        Main.gs.openMenu(player, this);
+        Main.GS.openMenu(player, this);
     }
 
     protected void placeAll() {

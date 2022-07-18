@@ -23,7 +23,7 @@ public class PersonalSettingsMenu extends Menu {
     @Override
     protected void prepare() {
         createInventory(this, 54, "My settings");
-        Table table = Main.gs.getTable(player);
+        Table table = Main.GS.getTable(player);
 
         for (int i = 0; i < 9; i++) {
             addButton(grid(i + 1, 1), empty);

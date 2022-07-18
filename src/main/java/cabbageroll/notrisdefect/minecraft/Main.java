@@ -25,88 +25,87 @@ import java.util.Scanner;
 
 public class Main extends JavaPlugin implements Listener {
 
-    public static final GameServer gs = new GameServer();
-    public static Main plugin;
-    public static ProtocolLib protocollib;
-    public static Netherboard netherboard;
-    public static NoteBlockAPI noteBlockAPI;
-    public String nmsVersion;
-    public int numericalVersion;
+    public static GameServer GS;
+    public static Main PLUGIN;
+    public static ProtocolLib PROTOCOLLIB;
+    public static Netherboard NETHERBOARD;
+    public static NoteBlockAPI NOTEBLOCKAPI;
+    public String NMSVERSION;
+    public int VERSION;
 
     @Override
     public void onEnable() {
         long timeStart = System.nanoTime();
 
-        if (versionIsSupported()) {
-            Bukkit.getPluginManager().registerEvents(this, this);
-        } else {
+        if (!versionIsSupported()) {
             getLogger().severe("Unsupported server version");
-            Bukkit.getServer().getPluginManager().disablePlugin(this);
+            getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
         PluginCommand rootCommand = getCommand(Strings.mainCommand);
-        if (rootCommand != null) {
-            rootCommand.setExecutor(MainCommand.getInstance());
-        } else {
-            Bukkit.getServer().getPluginManager().disablePlugin(this);
+        if (rootCommand == null) {
+            getLogger().severe("Failed to get command");
+            getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        plugin = this;
+        PLUGIN = this;
+        GS = new GameServer();
 
+        rootCommand.setExecutor(MainCommand.getInstance());
+        getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(Listeners.getInstance(), this);
         getServer().getPluginManager().registerEvents(MainCommand.getInstance(), this);
 
         if (getServer().getPluginManager().getPlugin("NoteBlockAPI") == null) {
             getLogger().warning("NoteBlockAPI is missing.");
-            noteBlockAPI = new NoteBlockAPINo();
+            NOTEBLOCKAPI = new NoteBlockAPINo();
         } else {
             getLogger().info("NoteBlockAPI OK.");
-            noteBlockAPI = new NoteBlockAPIYes();
-            noteBlockAPI.loadSongs();
+            NOTEBLOCKAPI = new NoteBlockAPIYes();
+            NOTEBLOCKAPI.loadSongs();
         }
 
         if (getServer().getPluginManager().getPlugin("Netherboard") == null) {
             getLogger().warning("Netherboard is missing.");
-            netherboard = new NetherboardNo();
+            NETHERBOARD = new NetherboardNo();
         } else {
-            if (numericalVersion > 16) {
+            if (VERSION > 16) {
                 getLogger().warning("Netherboard supports only up to 1.17.1 when this was written. Be careful.");
             }
             getLogger().info("Netherboard OK.");
-            netherboard = new NetherboardYes();
+            NETHERBOARD = new NetherboardYes();
         }
 
         if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
             getLogger().warning("ProtocolLib is missing.");
-            protocollib = new ProtocolLibNo();
+            PROTOCOLLIB = new ProtocolLibNo();
         } else {
-            if (numericalVersion > 16) {
+            if (VERSION > 16) {
                 getLogger().warning("ProtocolLib currently serves no purpose for 1.17+");
             }
             getLogger().info("ProtocolLib OK.");
-            protocollib = new ProtocolLibYes();
+            PROTOCOLLIB = new ProtocolLibYes();
         }
 
         long timeEnd = System.nanoTime();
         long timeElapsed = timeEnd - timeStart;
         getLogger().info("Done. Time elapsed: " + timeElapsed / 1000000 + "ms");
 
-        // https://www.spigotmc.org/wiki/creating-an-update-checker-that-checks-for-updates/
         checkForUpdates();
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (gs.isPlayerUsingThePlugin(player)) {
-            gs.deinitialize(player);
+        if (GS.isPlayerUsingThePlugin(player)) {
+            GS.deinitialize(player);
         }
     }
 
     private void checkForUpdates() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, () -> {
             try (
                 InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=84269").openStream();
                 Scanner scanner = new Scanner(inputStream)) {
@@ -120,15 +119,15 @@ public class Main extends JavaPlugin implements Listener {
                     getLogger().info("Latest version on spigot: " + versionOnSpigot);
                 }
             } catch (IOException exception) {
-                plugin.getLogger().info("Unable to check for updates: " + exception.getMessage());
+                PLUGIN.getLogger().info("Unable to check for updates: " + exception.getMessage());
             }
         });
     }
 
     private boolean versionIsSupported() {
-        nmsVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-        numericalVersion = Integer.parseInt(nmsVersion.split("_")[1]);
-        getLogger().info("Your server is running version " + nmsVersion + " (" + numericalVersion + ")");
-        return numericalVersion > 7;
+        NMSVERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        VERSION = Integer.parseInt(NMSVERSION.split("_")[1]);
+        getLogger().info("Your server is running version " + NMSVERSION + " (" + VERSION + ")");
+        return VERSION > 7;
     }
 }

@@ -7,14 +7,12 @@ import cabbageroll.notrisdefect.minecraft.playerdata.BuiltInSkins;
 import cabbageroll.notrisdefect.minecraft.playerdata.Settings;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,20 +21,13 @@ import java.util.List;
 import java.util.Map;
 
 public class GameServer {
-    /* TIPS
-    A player doesn't have to be in any room to see a table (spectator mode is implemented in a different way).
-    A player can only be in one room, and have one table.
-    Table contains player and the room reference.
-    Room contains reference to tables in the room.
-    Room ticks all alive tables that are in it.
-    */
 
     private final Map<String, Room> roomMap = new LinkedHashMap<>();
     private final List<Room> roomList = new LinkedList<>();
     private final Map<Player, Table> tableMap = new HashMap<>();
     private final Map<Player, Settings> offlineData = new HashMap<>();
 
-    public List<Room> cloneRoomList() {
+    public List<Room> getMultiplayerRoomList() {
         List<Room> mpRooms = new LinkedList<>();
         for (Room room : roomList) {
             if (!room.isSingleplayer()) {
@@ -62,7 +53,7 @@ public class GameServer {
         tableMap.remove(player);
 
         try {
-            File file = new File(Main.plugin.getDataFolder() + "/userdata/" + player.getName() + "_" + player.getUniqueId() + ".dat");
+            File file = new File(Main.PLUGIN.getDataFolder() + "/userdata/" + player.getUniqueId() + ".dat");
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
@@ -75,11 +66,10 @@ public class GameServer {
             oos.close();
             fos.close();
         } catch (IOException e) {
-            Main.plugin.getLogger().warning(e.getMessage());
+            Main.PLUGIN.getLogger().warning(e.getMessage());
         }
 
         offlineData.remove(player);
-
     }
 
     public void deleteRoom(Room room) {
@@ -112,22 +102,20 @@ public class GameServer {
     }
 
     public boolean hasMenuOpen(Player player) {
-        InventoryView iv = player.getOpenInventory();
-        Inventory upper = iv.getTopInventory();
-        return upper.getHolder() instanceof Menu;
+        return player.getOpenInventory().getTopInventory().getHolder() instanceof Menu;
     }
 
     public void initialize(Player player) {
         Settings data;
 
         try {
-            FileInputStream fis = new FileInputStream(Main.plugin.getDataFolder() + "/userdata/" + player.getName() + "_" + player.getUniqueId() + ".dat");
-            BukkitObjectInputStream ois = new BukkitObjectInputStream(fis);
+            FileInputStream fis = new FileInputStream(Main.PLUGIN.getDataFolder() + "/userdata/" + player.getUniqueId() + ".dat");
+            ObjectInputStream ois = new ObjectInputStream(fis);
             data = (Settings) ois.readObject();
             ois.close();
             fis.close();
         } catch (IOException | ClassNotFoundException e) {
-            Main.plugin.getLogger().warning(e.getMessage());
+            Main.PLUGIN.getLogger().warning(e.getMessage());
             data = new Settings();
             data.setSkin(new HashMap<>(BuiltInSkins.DEFAULTSKIN));
             data.setARR(50);
@@ -145,15 +133,16 @@ public class GameServer {
     }
 
     public void openLastMenu(Player player) {
-        if (tableMap.get(player).getLastMenuOpened() == null) {
+        Menu last = tableMap.get(player).getLastMenuOpened();
+        if (last == null) {
             new HomeMenu(player);
             return;
         }
-        //DUMB
-        if (tableMap.get(player).getLastMenuOpened() instanceof RoomMenu) {
+
+        if (last instanceof RoomMenu) {
             new RoomMenu(player);
         } else {
-            player.openInventory(tableMap.get(player).getLastMenuOpened().getInventory());
+            player.openInventory(last.getInventory());
         }
     }
 
