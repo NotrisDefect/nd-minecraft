@@ -8,8 +8,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.EntityType;
@@ -26,22 +24,6 @@ public class ProtocolLibYes implements ProtocolLib {
 
     private final ProtocolManager pm = ProtocolLibrary.getProtocolManager();
     private final int version = Main.plugin.numericalVersion;
-
-    @Override
-    public void sendActionBarCustom(Player player, String message) {
-        if (version < 12) {
-            PacketContainer actionbar = new PacketContainer(PacketType.Play.Server.TITLE);
-            actionbar.getTitleActions().write(0, EnumWrappers.TitleAction.ACTIONBAR);
-            actionbar.getChatComponents().write(0, WrappedChatComponent.fromText(message));
-            try {
-                pm.sendServerPacket(player, actionbar);
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        } else {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
-        }
-    }
 
     @Override
     public void sendFallingBlockCustom(Player player, Location loc, int color, double xVel, double yVel, double zVel) {

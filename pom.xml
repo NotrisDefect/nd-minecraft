@@ -6,7 +6,7 @@
 
     <groupId>cabbageroll.notrisdefect</groupId>
     <artifactId>nd-minecraft</artifactId>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
