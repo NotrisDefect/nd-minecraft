@@ -36,9 +36,13 @@ public class Room {
         Main.NOTEBLOCKAPI.addPlayer(this, player);
         if (isRunning) {
             player.sendMessage(Strings.gameInProgress);
-        }
-        for (Player p : players) {
-            getTable(p).updateWholeTableTo(player);
+            for (Player p : players) {
+                getTable(p).forceFullRender();
+            }
+        } else {
+            for (Player p : players) {
+                getTable(p).drawLogo();
+            }
         }
     }
 
@@ -129,6 +133,19 @@ public class Room {
         backfire ^= true;
     }
 
+    private void afterLoopStopped() {
+        Main.NOTEBLOCKAPI.setPlaying(this, false);
+
+        for (Player player : alivePlayers) {
+            getTable(player).doAbort();
+            getTable(player).drawLogo();
+        }
+    }
+
+    private Table getTable(Player player) {
+        return Main.GS.getTable(player);
+    }
+
     private void roomLoop() {
         new BukkitRunnable() {
             @Override
@@ -159,20 +176,6 @@ public class Room {
             }
         }.runTaskLaterAsynchronously(Main.PLUGIN, 80);
     }
-
-    private void afterLoopStopped() {
-        Main.NOTEBLOCKAPI.setPlaying(this, false);
-
-        for (Player player : alivePlayers) {
-            getTable(player).doAbort();
-            getTable(player).drawLogo();
-        }
-    }
-
-    private Table getTable(Player player) {
-        return Main.GS.getTable(player);
-    }
-
 
     private void tick() {
         ArrayList<Player> stillAlivePlayers = new ArrayList<>(alivePlayers);

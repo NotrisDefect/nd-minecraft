@@ -12,6 +12,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -514,6 +515,21 @@ public class Table extends GameLogic {
         }
     }
 
+    // bandaid
+    public void forceFullRender() {
+        for (int[] row : oldStageDisplay) {
+            Arrays.fill(row, -1);
+        }
+        Arrays.fill(oldGarbageDisplay, -1);
+        Arrays.fill(oldZoneDisplay, -1);
+        for (int[] row : oldNextDisplay) {
+            Arrays.fill(row, -1);
+        }
+        for (int[] row : oldHoldDisplay) {
+            Arrays.fill(row, -1);
+        }
+    }
+
     public int getGAP() {
         return GAP;
     }
@@ -615,8 +631,6 @@ public class Table extends GameLogic {
         centerTable();
         automaticElements();
         drawLogo();
-
-
     }
 
     public void leaveRoom() {
@@ -1083,6 +1097,12 @@ public class Table extends GameLogic {
     }
 
     private void printBlock(int x, int y, int color) {
+        for (Player player : room.players) {
+            printBlock(x, y, color, player);
+        }
+    }
+
+    private void printBlock(int x, int y, int color, Player player) {
         int blockX, blockY, blockZ;
 
         for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
@@ -1091,13 +1111,20 @@ public class Table extends GameLogic {
                 blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
                 for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                     blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
-                    printSingleBlockToAll(new Location(location.getWorld(), blockX, blockY, blockZ), color);
+                    sendBlock(player, new Location(location.getWorld(), blockX, blockY, blockZ), color);
                 }
             }
         }
     }
+
 
     private void printBlock(int x, int y) {
+        for (Player player : room.players) {
+            printBlock(x, y, player);
+        }
+    }
+
+    private void printBlock(int x, int y, Player player) {
         int blockX, blockY, blockZ;
 
         for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
@@ -1106,28 +1133,18 @@ public class Table extends GameLogic {
                 blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
                 for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                     blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
-                    printSingleBlockToAll(new Location(location.getWorld(), blockX, blockY, blockZ));
+                    sendBlock(player, new Location(location.getWorld(), blockX, blockY, blockZ));
                 }
             }
-        }
-    }
-
-    private void printSingleBlockToAll(Location loc, int color) {
-        for (Player player : room.players) {
-            sendBlock(player, loc, color);
-        }
-    }
-
-    private void printSingleBlockToAll(Location loc) {
-        for (Player player : room.players) {
-            sendBlock(player, loc);
         }
     }
 
     private void render() {
         renderStage();
         renderGarbage();
-        renderZone();
+        if (ZONEENABLED) {
+            renderZone();
+        }
         renderNext();
         renderHold();
         sendScoreboard();
