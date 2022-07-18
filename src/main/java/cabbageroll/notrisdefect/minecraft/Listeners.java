@@ -19,7 +19,7 @@ public class Listeners implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof Menu) {
-            Main.GS.getTable((Player) event.getWhoClicked()).getLastMenuOpened().onInventoryClick(event);
+            Main.GS.getMenu((Player) event.getWhoClicked()).onInventoryClick(event);
         }
     }
 

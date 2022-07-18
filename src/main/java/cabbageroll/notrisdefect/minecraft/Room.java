@@ -95,7 +95,7 @@ public class Room {
         Main.GS.getTable(player).leaveRoom();
         if (player == owner) {
             if (players.size() == 0) {
-                Main.GS.deleteRoom(this);
+                Main.GS.popRoom(this);
             } else {
                 owner = players.get(0);
                 owner.sendMessage(Strings.ownerChange);

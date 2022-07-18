@@ -46,16 +46,16 @@ public class Table extends GameLogic {
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', '_', 'N', 'N', 'N', '_', '_', '_'},
-        {'_', 'N', 'T', 'N', 'N', 'J', 'J', '_', '_', '_'},
-        {'_', 'N', 'T', 'T', 'N', 'J', '_', '_', '_', '_'},
-        {'_', '_', 'T', 'N', 'N', 'J', '_', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', '_', '_', '_', '_'},
+        {'_', '_', 'N', 'N', 'N', 'N', '_', '_', '_', '_'},
         {'_', '_', '_', '_', '_', 'N', '_', '_', '_', '_'},
         {'_', '_', '_', '_', '_', 'N', '_', '_', '_', '_'},
-        {'_', 'L', 'N', 'N', 'S', 'S', 'N', 'Z', 'N', '_'},
-        {'_', 'L', 'N', 'N', 'N', 'S', 'S', 'Z', 'Z', '_'},
-        {'_', 'L', 'L', 'N', 'I', 'I', 'I', 'I', 'Z', '_'},
-        {'_', '_', '_', '_', '_', 'O', 'O', '_', '_', '_'},
-        {'_', '_', '_', '_', '_', 'O', 'O', '_', '_', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '_'},
+        {'_', '_', '_', '_', '_', 'N', 'N', '_', '_', '_'},
+        {'_', '_', '_', '_', '_', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
         {'_', 'N', 'N', 'N', 'N', 'N', 'N', '_', '_', '_'},
@@ -74,6 +74,7 @@ public class Table extends GameLogic {
         {'_', 'N', 'N', 'N', '_', '_', 'N', 'N', '_', '_'},
         {'_', '_', 'N', 'N', '_', '_', '_', '_', '_', '_'}
     };
+    private final boolean HOLDENABLED = true;
     public boolean enableAnimations = true;
     public boolean readyForClick;
     private int AWAYMOVE = (int) (getPLAYABLEROWS() * 1.5);
@@ -81,7 +82,6 @@ public class Table extends GameLogic {
     private int SIDEMOVE = (getSTAGESIZEX() >> 1);
     private int GAP = 2;
     private boolean ZONEENABLED = false;
-    private final boolean HOLDENABLED = true;
     private Room room;
     private Menu lastMenuOpened;
     // board elements
@@ -243,7 +243,7 @@ public class Table extends GameLogic {
     }
 
     @SuppressWarnings("deprecation")
-    private static void resendBlock(Player player, Location loc) {
+    private static void sendBlock(Player player, Location loc) {
         if (Main.PLUGIN.VERSION < 13) {
             player.sendBlockChange(loc, loc.getBlock().getType(), loc.getBlock().getData());
         } else {
@@ -252,11 +252,11 @@ public class Table extends GameLogic {
     }
 
     @SuppressWarnings("deprecation")
-    private static void sendBlockChangeCustom(Player player, Location loc, int color) {
+    private static void sendBlock(Player player, Location loc, int color) {
         XMaterial xm = (Main.GS.getData(player).isCustom() ? Main.GS.getSkin(player) : BuiltInSkins.DEFAULTSKIN).get(color);
 
         if (xm == SkinMenu.EXISTING_MATERIAL) {
-            resendBlock(player, loc);
+            sendBlock(player, loc);
         } else {
             if (Main.PLUGIN.VERSION < 13) {
                 player.sendBlockChange(loc, xm.parseItem().getType(), xm.parseItem().getData().getData());
@@ -393,14 +393,14 @@ public class Table extends GameLogic {
 
     public void cleanGarbage() {
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            printExistingBlock(garbageBarLocation.x, garbageBarLocation.y + i);
+            printBlock(garbageBarLocation.x, garbageBarLocation.y + i);
         }
     }
 
     public void cleanHold() {
         for (int i = 0; i < getPieceTable().mostPiecePoints(); i++) {
             for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
-                printExistingBlock(holdLocation.x + j, holdLocation.y + i);
+                printBlock(holdLocation.x + j, holdLocation.y + i);
             }
         }
     }
@@ -409,7 +409,7 @@ public class Table extends GameLogic {
         for (int i = 0; i < getNEXTPIECES(); i++) {
             for (int j = 0; j < getPieceTable().mostPiecePoints(); j++) {
                 for (int k = 0; k < getPieceTable().mostPiecePoints(); k++) {
-                    printExistingBlock(nextLocation[i].x + k, nextLocation[i].y + j);
+                    printBlock(nextLocation[i].x + k, nextLocation[i].y + j);
                 }
             }
         }
@@ -418,14 +418,14 @@ public class Table extends GameLogic {
     public void cleanStage() {
         for (int i = 0; i < getSTAGESIZEY(); i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
-                printExistingBlock(j, i);
+                printBlock(j, i);
             }
         }
     }
 
     public void cleanZone() {
         for (int i = 0; i < getPLAYABLEROWS(); i++) {
-            printExistingBlock(zoneBarLocation.x, zoneBarLocation.y + i);
+            printBlock(zoneBarLocation.x, zoneBarLocation.y + i);
         }
     }
 
@@ -471,7 +471,7 @@ public class Table extends GameLogic {
         for (int i = 0; i < getSTAGESIZEY() - BACKROWS; i++) {
             for (int j = 0; j < getSTAGESIZEX(); j++) {
                 if (logo2[i][j] == BLOCK_NONE) {
-                    printExistingBlock(j, i);
+                    printBlock(j, i);
                 } else {
                     printBlock(j, i, logo2[i][j]);
                 }
@@ -615,6 +615,8 @@ public class Table extends GameLogic {
         centerTable();
         automaticElements();
         drawLogo();
+
+
     }
 
     public void leaveRoom() {
@@ -1089,13 +1091,13 @@ public class Table extends GameLogic {
                 blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
                 for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                     blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
-                    printSingleBlockToAll(blockX, blockY, blockZ, color);
+                    printSingleBlockToAll(new Location(location.getWorld(), blockX, blockY, blockZ), color);
                 }
             }
         }
     }
 
-    private void printExistingBlock(int x, int y) {
+    private void printBlock(int x, int y) {
         int blockX, blockY, blockZ;
 
         for (int i = 0; i < (imi != 0 ? imi : THICKNESS); i++) {
@@ -1104,21 +1106,21 @@ public class Table extends GameLogic {
                 blockY = location.getBlockY() + (int) Math.floor(x * WMY) + (int) Math.floor(y * HMY) + j;
                 for (int k = 0; k < (imk != 0 ? imk : THICKNESS); k++) {
                     blockZ = location.getBlockZ() + (int) Math.floor(x * WMZ) + (int) Math.floor(y * HMZ) + k;
-                    for (Player player : room.players) {
-                        resendBlock(player, new Location(location.getWorld(), blockX, blockY, blockZ));
-                    }
+                    printSingleBlockToAll(new Location(location.getWorld(), blockX, blockY, blockZ));
                 }
             }
         }
     }
 
-    private void printSingleBlockTo(Player playerTo, int x, int y, int z, int color) {
-        sendBlockChangeCustom(playerTo, new Location(location.getWorld(), x, y, z), color);
+    private void printSingleBlockToAll(Location loc, int color) {
+        for (Player player : room.players) {
+            sendBlock(player, loc, color);
+        }
     }
 
-    private void printSingleBlockToAll(int x, int y, int z, int color) {
+    private void printSingleBlockToAll(Location loc) {
         for (Player player : room.players) {
-            printSingleBlockTo(player, x, y, z, color);
+            sendBlock(player, loc);
         }
     }
 
@@ -1233,7 +1235,7 @@ public class Table extends GameLogic {
                         if (newStageDisplay[i][j] != BLOCK_NONE) {
                             printBlock(j, i, newStageDisplay[i][j]);
                         } else {
-                            printExistingBlock(j, i);
+                            printBlock(j, i);
                         }
                     }
                 }

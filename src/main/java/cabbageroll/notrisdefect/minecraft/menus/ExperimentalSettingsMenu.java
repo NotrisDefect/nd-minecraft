@@ -33,9 +33,9 @@ public class ExperimentalSettingsMenu extends Menu {
 
         addButton(BACK_LOCATION, event -> new RoomMenu(player), XMaterial.BEDROCK, ChatColor.WHITE + "Back");
 
-        addButton(grid(9, 2), event -> table.setSTAGESIZEX(table.getSTAGESIZEX() + howMuch(event.getClick())), XMaterial.COAL_BLOCK, ChatColor.WHITE + "STAGESIZEX", "" + table.getSTAGESIZEX());
-        addButton(grid(9, 3), event -> table.setSTAGESIZEY(table.getSTAGESIZEY() + howMuch(event.getClick())), XMaterial.COAL_BLOCK, ChatColor.WHITE + "STAGESIZEY", "" + table.getSTAGESIZEY());
-        addButton(grid(9, 4), event -> table.setNEXTPIECES(table.getNEXTPIECES() + howMuch(event.getClick())), XMaterial.COAL_BLOCK, ChatColor.WHITE + "NEXTPIECESMAX", "" + table.getNEXTPIECES());
+        addButton(grid(9, 2), event -> table.setSTAGESIZEX(table.getSTAGESIZEX() + checkClickType(event.getClick())), XMaterial.COAL_BLOCK, ChatColor.WHITE + "STAGESIZEX", "" + table.getSTAGESIZEX());
+        addButton(grid(9, 3), event -> table.setSTAGESIZEY(table.getSTAGESIZEY() + checkClickType(event.getClick())), XMaterial.COAL_BLOCK, ChatColor.WHITE + "STAGESIZEY", "" + table.getSTAGESIZEY());
+        addButton(grid(9, 4), event -> table.setNEXTPIECES(table.getNEXTPIECES() + checkClickType(event.getClick())), XMaterial.COAL_BLOCK, ChatColor.WHITE + "NEXTPIECESMAX", "" + table.getNEXTPIECES());
 
         addButton(grid(5, 2), event -> Main.GS.getRoom(player).toggleBackfire(), XMaterial.FLINT_AND_STEEL, "backfire", "" + Main.GS.getRoom(player).getBackfire());
         addButton(grid(6, 2), event -> table.enableAnimations ^= true, XMaterial.PACKED_ICE, ChatColor.WHITE + "Falling blocks", "" + table.enableAnimations);

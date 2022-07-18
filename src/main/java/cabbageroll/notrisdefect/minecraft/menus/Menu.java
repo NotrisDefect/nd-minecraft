@@ -36,28 +36,6 @@ public abstract class Menu implements InventoryHolder {
         open();
     }
 
-    public static int grid(int x, int y) {
-        return (y - 1) * 9 + x - 1;
-    }
-
-    protected static int howMuch(ClickType ct) {
-        switch (ct) {
-            case LEFT:
-                return 1;
-            case RIGHT:
-                return -1;
-            case SHIFT_LEFT:
-                return 10;
-            case SHIFT_RIGHT:
-                return -10;
-        }
-        return 0;
-    }
-
-    public void createInventory(InventoryHolder holder, int size, String name) {
-        inventory = Bukkit.createInventory(holder, size, name);
-    }
-
     public static ItemStack createItem(XMaterial material, String name, String... lore) {
         ItemStack item = material.parseItem();
         ItemMeta meta;
@@ -66,6 +44,36 @@ public abstract class Menu implements InventoryHolder {
         meta.setLore(Arrays.asList(lore));
         item.setItemMeta(meta);
         return item;
+    }
+
+    public static int grid(int x, int y) {
+        return (y - 1) * 9 + x - 1;
+    }
+
+    protected static int checkClickType(ClickType ct, int a, int b) {
+        switch (ct) {
+            case LEFT:
+                return a;
+            case RIGHT:
+                return -a;
+            case SHIFT_LEFT:
+                return b;
+            case SHIFT_RIGHT:
+                return -b;
+        }
+        return 0;
+    }
+
+    protected static int checkClickType(ClickType ct) {
+        return checkClickType(ct, 1);
+    }
+
+    protected static int checkClickType(ClickType ct, int a) {
+        return checkClickType(ct, a, a);
+    }
+
+    public void createInventory(InventoryHolder holder, int size, String name) {
+        inventory = Bukkit.createInventory(holder, size, name);
     }
 
     @Override

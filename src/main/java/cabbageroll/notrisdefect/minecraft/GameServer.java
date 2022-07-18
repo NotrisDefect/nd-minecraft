@@ -23,19 +23,8 @@ import java.util.Map;
 public class GameServer {
 
     private final Map<String, Room> roomMap = new LinkedHashMap<>();
-    private final List<Room> roomList = new LinkedList<>();
     private final Map<Player, Table> tableMap = new HashMap<>();
     private final Map<Player, Settings> offlineData = new HashMap<>();
-
-    public List<Room> getMultiplayerRoomList() {
-        List<Room> mpRooms = new LinkedList<>();
-        for (Room room : roomList) {
-            if (!room.isSingleplayer()) {
-                mpRooms.add(room);
-            }
-        }
-        return mpRooms;
-    }
 
     public void createMPRoom(Player player) {
         pushRoom(new Room(player, false));
@@ -72,17 +61,22 @@ public class GameServer {
         offlineData.remove(player);
     }
 
-    public void deleteRoom(Room room) {
-        roomMap.remove(room.getRoomID());
-        roomList.remove(room);
-    }
-
     public void flush() {
 
     }
 
     public Settings getData(Player player) {
         return offlineData.get(player);
+    }
+
+    public List<Room> getMultiplayerRoomList() {
+        List<Room> mpRooms = new LinkedList<>();
+        for (Room room : roomMap.values()) {
+            if (!room.isSingleplayer()) {
+                mpRooms.add(room);
+            }
+        }
+        return mpRooms;
     }
 
     public Room getRoom(String s) {
@@ -133,7 +127,7 @@ public class GameServer {
     }
 
     public void openLastMenu(Player player) {
-        Menu last = tableMap.get(player).getLastMenuOpened();
+        Menu last = getMenu(player);
         if (last == null) {
             new HomeMenu(player);
             return;
@@ -151,25 +145,23 @@ public class GameServer {
         player.openInventory(menu.getInventory());
     }
 
-    public void popRoom(String s) {
-        roomList.remove(roomMap.get(s));
-        roomMap.remove(s);
+    public void popRoom(Room room) {
+        roomMap.remove(room.getRoomID());
     }
 
     public boolean roomExists(Room room) {
-        return roomList.contains(room);
+        return roomMap.containsValue(room);
     }
 
     public void setSkin(Player player, HashMap<Integer, XMaterial> skin) {
         offlineData.get(player).setSkin(skin);
     }
 
-    private Menu getMenu(Player player) {
+    public Menu getMenu(Player player) {
         return tableMap.get(player).getLastMenuOpened();
     }
 
     private void pushRoom(Room room) {
         roomMap.put(room.getRoomID(), room);
-        roomList.add(room);
     }
 }
