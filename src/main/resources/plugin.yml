@@ -1,6 +1,6 @@
 name: NotrisDefect
-main: cabbageroll.notrisdefect.minecraft.Main
-version: 1.6.4
+main: in.cabbageroll.notrisdefect.minecraft.Main
+version: 2.0.0
 api-version: 1.19
 softdepend: [ NoteBlockAPI, Netherboard, ProtocolLib ]
 commands:
